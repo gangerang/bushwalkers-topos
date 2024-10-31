@@ -1,0 +1,1576 @@
+<html>
+    <head>
+        <title>Bushwalkers Topo</title>
+        <meta charset="utf-8"/>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+		<style>
+			body, #map {
+				height: 100vh;
+				margin: 0;
+			}
+			.modal {
+				display: none;
+				position: fixed;
+				z-index: 1000;
+				padding-top: 100px;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0, 0, 0, 0.4);
+			}
+			.modal-content {
+				background-color: #fefefe;
+				margin: auto;
+				padding: 20px;
+				border: 1px solid #888;
+				width: 600px;
+				border-radius: 4px;
+				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+				max-height: 80vh;
+				overflow-y: auto;
+			}
+			.close {
+				color: #aaa;
+				float: right;
+				font-size: 28px;
+				font-weight: bold;
+				cursor: pointer;
+			}
+			.close:hover {
+				color: black;
+			}
+			.modal-content input,
+			.modal-content button {
+				width: 100%;
+				padding: 8px;
+				margin-top: 5px;
+			}
+			.button-container {
+				display: flex;
+				gap: 10px; /* Space between buttons */
+			}
+
+			.button-container .search,
+			.button-container .clear {
+				width: 50%; /* Each button takes up half the space of the container */
+			}
+			.modal-content button.search {
+				background-color: #4CAF50;
+				color: white;
+				border: none;
+				cursor: pointer;
+			}
+			.modal-content button.clear {
+				background-color: #f44336;
+				color: white;
+				border: none;
+				cursor: pointer;
+			}
+			.results-table {
+				width: 100%;
+				border-collapse: collapse;
+				margin-top: 10px;
+				max-height: 300px;
+				overflow-y: auto;
+				display: block;
+			}
+			.results-table th, .results-table td {
+				padding: 8px;
+				text-align: left;
+				border: 1px solid #ddd;
+				width: 50%;
+			}
+			.results-table tr:hover {
+				background-color: #f1f1f1;
+				cursor: pointer;
+			}
+		</style>
+    </head>
+    <body>
+        <div id="map"></div>
+
+		<div id="buttonContainer" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; gap: 2px;">
+			<button id="lotSearchBtn">Lot Search</button>
+			<button id="locationSearchBtn">Location Search</button>
+			<button id="watercourseSearchBtn">Watercourse Search</button>
+			<button id="gnrSearchBtn">GNR Search</button>
+		</div>
+	
+		<!-- Lot Search Modal -->
+		<div id="lotSearchModal" class="modal">
+			<div class="modal-content">
+				<span class="close" onclick="closeModal('lotSearchModal')">&times;</span>
+				<h3>Lot Search</h3>
+				<input type="text" id="folio" placeholder="Enter folio (e.g., 10/100, 1/A/10101, SP100)" />
+				<div class="button-container">
+					<button class="search" onclick="searchLot()">Search</button>
+					<button class="clear" onclick="clearMap()">Clear</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- Location Search Modal -->
+		<div id="locationSearchModal" class="modal">
+			<div class="modal-content">
+				<span class="close" onclick="closeModal('locationSearchModal')">&times;</span>
+				<h3>Location Search</h3>
+				<input type="text" id="locationQuery" placeholder="Enter location name" />
+				<div class="button-container">
+					<button class="search" onclick="searchLocation()">Search</button>
+					<button class="clear" onclick="clearMap()">Clear</button>
+				</div>
+				<table id="resultsTable" class="results-table"></table>
+			</div>
+		</div>
+
+		<!-- Watercourse Search Modal -->
+		<div id="watercourseSearchModal" class="modal">
+			<div class="modal-content">
+				<span class="close" onclick="closeModal('watercourseSearchModal')">&times;</span>
+				<h3>Watercourse Search</h3>
+				<input type="text" id="watercourseQuery" placeholder="Enter watercourse name" />
+				<div class="button-container">
+					<button class="search" onclick="searchWatercourse()">Search</button>
+					<button class="clear" onclick="clearMap()">Clear</button>
+				</div>
+				<table id="watercourseResultsTable" class="results-table"></table>
+			</div>
+		</div>
+
+		<!-- GNR Search Modal -->
+		<div id="gnrSearchModal" class="modal">
+			<div class="modal-content">
+				<span class="close" onclick="closeModal('gnrSearchModal')">&times;</span>
+				<h3>GNR Search</h3>
+				<input type="text" id="gnrQuery" placeholder="Enter geographical name" />
+				<div class="button-container">
+					<button class="search" onclick="searchGNR()">Search</button>
+					<button class="clear" onclick="clearMap()">Clear</button>
+				</div>
+				<table id="gnrResultsTable" class="results-table"></table>
+			</div>
+		</div>
+
+        <script src="https://unpkg.com/leaflet@1.9.0/dist/leaflet.js"></script>
+        <script src="https://unpkg.com/pmtiles@2.7.2/dist/index.js"></script>
+
+		<!-- Load Esri Leaflet from CDN -->
+		<script src="https://unpkg.com/esri-leaflet@3.0.12/dist/esri-leaflet.js"></script>
+
+		<!-- Load Esri Leaflet Vector from CDN -->
+		<script src="https://unpkg.com/esri-leaflet-vector@4.2.3/dist/esri-leaflet-vector.js" crossorigin=""></script>
+				
+		<!-- Load control layers tree https://github.com/jjimenezshaw/Leaflet.Control.Layers.Tree -->
+		<script src="https://unpkg.com/leaflet.control.layers.tree@1.1.0/L.Control.Layers.Tree.js"></script>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet.control.layers.tree@1.1.0/L.Control.Layers.Tree.css" />
+
+		<!-- Load leaflet.tilelayer.wmts from CDN https://github.com/alexandre-melard/leaflet.TileLayer.WMTS -->
+		<script src="https://unpkg.com/@mladen/leaflet.tilelayer.wmts@1.0.0/leaflet-tilelayer-wmts.js"></script>
+
+		<!-- Load leaflet locatecontrol from CDN https://github.com/domoritz/leaflet-locatecontrol -->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.81.0/dist/L.Control.Locate.min.css" />
+		<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.81.0/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+		
+
+		<!-- Leaflet plugin for vector tiles support -->
+		<script type="text/javascript"  src="https://unpkg.com/leaflet.vectorgrid@1.2.0"></script>
+
+        <script type="text/javascript">
+
+			// Define map with initial view
+            const map = L.map('map').setView([-33.754, 150.270], 10);
+
+			// function to create the NLA Map Search layers based on a list
+			
+			function createNlaWmsReferences(namesAndLayerIds) {
+				const layersArray = [];
+
+				namesAndLayerIds.forEach(item => {
+					const { name, label, layerid } = item;
+					const layer = L.tileLayer.wms('https://mapsearch.nla.gov.au/geoserver/NLAMaps/wms?', {
+						layers: layerid,
+						format: 'image/png',
+						transparent: true,
+						version: '1.3.0',
+						uppercase: true,
+						attribution: attrib_nla_ms
+					});
+					layersArray.push({ label: label, layer: layer });
+				});
+
+				return layersArray;
+			}	
+
+			///////////////////////////
+			//	custom search box
+			///////////////////////////	
+
+			document.addEventListener("DOMContentLoaded", function() {
+				let polygonLayer;
+				let pointLayer;
+				let watercourseLayer;
+				let gnrLayer;
+
+				function openModal(modalId) {
+					document.getElementById(modalId).style.display = "block";
+				}
+
+				// uncomment below for search results to be cleared in results table after closing
+				function closeModal(modalId) {
+					document.getElementById(modalId).style.display = "none";
+					// document.getElementById("resultsTable").innerHTML = "";
+					// document.getElementById("watercourseResultsTable").innerHTML = "";
+					// document.getElementById("gnrResultsTable").innerHTML = "";
+				}
+
+				// Close any modal when clicking outside of its content
+				function clickOffModal(event) {
+					// Select all modals with the 'modal' class
+					const modals = document.querySelectorAll('.modal');
+					
+					modals.forEach(modal => {
+						// Check if the click target is the modal itself (the overlay)
+						if (event.target === modal) {
+							closeModal(modal.id); // Close the modal by its unique ID
+						}
+					});
+				};
+
+				// clicking on buttons opens modal
+				document.getElementById("lotSearchBtn").onclick = () => openModal("lotSearchModal");
+				document.getElementById("locationSearchBtn").onclick = () => openModal("locationSearchModal");
+				document.getElementById("watercourseSearchBtn").onclick = () => openModal("watercourseSearchModal");
+				document.getElementById("gnrSearchBtn").onclick = () => openModal("gnrSearchModal");
+
+				// functions for each search type
+
+				// lot search
+				function searchLot() {
+					const folio = document.getElementById("folio").value.toUpperCase();
+					const folioParts = folio.split("/");
+
+					let lot = "", section = "", plan = "", planType = "DP";
+
+					if (folioParts.length === 2 && folioParts[0] !== "SP") {
+						// Format like 10/100 (lot and plan)
+						[lot, plan] = folioParts;
+					} else if (folioParts.length === 3) {
+						// Format like 10/3/400 (lot, section, and plan)
+						[lot, section, plan] = folioParts;
+					} else if (folioParts[0].startsWith("SP")) {
+						// Format like SP100 or SP500 (plan type SP and plan number)
+						planType = "SP";
+						plan = folioParts[0].slice(2); // Extract number after "SP"
+					} else {
+						alert("Invalid folio format.");
+						return;
+					}
+
+					// Construct the lotidstring based on the provided parts
+					const lotidstring = planType === "SP" ? `//SP${plan}` : `${lot}/${section || ""}/${planType}${plan}`;
+					const url = `https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/Boundaries/MapServer/6/query?f=json&where=lotidstring%20%3D%20%27${lotidstring}%27&returnGeometry=true&spatialRel=esriSpatialRelIntersects&outFields=*&outSR=3857`;
+
+					fetch(url)
+						.then(response => response.json())
+						.then(data => {
+							if (data.features.length > 0) {
+								const rings = data.features[0].geometry.rings[0];
+								const coordinates = rings.map(([x, y]) => {
+									const latlng = L.Projection.SphericalMercator.unproject(L.point(x, y));
+									return [latlng.lat, latlng.lng];
+								});
+								// uncomment for adding new feature removed previous ones
+								// if (polygonLayer) map.removeLayer(polygonLayer);
+								polygonLayer = L.polygon(coordinates, { color: 'blue' }).addTo(map);
+								map.fitBounds(polygonLayer.getBounds());
+								closeModal('lotSearchModal');
+							} else {
+								alert(`Folio ${lotidstring} not found.`);
+							}
+						})
+						.catch(error => console.error("Error fetching data:", error));
+				}
+
+				// Location Search with clear button
+				function searchLocation() {
+					const query = document.getElementById("locationQuery").value.toUpperCase();
+					const url = `https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/POI/MapServer/0/query?f=json&where=poilabel%20LIKE%20%27%25${encodeURIComponent(query)}%25%27&returnGeometry=true&spatialRel=esriSpatialRelIntersects&outFields=*&outSR=3857`;
+
+					fetch(url)
+						.then(response => response.json())
+						.then(data => {
+							const table = document.getElementById("resultsTable");
+							table.innerHTML = "<tr><th>Name</th><th>Type</th></tr>";
+
+							data.features.forEach((feature) => {
+								const { poiname, poitype } = feature.attributes;
+								const { x, y } = feature.geometry;
+
+								const row = document.createElement("tr");
+								row.innerHTML = `<td>${poiname}</td><td>${poitype}</td>`;
+								row.onclick = () => {
+									// uncomment for adding new feature removed previous ones
+									// if (pointLayer) map.removeLayer(pointLayer);
+									const latlng = L.Projection.SphericalMercator.unproject(L.point(x, y));
+									pointLayer = L.marker(latlng).addTo(map).bindPopup(`${poiname} (${poitype})`).openPopup();
+									map.setView(latlng, 14);
+									closeModal('locationSearchModal');
+								};
+								table.appendChild(row);
+							});
+						})
+						.catch(error => console.error("Error fetching data:", error));
+				}
+
+				// Watercourse Search
+				function searchWatercourse() {
+					const query = document.getElementById("watercourseQuery").value.toUpperCase();
+					const url = `https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Hydrography/MapServer/6/query?f=json&where=UPPER(hydronamestring)%20LIKE%20'%25${encodeURIComponent(query)}%25'&returnGeometry=true&spatialRel=esriSpatialRelIntersects&outFields=hydronamestring&outSR=3857`;
+
+					fetch(url)
+						.then(response => response.json())
+						.then(data => {
+							const table = document.getElementById("watercourseResultsTable");
+							table.innerHTML = "<tr><th>Watercourse Name</th></tr>";
+
+							data.features.forEach((feature) => {
+								const { hydronamestring } = feature.attributes;
+								const coordinates = feature.geometry.paths[0]; // Line geometry coordinates
+
+								// Create a table row with a clickable link for each watercourse
+								const row = document.createElement("tr");
+								row.innerHTML = `<td>${hydronamestring}</td>`;
+								row.onclick = () => {
+								// uncomment for adding new feature removed previous ones
+								// if (watercourseLayer) map.removeLayer(watercourseLayer);
+
+									// Convert coordinates to LatLng and add as a polyline
+									const latLngs = coordinates.map(coord => {
+										const latlng = L.Projection.SphericalMercator.unproject(L.point(coord[0], coord[1]));
+										return [latlng.lat, latlng.lng];
+									});
+
+									watercourseLayer = L.polyline(latLngs, { color: 'blue' }).addTo(map);
+									map.fitBounds(watercourseLayer.getBounds());
+
+									// Close the modal after selecting
+									closeModal('watercourseSearchModal');
+								};
+								table.appendChild(row);
+							});
+						})
+						.catch(error => console.error("Error fetching data:", error));
+				}
+
+				// GNR Search function
+				function searchGNR() {
+					const query = document.getElementById("gnrQuery").value;
+					const url = `https://dcok8xuap4.execute-api.ap-southeast-2.amazonaws.com/prod/public/placenames/geonames?limit=100&page=1&includeTotal=true&geographical_name=${encodeURIComponent(query)}&status=[]&designation=[]&lga=[]`;
+
+					fetch(url)
+						.then(response => response.json())
+						.then(data => {
+							const table = document.getElementById("gnrResultsTable");
+							table.innerHTML = "<tr><th>Name</th><th>Designation</th><th>Status</th><th>LGA</th></tr>";
+
+							// Sort data by Name, Designation, and Status
+							const sortedGeonames = data.geonames.sort((a, b) => {
+								return a.geographical_name.localeCompare(b.geographical_name) ||
+									a.designation.localeCompare(b.designation) ||
+									a.status.localeCompare(b.status);
+							});
+
+							sortedGeonames.forEach((feature) => {
+								const { identifier, geographical_name, designation, status, lga, latitude, longitude } = feature;
+								const lgaName = lga ? lga[0] : "";  // Assuming LGA is an array, take the first element
+
+								// Create a table row with a clickable link for each GNR entry
+								const row = document.createElement("tr");
+								row.innerHTML = `<td>${geographical_name}</td>
+												<td>${designation}</td>
+												<td>${status}</td>
+												<td>${lgaName}</td>`;
+								row.onclick = () => {
+									// uncomment for adding new feature removed previous ones
+									// if (gnrLayer) map.removeLayer(gnrLayer);
+
+									// Create a point using latitude and longitude
+									const latLng = L.latLng(parseFloat(latitude), parseFloat(longitude));
+									gnrLayer = L.marker(latLng).addTo(map).bindPopup(
+										`<strong>${geographical_name}</strong><br>Designation: ${designation}<br>Status: ${status}<br>LGA: ${lgaName}<br>
+										<a href="https://proposals.gnb.nsw.gov.au/public/geonames/${identifier}" target="_blank">GNR Record</a>`
+									);
+									map.setView(latLng, 14);
+
+									// Close the modal after selecting
+									closeModal('gnrSearchModal');
+								};
+								table.appendChild(row);
+							});
+						})
+						.catch(error => console.error("Error fetching data:", error));
+				}
+
+				function clearMap() {
+					if (polygonLayer) map.removeLayer(polygonLayer);
+					if (pointLayer) map.removeLayer(pointLayer);
+					if (watercourseLayer) map.removeLayer(watercourseLayer);
+					if (gnrLayer) map.removeLayer(gnrLayer);
+					document.getElementById("folio").value = "";
+					document.getElementById("locationQuery").value = "";
+					document.getElementById("watercourseQuery").value = "";
+					document.getElementById("gnrQuery").value = "";
+				}
+
+				window.searchLot = searchLot;
+				window.searchLocation = searchLocation;
+				window.searchWatercourse = searchWatercourse;
+				window.searchGNR = searchGNR;
+
+				window.clearMap = clearMap;
+				window.closeModal = closeModal;
+				window.onclick = clickOffModal;
+			});
+
+			// source attribution vars
+			const licence_cc_by_4_0 = 'This product is released under the <a href="http://creativecommons.org/licenses/by/4.0/legalcode">Creative Commons Attribution 4.0 International Licence.</a>'
+
+			const attrib_nsw_ss = '&copy; <a href="https://www.spatial.nsw.gov.au">DCS Spatial Services</a>'
+			const attrib_nla_ms = 'Source <a href="https://mapsearch.nla.gov.au">NLA Map Search</a>'
+			const attrib_ga = '&copy; Commonwealth of Australia (Geoscience Australia).' + licence_cc_by_4_0
+			const attrib_nsw_dcceew = '&copy;  State Government of NSW and NSW Department of Climate Change, Energy, the Environment and Water 2023.' + licence_cc_by_4_0
+			const attrib_nsw_planning = '&copy; State Government of NSW and NSW Department of Planning, Housing and Infrastructure 2021.' + licence_cc_by_4_0
+
+			///////////////////////////
+			//	basemaps
+			///////////////////////////
+
+			// NSW raster topo maps layer
+			const basemap_raster_ss_nsw_raster_topo = L.tileLayer('https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+				maxZoom: 21,
+				maxNativeZoom: 16,
+				attribution: attrib_nsw_ss
+			});
+			
+			// NSW raster imagery layer
+			const basemap_raster_ss_nsw_imagery = L.tileLayer('https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Imagery/MapServer/tile/{z}/{y}/{x}', {
+				maxZoom: 21,
+				//maxNativeZoom: 16,
+				attribution: attrib_nsw_ss
+			});			
+			
+			// NSW poi topo basemap
+			const basemap_raster_ss_nsw_poi_topo = L.esri.tiledMapLayer({url: 'https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/LPIMap/MapServer',
+				maxZoom: 21,
+				maxNativeZoom: 18,
+				attribution: attrib_nsw_ss
+			}).addTo(map);
+
+			// NSW series 1 topo basemap
+			const basemap_raster_ss_nsw_raster_topo_s1 = L.esri.tiledMapLayer({url: 'https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/LPITopoMap_S1/MapServer',
+				maxZoom: 21,
+				maxNativeZoom: 16,
+				attribution: attrib_nsw_ss
+			});
+			
+			// Geoscience Australia 250k topo 2008
+			const basemap_raster_ga_natmap_250k_2008 = L.esri.tiledMapLayer({url: 'http://services.ga.gov.au/gis/rest/services/NATMAP_Maps_250K_2008/MapServer',
+				maxZoom: 21,
+				maxNativeZoom: 12,
+				attribution: attrib_ga
+			});
+
+			// Geoscience Australia topo 
+			const basemap_raster_ga_topo_basemap = L.esri.tiledMapLayer({url: 'https://services.ga.gov.au/gis/rest/services/Topographic_Base_Map/MapServer',
+				maxZoom: 21,
+				maxNativeZoom: 12,
+				attribution: attrib_ga
+			});
+
+			//Google Maps imagery layer
+			const basemap_raster_google_imagery = new L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+				maxZoom: 21,
+				maxNativeZoom: 20,
+				subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+				attribution: 'Basemap Imagery data &copy; <a href="https://www.google.com/maps">Google</a>'
+			});
+			
+			// raster esri hillshade
+			const basemap_raster_esri_hillshade = L.esri.tiledMapLayer({url: 'https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer',
+				maxZoom: 21,
+				maxNativeZoom: 15
+			});
+			
+			// raster esri hillshade with opacity slider
+			const basemap_raster_esri_hillshade_opacity = L.esri.tiledMapLayer({url: 'https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer',
+				maxZoom: 21,
+				maxNativeZoom: 15
+			});
+			
+			// raster esri world topo
+			const basemap_raster_esri_topo = L.esri.tiledMapLayer({url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer',
+				maxZoom: 21,
+				maxNativeZoom: 16
+			});
+			
+			// raster esri world imagery
+			const basemap_raster_esri_imagery = L.esri.tiledMapLayer({url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer',
+				maxZoom: 21,
+				maxNativeZoom: 16
+			});
+			
+			// raster esri landsat 8
+			const basemap_raster_esri_landsat8 = L.esri.imageMapLayer({url: 'https://landsat.arcgis.com/arcgis/rest/services/Landsat8_PanSharpened/ImageServer',
+				renderingRule: { "rasterFunction": "Panchromatic with DRA Sharpened" }
+			});
+			
+			// raster esri modis
+			const basemap_raster_esri_modis = L.esri.imageMapLayer({url: 'https://modis.arcgis.com/arcgis/rest/services/MODIS/ImageServer'
+			});
+			
+			// raster esri modis ir
+			const basemap_raster_esri_modis_ir = L.esri.imageMapLayer({url: 'https://modis.arcgis.com/arcgis/rest/services/MODIS/ImageServer'
+			}).setBandIds('7,2,1');
+			
+			// raster esri night time lights
+			const basemap_raster_esri_viirs_nighttime = L.esri.imageMapLayer({url: 'https://ic.img.arcgis.com/arcgis/rest/services/VIIRS/NighttimeLightsMDNB/ImageServer',
+				renderingRule: { "rasterFunction": "Average Monthly Radiance - Cartographic" }
+			});
+			
+			// raster esri viirs
+			const basemap_raster_esri_viirs = L.esri.imageMapLayer({url: 'https://modis.arcgis.com/arcgis/rest/services/VIIRS/ImageServer'
+			});
+			
+			// vector tile esri topo basemap (styling appears different to that on SCP ArcGIS Online maps)
+			const basemap_vectortile_esri_basemap = L.esri.Vector.vectorTileLayer(
+				"https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer"
+			);
+			
+			// vector tile esri contours
+			const basemap_vectortile_esri_contours = L.esri.Vector.vectorTileLayer(
+				"https://basemaps.arcgis.com/arcgis/rest/services/World_Contours_v2/VectorTileServer"
+			);
+			// vector tile esri hillshade
+			const basemap_vectortile_esri_hillshade = L.esri.Vector.vectorTileLayer(
+				"https://basemaps.arcgis.com/arcgis/rest/services/World_Hillshade_v2/VectorTileServer"
+			);
+			
+			
+			///////////////////////////
+			//	overlay layers
+			///////////////////////////
+			
+			// vector name watercourses
+			const vector_ss_waterTheme_namedRivers = L.esri.featureLayer({
+				url: "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Water_Theme/FeatureServer/2",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_ss
+			});
+			// vector trig stations
+			const vector_ss_trig = L.esri.featureLayer({
+				url: "https://portal.spatial.nsw.gov.au/server/rest/services/SurveyMarkGDA2020/FeatureServer/0",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_ss,
+				where: "marktype='TS'"
+			});
+			// vector lots
+			const vector_ss_lots = L.esri.featureLayer({
+				url: "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Land_Parcel_Property_Theme/FeatureServer/8",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_ss
+			});
+			// vector parish boundaries
+			const vector_ss_parish = L.esri.featureLayer({
+				url: "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Administrative_Boundaries_Theme/FeatureServer/5",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_ss
+			});
+			// vector county boundaries
+			const vector_ss_county = L.esri.featureLayer({
+				url: "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Administrative_Boundaries_Theme/FeatureServer/11",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_ss,
+				style: () => {
+					return {
+						color: "#ff0000" // red
+					};
+				}
+            });
+			// vector government property index gpi
+			const vector_env_gpi = L.esri.featureLayer({
+				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/Planning_Portal_GPI/MapServer/302",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_planning,
+				style: () => {
+					return {
+						color: "#6600cc" // purple
+					};
+				}
+			});
+			// vector nsw declared wilderness
+			const vector_env_wilderness = L.esri.featureLayer({
+				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/EDP/Identified_Wilderness/MapServer/0",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_dcceew
+			});			
+
+			///////////////////////////
+			// crown land
+			///////////////////////////
+
+			// vector crown land all
+			const vector_env_crownland_all = L.esri.featureLayer({
+				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/Planning_Portal_Crown_Land/MapServer/258",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_planning,
+				style: () => {
+					return {
+						color: "#6600cc" // purple
+					};
+				}
+			});
+
+			// vector crown land - reserves
+			const vector_env_crownland_reserves = L.esri.featureLayer({
+				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/Planning_Portal_Crown_Land/MapServer/312",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_planning,
+				style: () => {
+					return {
+						color: "#6600cc" // purple
+					};
+				}
+			});
+
+			// vector crown land - leases
+			const vector_env_crownland_leases = L.esri.featureLayer({
+				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/Planning_Portal_Crown_Land/MapServer/313",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_planning,
+				style: () => {
+					return {
+						color: "#6600cc" // purple
+					};
+				}
+			});
+
+			// vector crown land - licences
+			const vector_env_crownland_licences = L.esri.featureLayer({
+				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/Planning_Portal_Crown_Land/MapServer/314",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_planning,
+				style: () => {
+					return {
+						color: "#6600cc" // purple
+					};
+				}
+			});
+
+			// vector crown land - enclosure permit
+			const vector_env_crownland_enclosure = L.esri.featureLayer({
+				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/Planning_Portal_Crown_Land/MapServer/315",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_planning,
+				style: () => {
+					return {
+						color: "#6600cc" // purple
+					};
+				}
+			});
+
+
+			
+			// vector ga historic aerial photos
+			const vector_ga_historic_aerial_photos = L.esri.featureLayer({
+				url: "https://services1.arcgis.com/wfNKYeHsOyaFyPw3/ArcGIS/rest/services/HistoricalAerialPhotography_AGOL_DIST_gdb/FeatureServer/0",
+				simplifyFactor: 0.5,
+				precision: 4,
+				where: "scanned=1"
+			});
+
+			// vector spatial services nsw historic aerial photos
+
+			const vector_ss_nsw_historic_aerial_photos = L.esri.featureLayer({
+				url: "https://portal.spatial.nsw.gov.au/agolproxy/Yb2UeNWvQYEwyYDl/arcgis/rest/services/Historical_Image_Index_view/FeatureServer/0",
+				// where: "image_name='CAC_28_1376'",
+				where: "key_diagra='91301930'",
+				// onEachFeature: function (feature, layer) {
+				// 	// Check if the layer is a polygon
+				// 	if (layer instanceof L.Polygon) {
+				// 		// Get the bounds of the polygon and calculate its center
+				// 		var center = layer.getBounds().getCenter();
+						
+				// 		// Add a marker at the calculated centroid
+				// 		L.marker(center).addTo(map);
+
+				// 		// Optionally remove the polygon from the map
+				// 		map.removeLayer(layer);
+				// 	}
+				// },
+				fill: false,
+				// stroke: false
+			});
+
+			// vector wnsw schedule 1 catchment
+			// note - doesn't load due to CORS error - removed from layer list
+			const vector_wnsw_catchment_schedule_1 = L.esri.featureLayer({
+				url: "https://mapprod.waternsw.com.au/arcgis/rest/services/Public/Greater_Sydney_Declared_Catchment_and_Water_Supply_System/FeatureServer/1",
+				simplifyFactor: 0.5,
+				precision: 4,
+				where: "Schedule=1",
+				useCors: true
+			});
+			
+			
+			///////////////////////////
+			// 2019-20 fire layers
+			// geebam - Google Earth Engine Burnt Area Map
+			// https://datasets.seed.nsw.gov.au/dataset/google-earth-engine-burnt-area-map-geebam
+			// for some reason, map server layers are not working but imageserver versions are
+			///////////////////////////
+
+			// image/raster env veg image
+			const image_env_geebam_veg_index = L.esri.imageMapLayer({url: 'https://mapprod2.environment.nsw.gov.au/arcgis/rest/services/Fire/GEEBAM_dNBR_Vegetation_Index/ImageServer'
+			});
+			// image/raster env sentinel
+			const image_env_geebam_sentinel = L.esri.imageMapLayer({url: 'https://mapprod2.environment.nsw.gov.au/arcgis/rest/services/Fire/GEEBAM_Sentinel2_PostFire_Satellite_Image/ImageServer'
+			});
+
+			// raster env geebam burn area class - not working
+			const raster_env_geebam_burnt_area = L.esri.tiledMapLayer({url: 'https://mapprod2.environment.nsw.gov.au/arcgis/rest/services/Fire/GEEBAM/MapServer/0',
+				maxZoom: 21,
+				maxNativeZoom: 16
+			});
+			// raster env geebam veg index - not working
+			const raster_env_geebam_veg_index = L.esri.tiledMapLayer({url: 'https://mapprod2.environment.nsw.gov.au/arcgis/rest/services/Fire/GEEBAM/MapServer/3',
+				maxZoom: 21,
+				maxNativeZoom: 16
+			});
+			// raster esri world imagery - not working
+			const raster_env_geebam_sentinel = L.esri.tiledMapLayer({url: 'https://mapprod2.environment.nsw.gov.au/arcgis/rest/services/Fire/GEEBAM/MapServer/4',
+				maxZoom: 21,
+				maxNativeZoom: 16
+			});
+			
+			//	// rasater env veg pct 50m - not working
+			//	const raster_env_veg_pct_50m = L.esri.tiledMapLayer({url: 'https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/VIS/SVTM_NSW_PCT_TNM_50M/MapServer/6',
+			//		maxZoom: 21,
+			//		maxNativeZoom: 16
+			//	});
+
+			///////////////////////////
+			// nsw geology
+			// https://data.nsw.gov.au/data/dataset/nsw-seamless-geology
+			// https://data.nsw.gov.au/data/dataset/nsw-seamless-geology/resource/ad18b565-c81c-429e-ad8b-3cc99a2703ff
+			// https://gs-seamless.geoscience.nsw.gov.au/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities
+			// version used in minview application appears to use a different dataset with same name - only found as wmts layer
+			// https://minview.geoscience.nsw.gov.au/gs-geology/gwc/service/wmts
+			///////////////////////////
+
+			// seamless geology - surface
+			const basemap_raster_geonsw_geology = L.tileLayer.wms('https://gs-seamless.geoscience.nsw.gov.au/geoserver/ows?', {
+						layers: 'geology:nsw_surface',
+						format: 'image/png',
+						transparent: true,
+						version: '1.3.0',
+						//uppercase: true,
+						attribution: 'Department of Regional New South Wales'
+			});
+			// seamless geology - surface simplified
+			const basemap_raster_geonsw_geology_simplified = L.tileLayer.wms('https://gs-seamless.geoscience.nsw.gov.au/geoserver/ows?', {
+						layers: 'geology-simplified:simplified_geology',
+						format: 'image/png',
+						transparent: true,
+						version: '1.3.0',
+						//uppercase: true,
+						attribution: 'Department of Regional New South Wales'
+			});
+			// 5m hillshade
+			const basemap_raster_geonsw_hillshade_5m = L.tileLayer.wms('https://gs-seamless.geoscience.nsw.gov.au/geoserver/ows?', {
+						layers: 'geology:hillshade_raster',
+						format: 'image/png',
+						transparent: true,
+						version: '1.3.0',
+						//uppercase: true,
+						attribution: 'Department of Regional New South Wales'
+			});
+			// seamless geology - surface - wmts
+			const basemap_raster_geonsw_geology_wmts =  new L.TileLayer.WMTS('https://minview.geoscience.nsw.gov.au/gs-geology/gwc/service/wmts', {
+						layer: 'geology:nsw_surface',
+						format: 'image/png',
+						tilematrixSet: 'EPSG:900913',
+						//transparent: true,
+						version: '1.0.0',
+						//uppercase: true,
+						attribution: 'Department of Regional New South Wales'
+			});
+
+			
+			///////////////////////////
+			// vegetation
+			// mapserver connection doesn't seem to work
+			// trying wms
+			// https://mapprod3.environment.nsw.gov.au/arcgis/services/VIS/SVTM_NSW_Extant_PCT/MapServer/WMSServer?request=GetCapabilities&service=WMS
+			// the 4 layers show similar data, data is served so that there is no overlap in visability across the zoom levels, using min and max zoom
+			///////////////////////////
+
+			const basemap_raster_env_svtm_pct_5m_labels = L.tileLayer.wms('https://mapprod3.environment.nsw.gov.au/arcgis/services/VIS/SVTM_NSW_Extant_PCT/MapServer/WMSServer?', {
+						layers: 0,
+						format: 'image/png',
+						transparent: true,
+						version: '1.3.0',
+						minZoom: 15,
+						maxZoom: 21
+			});
+			const basemap_raster_env_svtm_pct_5m = L.tileLayer.wms('https://mapprod3.environment.nsw.gov.au/arcgis/services/VIS/SVTM_NSW_Extant_PCT/MapServer/WMSServer?', {
+						layers: 1,
+						format: 'image/png',
+						transparent: true,
+						version: '1.3.0',
+						minZoom: 13,
+						maxZoom: 14
+			});
+			const basemap_raster_env_svtm_veg_class_5m = L.tileLayer.wms('https://mapprod3.environment.nsw.gov.au/arcgis/services/VIS/SVTM_NSW_Extant_PCT/MapServer/WMSServer?', {
+						layers: 2,
+						format: 'image/png',
+						transparent: true,
+						version: '1.3.0',
+						minZoom: 10,
+						maxZoom: 12
+			});
+			const basemap_raster_env_svtm_veg_formation_5m = L.tileLayer.wms('https://mapprod3.environment.nsw.gov.au/arcgis/services/VIS/SVTM_NSW_Extant_PCT/MapServer/WMSServer?', {
+						layers: 3,
+						format: 'image/png',
+						transparent: true,
+						version: '1.3.0',
+						maxZoom: 9
+			});
+
+			const basemap_raster_env_svtm_veg_group = L.layerGroup([
+				basemap_raster_env_svtm_pct_5m_labels,
+				basemap_raster_env_svtm_pct_5m,
+				basemap_raster_env_svtm_veg_class_5m,
+				basemap_raster_env_svtm_veg_formation_5m
+			]);
+
+			///////////////////////////
+			// strava
+			///////////////////////////
+
+			// note - auth layers lasts 7 days before token refresh required
+			const strava_public_hot_all_url = 'https://heatmap-external-a.strava.com/tiles/all/hot/{z}/{x}/{y}.png'
+			const strava_public_hot_run_url = 'https://heatmap-external-a.strava.com/tiles/run/hot/{z}/{x}/{y}.png'
+
+			const basemap_raster_strava_public_hot_all = L.tileLayer(strava_public_hot_all_url, {
+				maxZoom: 21,
+				maxNativeZoom: 11
+			});
+			const basemap_raster_strava_public_hot_run = L.tileLayer(strava_public_hot_run_url, {
+				maxZoom: 21,
+				maxNativeZoom: 11
+			});
+
+			///////////////////////////
+			// topo map downloads
+			///////////////////////////
+
+			// nsw ss
+			const vector_ss_topo_index = L.esri.featureLayer({
+				url: "https://portal.spatial.nsw.gov.au/server/rest/services/Hosted/TopoMapIndex/FeatureServer/0",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_ss,
+				style: () => {
+					return {
+						color: "#6600cc" // purple
+					};
+				}
+			});
+
+			// ga 50k
+			const vector_ga_topo_index_50k = L.esri.featureLayer({
+				url: "https://services1.arcgis.com/wfNKYeHsOyaFyPw3/ArcGIS/rest/services/ArcGIS_Online_Map_Index_50k_new/FeatureServer/0",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_ga,
+				style: () => {
+					return {
+						color: "#6600cc" // purple
+					};
+				}
+			});
+
+			// ga 100k
+			const vector_ga_topo_index_100k = L.esri.featureLayer({
+				url: "https://services1.arcgis.com/wfNKYeHsOyaFyPw3/arcgis/rest/services/AGOL_MapIndex100k/FeatureServer/0",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_ga,
+				style: () => {
+					return {
+						color: "#6600cc" // purple
+					};
+				}
+			});
+
+			// ga 250k
+			const vector_ga_topo_index_250k = L.esri.featureLayer({
+				url: "https://services1.arcgis.com/wfNKYeHsOyaFyPw3/ArcGIS/rest/services/ArcGIS_Online_Map_Index_250k/FeatureServer/0",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_ga,
+				style: () => {
+					return {
+						color: "#6600cc" // purple
+					};
+				}
+			});
+
+			// ga historic military inch to the mile
+			// all
+			const vector_ga_topo_index_military_63360_all = L.esri.featureLayer({
+				url: "https://services1.arcgis.com/wfNKYeHsOyaFyPw3/ArcGIS/rest/services/Military_Map_Index_14022023_gdb/FeatureServer/1",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_ga,
+				style: () => {
+					return {
+						color: "#6600cc" // purple
+					};
+				}
+			});
+
+			// ga historic military inch to the mile
+			// with nla links
+			const vector_ga_topo_index_military_63360_nla = L.esri.featureLayer({
+				url: "https://services1.arcgis.com/wfNKYeHsOyaFyPw3/ArcGIS/rest/services/Military_Map_Index_14022023_gdb/FeatureServer/1",
+				simplifyFactor: 0.5,
+				precision: 4,
+				where: "URL_National_Library<>''",
+				attribution: attrib_ga,
+				style: () => {
+					return {
+						color: "#6600cc" // purple
+					};
+				}
+			});
+
+			///////////////////////////
+			// NLA Map Search WMS list
+			// see https://mapsearch.nla.gov.au
+			///////////////////////////
+			
+			// military inch to the mile series - 1:63360 scale
+			const nlaMilitary63360WmsList = [
+				{ name: "raster_nla_military_385_mt_pomany_1962", label: "Military 385 Mt Pomany 1962", layerid: "6931775-nla-obj-282537455" },
+				{ name: "raster_nla_military_386_doyles_creek_1956", label: "Military 386 Doyles Creek 1956", layerid: "6931780-nla-obj-282583744" },
+				{ name: "raster_nla_military_393_tawinbang_1962", label: "Military 393 Tawinbang 1962", layerid: "6932794-nla-obj-283731408" },
+				{ name: "raster_nla_military_394_mt_yengo_1954", label: "Military 394 Mt Yengo 1954", layerid: "6932804-nla-obj-282598073" },
+				{ name: "raster_nla_military_401_glen_alice_1950", label: "Military 401 Glen Alice 1950", layerid: "6939371-nla-obj-283382226" },
+				{ name: "raster_nla_military_402_mellong_1947", label: "Military 402 Mellong 1947", layerid: "6939377-nla-obj-283331686" },
+				{ name: "raster_nla_military_407_bathurst_1936", label: "Military 407 Bathurst 1936", layerid: "6928436-nla-obj-324486474" },
+				{ name: "raster_nla_military_408_wallerawang_1935", label: "Military 408 Wallerawang 1935", layerid: "6943106-nla-obj-283727828" },
+				{ name: "raster_nla_military_409_st_albans_1955", label: "Military 409 St Albans 1955", layerid: "6971739-nla-obj-394358422" },
+				{ name: "raster_nla_military_410_gosford_and_norahville_1942", label: "Military 410 Gosford and Norahville 1942", layerid: "6972830-nla-obj-394365795" },
+				{ name: "raster_nla_military_415_katoomba_1937", label: "Military 415 Katoomba 1937", layerid: "6973146-nla-obj-778055671" },
+				{ name: "raster_nla_military_416_windsor_1942", label: "Military 416 Windsor 1942", layerid: "6973254-nla-obj-445343390" },
+				{ name: "raster_nla_military_417_broken_bay_1941", label: "Military 417 Broken Bay 1941", layerid: "6975574-nla-obj-525194296" },
+				{ name: "raster_nla_military_421_jenolan_1942", label: "Military 421 Jenolan 1942", layerid: "6976709-nla-obj-283727280" },
+				{ name: "raster_nla_military_422_liverpool_1942", label: "Military 422 Liverpool 1942", layerid: "3997384-nla-obj-446269914" },
+				{ name: "raster_nla_military_423_sydney_1933", label: "Military 423 Sydney 1933", layerid: "6977105-nla-obj-446250019" },
+				{ name: "raster_nla_military_427_burragorang_1951", label: "Military 437 Burragorang 1951", layerid: "6979724-nla-obj-446061508" },
+				{ name: "raster_nla_military_428_camden_1933", label: "Military 428 Camden 1933", layerid: "5019577-nla-obj-446071905" },
+				{ name: "raster_nla_military_429_port_hacking_1935", label: "Military 429 Port Hacking 1935", layerid: "4728613-nla-obj-446071994" },
+				{ name: "raster_nla_military_433_mittagong_1930", label: "Military 433 Mittagong 1930", layerid: "7010619-nla-obj-445275197" },
+				{ name: "raster_nla_military_434_wollongong_1942", label: "Military 434 Wollongong 1942", layerid: "7010736-nla-obj-324030066" },
+				{ name: "raster_nla_military_438_moss_vale_1930", label: "Military 438 Moss Vale 1930", layerid: "4247686-nla-obj-445322856" },
+				{ name: "raster_nla_military_439_kiama_1932", label: "Military 439 Kiama 1932", layerid: "7011951-nla-obj-446379987" },
+				{ name: "raster_nla_military_442_goulburn_1942", label: "Military 442 Goulburn 1942", layerid: "6928706-nla-obj-324230938" },
+				{ name: "raster_nla_military_443_yalwal_1942", label: "Military 443 Yalwal 1942", layerid: "7012005-nla-obj-446350249" },
+				{ name: "raster_nla_military_444_nowra_1929", label: "Military 444 Nowra 1929", layerid: "7012034-nla-obj-446357502" },
+				{ name: "raster_nla_military_447_lake_bathurst_1942", label: "Military 447 Lake Bathurst 1942", layerid: "6930673-nla-obj-324250711" },
+				{ name: "raster_nla_military_448_tianjara_1942", label: "Military 448 Tianjara 1942", layerid: "7012666-nla-obj-324227279" },
+				{ name: "raster_nla_military_449_jervis_bay_1929", label: "Military 449 Jervis Bay 1929", layerid: "7012678-nla-obj-324226684" }
+			];
+			
+			// military 4 miles to the inch series - 1:253440 scale
+			const nlaMilitary253440WmsList = [
+				{ name: "raster_nla_military_i55_4_dubbo_1942", label: "Military I55-4 Dubbo 1942", layerid: "5778649-nla-obj-234118114" },
+				{ name: "raster_nla_military_i56_1_singleton_1942", label: "Military I56-1 Singleton 1942", layerid: "5779963-nla-obj-234120598" },
+				{ name: "raster_nla_military_i55_8_bathurst_1942", label: "Military I55-8 Bathurst 1942", layerid: "5778911-nla-obj-371213307" },
+				{ name: "raster_nla_military_i56_5_sydney_1942", label: "Military I56-5 Sydney 1942", layerid: "5780044-nla-obj-234121148" },
+				{ name: "raster_nla_military_i55_12_goulburn_1942", label: "Military I55-12 Goulburn 1942", layerid: "5779759-nla-obj-234119321" },
+				{ name: "raster_nla_military_i56_9_wollongong_1942", label: "Military I56-9 Wollongong 1942", layerid: "5780131-nla-obj-234121360" },
+				{ name: "raster_nla_military_i55_16_canberra_1942", label: "Military I55-16 Canberra 1942", layerid: "5779903-nla-obj-234120257" },
+				{ name: "raster_nla_military_i56_13_ulladulla_1942", label: "Military I56-13 Ulladulla 1942", layerid: "5780142-nla-obj-234121581" },
+				{ name: "raster_nla_military_i55_4_bega_1942", label: "Military I55-4 Bega 1942", layerid: "5720772-nla-obj-234074798" },
+				{ name: "raster_nla_military_i55_8_mallacoota_1942", label: "Military I55-8 Mallacoota 1942", layerid: "5720277-nla-obj-234072688" }
+			];
+			
+			// topo 2 inch to the mile series - 1:31680 scale
+			const nlaTopo31680WmsList = [
+				{ name: "raster_nla_topo_8930_iv_s_hamptop_1970", label: "Topo 8930-IV-S Hampton 1970", layerid: "6785961-nla-obj-643724293" },
+				{ name: "raster_nla_topo_8930_i_s_katoomba_1970", label: "Topo 8930-I-S Katoomba 1970", layerid: "6785961-nla-obj-643724174" },
+				{ name: "raster_nla_topo_8830_ii_n_edith_1962", label: "Topo 8830-II-N Edith 1962", layerid: "6785961-nla-obj-648783354" },
+				{ name: "raster_nla_topo_8930_iii_n_jenolan_1964", label: "Topo 8930-III-N Jenolan 1964", layerid: "6785961-nla-obj-643724232" },
+				{ name: "raster_nla_topo_8930_ii_n_jamison_1965", label: "Topo 8930-II-N Jamison 1965", layerid: "6785961-nla-obj-643724196" },
+				{ name: "raster_nla_topo_8830_ii_s_shooters_hill_1970", label: "Topo 8830-II-S Shooters Hill 1970", layerid: "6785961-nla-obj-648784291" },
+				{ name: "raster_nla_topo_8930_ii_s_bimlow_1963", label: "Topo 8930-II-S Bimlow 1963", layerid: "6785961-nla-obj-643724210" },
+				{ name: "raster_nla_topo_8929_iv_n_yerranderie_1965", label: "Topo 8929-IV-N Yerranderie 1965", layerid: "6785961-nla-obj-641300120" },
+				{ name: "raster_nla_topo_8929_i_n_burragorang_1965", label: "Topo 8929-I-N Burragorang 1965", layerid: "6785961-nla-obj-641300087" },
+				{ name: "raster_nla_topo_8929_iv_s_bindook_1965", label: "Topo 8929-IV-S Bindook 1965", layerid: "6785961-nla-obj-641300148" },
+				{ name: "raster_nla_topo_8929_i_s_nattai_1965", label: "Topo 8929-I-S Nattai 1965", layerid: "6785961-nla-obj-641300104" },
+				{ name: "raster_nla_topo_8928_iv_n_canyonleigh_1971", label: "Topo 8928-IV-N Canyonleigh 1971", layerid: "6785961-nla-obj-641300022" },
+				{ name: "raster_nla_topo_8928_i_n_moss_vale_1963", label: "Topo 8928-I-N Moss Vale 1963", layerid: "6785961-nla-obj-641299843" },
+				{ name: "raster_nla_topo_8928_iv_s_wingello_1967", label: "Topo 8928-IV-S Wingello 1967", layerid: "6785961-nla-obj-641300040" },
+				{ name: "raster_nla_topo_8928_i_s_bundanoon_1963", label: "Topo 8928-I-S Bundanoon 1963", layerid: "6785961-nla-obj-641299881" },
+				{ name: "raster_nla_topo_8928_iii_n_caoura_1968", label: "Topo 8928-III-N Caoura 1968", layerid: "6785961-nla-obj-641299967" },
+				{ name: "raster_nla_topo_8928_ii_n_burrier_1968", label: "Topo 8928-II-N Burrier 1968", layerid: "6785961-nla-obj-641299923" },
+				{ name: "raster_nla_topo_8928_iii_s_touga_1968", label: "Topo 8928-III-S Touga 1968", layerid: "6785961-nla-obj-641299980" },
+				{ name: "raster_nla_topo_8928_ii_s_yalwal_1968", label: "Topo 8928-II-S Yalwal 1968", layerid: "6785961-nla-obj-641299946" }
+			];
+			
+			// parish in county of westmoreland
+			const nlaParishWestmorelandWmsList = [
+				{ name: "raster_nla_parish_westmoreland_abercorn_5th_1932", label: "Parish of Abercorn - 5th Ed. - 1932", layerid: "3962101-nla-obj-1203051457" },
+				{ name: "raster_nla_parish_westmoreland_banshea_5th_1944", label: "Parish of Banshea - 5th Ed. - 1944", layerid: "3962143-nla-obj-1203054728" },
+				{ name: "raster_nla_parish_westmoreland_bimlow_5th_1938", label: "Parish of Bimlow - 5th Ed. - 1938", layerid: "3962687-nla-obj-1203056793" },
+				{ name: "raster_nla_parish_westmoreland_bimlow_6th_1969", label: "Parish of Bimlow - 6th Ed. - 1969", layerid: "3962692-nla-obj-1203057893" },
+				{ name: "raster_nla_parish_westmoreland_bouverie_5th_1939", label: "Parish of Bouverie - 5th Ed. - 1939", layerid: "3962711-nla-obj-1203060406" },
+				{ name: "raster_nla_parish_westmoreland_colong_6th_1948", label: "Parish of Colong - 6th Ed. - 1948", layerid: "3962722-nla-obj-1203156023" },
+				{ name: "raster_nla_parish_westmoreland_cyclops_2nd_1900", label: "Parish of Cyclops - 2nd Ed. - 1900", layerid: "3962732-nla-obj-1203157931" },
+				{ name: "raster_nla_parish_westmoreland_drogheda_5th_1963", label: "Parish of Drogheda - 5th Ed. - 1963", layerid: "3962735-nla-obj-1203159017" },
+				{ name: "raster_nla_parish_westmoreland_gangerang_3rd_1914", label: "Parish of Gangerang - 3rd Ed. - 1914", layerid: "3962776-nla-obj-1203161449" },
+				{ name: "raster_nla_parish_westmoreland_guineacor_4th_1937", label: "Parish of Guineacor - 4th Ed. - 1937", layerid: "3962827-nla-obj-1203162297" },
+				{ name: "raster_nla_parish_westmoreland_jooriland_5th_1936", label: "Parish of Jooriland - 5th Ed. - 1936", layerid: "3963052-nla-obj-1203299167" },
+				{ name: "raster_nla_parish_westmoreland_konangaroo_5th_1948", label: "Parish of Konangaroo - 5th Ed. - 1948", layerid: "3963064-nla-obj-1203300364" },
+				{ name: "raster_nla_parish_westmoreland_kowmung_5th_1938", label: "Parish of Kowmung - 5th Ed. - 1938", layerid: "3963277-nla-obj-1203301374" },
+				{ name: "raster_nla_parish_westmoreland_leibnitz_4th_1936", label: "Parish of Leibnitz - 4th Ed. - 1936", layerid: "3963949-nla-obj-1203304456" },
+				{ name: "raster_nla_parish_westmoreland_merlin_5th_1939", label: "Parish of Merlin - 5th Ed. - 1939", layerid: "3967697-nla-obj-1203729018" },
+				{ name: "raster_nla_parish_westmoreland_murruin_5th_1939", label: "Parish of Murruin - 5th Ed. - 1939", layerid: "3967708-nla-obj-1203729421" },
+				{ name: "raster_nla_parish_westmoreland_oldbuck_5th_1915", label: "Parish of Oldbuck - 5th Ed. - 1915", layerid: "3968096-nla-obj-1203733266" },
+				{ name: "raster_nla_parish_westmoreland_oldbuck_6th_1969", label: "Parish of Oldbuck - 6th Ed. - 1969", layerid: "3968098-nla-obj-1203733654" },
+				{ name: "raster_nla_parish_westmoreland_speedwell_5th_1939", label: "Parish of Speedwell - 5th Ed. - 1939", layerid: "3968137-nla-obj-1206695508" },
+				{ name: "raster_nla_parish_westmoreland_st_columba_4th_1938", label: "Parish of St. Columba - 4th Ed. - 1938", layerid: "3968111-nla-obj-1206695524" },
+				{ name: "raster_nla_parish_westmoreland_tartarus_4th_1938", label: "Parish of Tartarus - 4th Ed. - 1938", layerid: "3968170-nla-obj-1206695556" },
+				{ name: "raster_nla_parish_westmoreland_terni_4th_1939", label: "Parish of Terni - 4th Ed. - 1939", layerid: "3968173-nla-obj-1206695607" },
+				{ name: "raster_nla_parish_westmoreland_the_peaks_7th_1937", label: "Parish of The Peaks - 7th Ed. - 1937", layerid: "3968175-nla-obj-1206695610" },
+				{ name: "raster_nla_parish_westmoreland_the_peaks_8th_1968", label: "Parish of The Peaks - 8th Ed. - 1968", layerid: "3968176-nla-obj-1206695629" },
+				{ name: "raster_nla_parish_westmoreland_thurat_4th_1932", label: "Parish of Thurat - 4th Ed. - 1932", layerid: "3968183-nla-obj-1206695686" },
+				{ name: "raster_nla_parish_westmoreland_vulcan_6th_1939", label: "Parish of Vulcan - 6th Ed. - 1939", layerid: "3968184-nla-obj-1206695693" },
+				{ name: "raster_nla_parish_westmoreland_wingecarribee_5th_1949", label: "Parish of Wingecarribee - 5th Ed. - 1949", layerid: "3968191-nla-obj-1206695782" }
+			];
+			
+			// parish in county of cook
+			const nlaParishCookWmsList = [
+				{ name: "raster_nla_parish_cook_barton_1930", label: "Parish of Barton - 1930", layerid: "3775858-nla-obj-560950288" },
+				{ name: "raster_nla_parish_cook_bilpin_1882", label: "Parish of Bilpin - 1882", layerid: "1376600-nla-obj-230000696" },
+				{ name: "raster_nla_parish_cook_bilpin_1949", label: "Parish of Bilpin - 1949", layerid: "3775881-nla-obj-560950337" },
+				{ name: "raster_nla_parish_cook_blackheath_1952", label: "Parish of Blackheath - 1952", layerid: "3789770-nla-obj-560950444" },
+				{ name: "raster_nla_parish_cook_burralow_1949", label: "Parish of Burralow - 1949", layerid: "3789778-nla-obj-560950857" },
+				{ name: "raster_nla_parish_cook_capertee_1928", label: "Parish of Capertee - 1928", layerid: "3789846-nla-obj-560950926" },
+				{ name: "raster_nla_parish_cook_clwydd_1959", label: "Parish of Clwydd - 1959", layerid: "3789850-nla-obj-560951034" },
+				{ name: "raster_nla_parish_cook_colo_1939", label: "Parish of Colo - 1939", layerid: "3789947-nla-obj-560951331" },
+				{ name: "raster_nla_parish_cook_cook_1939", label: "Parish of Cook - 1939", layerid: "3789978-nla-obj-560953506" },
+				{ name: "raster_nla_parish_cook_coomassie_1947", label: "Parish of Coomassie - 1947", layerid: "3790001-nla-obj-560953691" },
+				{ name: "raster_nla_parish_cook_coomassie_1964", label: "Parish of Coomassie - 1964", layerid: "3790018-nla-obj-560955515" },
+				{ name: "raster_nla_parish_cook_cox_1945", label: "Parish of Cox - 1945", layerid: "3791334-nla-obj-560959795" },
+				{ name: "raster_nla_parish_cook_cox_1945", label: "Parish of Cox - 1945", layerid: "3791335-nla-obj-560961266" },
+				{ name: "raster_nla_parish_cook_currency_1939", label: "Parish of Currency - 1939", layerid: "3791338-nla-obj-560962693" },
+				{ name: "raster_nla_parish_cook_falnash_1945", label: "Parish of Falnash - 1945", layerid: "3791438-nla-obj-560963820" },
+				{ name: "raster_nla_parish_cook_gindantherie_1931", label: "Parish of Gindantherie - 1931", layerid: "3791449-nla-obj-560965141" },
+				{ name: "raster_nla_parish_cook_goollooinboin_1946", label: "Parish of Goollooinboin - 1946", layerid: "3791498-nla-obj-560966333" },
+				{ name: "raster_nla_parish_cook_govett_1908", label: "Parish of Govett - 1908", layerid: "3791521-nla-obj-560968316" },
+				{ name: "raster_nla_parish_cook_hartley_1939", label: "Parish of Hartley - 1939", layerid: "3792816-nla-obj-560972181" },
+				{ name: "raster_nla_parish_cook_hartley_1957", label: "Parish of Hartley - 1957", layerid: "3792814-nla-obj-560974548" },
+				{ name: "raster_nla_parish_cook_irvine_1939", label: "Parish of Irvine - 1939", layerid: "3792821-nla-obj-233821825" },
+				{ name: "raster_nla_parish_cook_jamieson_1926", label: "Parish of Jamieson - 1926", layerid: "3792910-nla-obj-560976350" },
+				{ name: "raster_nla_parish_cook_jamieson_1959", label: "Parish of Jamieson - 1959", layerid: "3792888-nla-obj-560978370" },
+				{ name: "raster_nla_parish_cook_kanimbla_1941", label: "Parish of Kanimbla - 1941", layerid: "3792924-nla-obj-560980194" },
+				{ name: "raster_nla_parish_cook_kedumba_1960", label: "Parish of Kedumba - 1960", layerid: "3792984-nla-obj-560980387" },
+				{ name: "raster_nla_parish_cook_kurrajong_1948", label: "Parish of Kurrajong - 1948", layerid: "3793046-nla-obj-560980576" },
+				{ name: "raster_nla_parish_cook_lett_1897", label: "Parish of Lett - 1897", layerid: "3793096-nla-obj-232404411" },
+				{ name: "raster_nla_parish_cook_lett_1965", label: "Parish of Lett - 1965", layerid: "3793085-nla-obj-560980727" },
+				{ name: "raster_nla_parish_cook_lidsdale_1960", label: "Parish of Lidsdale - 1960", layerid: "3793113-nla-obj-560980838" },
+				{ name: "raster_nla_parish_cook_linden_1931", label: "Parish of Linden - 1931", layerid: "3794364-nla-obj-560986021" },
+				{ name: "raster_nla_parish_cook_linden_1955", label: "Parish of Linden - 1955", layerid: "3794317-nla-obj-560986076" },
+				{ name: "raster_nla_parish_cook_magdala_1937", label: "Parish of Magdala - 1937", layerid: "3794441-nla-obj-560986130" },
+				{ name: "raster_nla_parish_cook_marangaroo_1940", label: "Parish of Marangaroo - 1940", layerid: "3794461-nla-obj-560986163" },
+				{ name: "raster_nla_parish_cook_meehan_1965", label: "Parish of Meehan - 1965", layerid: "3794520-nla-obj-560986229" },
+				{ name: "raster_nla_parish_cook_megalong_1956", label: "Parish of Megalong - 1956", layerid: "3794530-nla-obj-560986255" },
+				{ name: "raster_nla_parish_cook_merroo_1920", label: "Parish of Merroo - 1920", layerid: "3794596-nla-obj-560986343" },
+				{ name: "raster_nla_parish_cook_merroo_1964", label: "Parish of Merroo - 1964", layerid: "3794586-nla-obj-560986450" },
+				{ name: "raster_nla_parish_cook_mouin_1929", label: "Parish of Mouin - 1929", layerid: "3794634-nla-obj-560986544" },
+				{ name: "raster_nla_parish_cook_nepean_1945", label: "Parish of Nepean - 1945", layerid: "3794642-nla-obj-560986553" },
+				{ name: "raster_nla_parish_cook_strathdon_1927", label: "Parish of Strathdon - 1927", layerid: "3794668-nla-obj-560986590" },
+				{ name: "raster_nla_parish_cook_strathdon_1961", label: "Parish of Strathdon - 1961", layerid: "3794657-nla-obj-560986623" },
+				{ name: "raster_nla_parish_cook_warragamba_1948", label: "Parish of Warragamba - 1948", layerid: "3807350-nla-obj-560986651" },
+				{ name: "raster_nla_parish_cook_wheeny_1930", label: "Parish of Wheeny - 1930", layerid: "3807655-nla-obj-560986667" },
+				{ name: "raster_nla_parish_cook_wilberforce_1964", label: "Parish of Wilberforce - 1964", layerid: "3807665-nla-obj-560986718" },
+				{ name: "raster_nla_parish_cook_wolgan_1930", label: "Parish of Wolgan - 1930", layerid: "3807691-nla-obj-560986840" },
+				{ name: "raster_nla_parish_cook_woodford_1941", label: "Parish of Woodford - 1941", layerid: "3807960-nla-obj-560986904" }
+			]
+
+			// Turn NLA WMS references into layers
+			const nlaMilitary63360Layers = createNlaWmsReferences(nlaMilitary63360WmsList);
+			const nlaMilitary253440Layers = createNlaWmsReferences(nlaMilitary253440WmsList);
+			const nlaTopo31680Layers = createNlaWmsReferences(nlaTopo31680WmsList);
+			const nlaParishWestmorelandLayers = createNlaWmsReferences(nlaParishWestmorelandWmsList);
+			const nlaParishCookLayers = createNlaWmsReferences(nlaParishCookWmsList);
+			
+			///////////////////////////
+			// functions to display canyons from ropewiki
+			// it needs to have layer created first and then call function to add additional points
+			// otherwise layer will fail creating as no data returned
+			// based on code from https://australiancanyoning.org.au/canyons/map
+			///////////////////////////
+
+			const ROPEWIKI_URL = "https://ropewiki.com/api.php?action=ask&format=json&query=%5B%5BCategory%3ACanyons%5D%5D%5B%5BHas%20coordinates%3A%3A%2B%5D%5D%5B%5BLocated%20in%20region.Located%20in%20regions%3A%3AX%7C%7CAustralia%5D%5D%7C%3FHas_coordinates%7C%3FHas_summary%7C%3FHas_info_regions%7C%3FHas_info_major_region%7C%3FHas_info_rappels%7C%3FHas_longest_rappel%7C%3FHas_pageid%7Climit%3D1000%7Corder%3Dascending%7Csort%3DHas%20name"
+
+			function processCanyonResults(ropewiki_payload_object) {
+				let canyons_array = []
+
+				for (let canyon_string in ropewiki_payload_object.query.results) {
+
+					let canyon_object = ropewiki_payload_object.query.results[canyon_string]
+
+					canyons_array.push({
+						title: canyon_object.fulltext,
+						url: canyon_object.fullurl,
+						latitude: canyon_object.printouts["Has coordinates"][0].lat,
+						longitude: canyon_object.printouts["Has coordinates"][0].lon
+					})
+				}
+
+				return canyons_array
+			}
+
+			function getCanyons() {
+				return fetch(ROPEWIKI_URL, {
+					method: "GET"
+				})
+				.then(response => response.json());
+			}
+
+
+			function addCanyonsToLayerGroup(layerGroup) {
+				getCanyons()
+				.then(ropewiki_response => {
+					console.log(ropewiki_response)
+					const canyons_array = processCanyonResults(ropewiki_response)
+					console.log(canyons_array)
+
+					for (let canyon_object of canyons_array) {
+						let popup = new L.Popup()
+							.setContent(`<strong>${canyon_object.title}</strong><br /><a href="${canyon_object.url}" target="_blank">${canyon_object.url.replace("https://", "")}</a>`)
+
+						let marker = new L.Marker()
+							.setLatLng([canyon_object.latitude, canyon_object.longitude]) // lat, long
+							.bindPopup(popup)
+
+						layerGroup.addLayer(marker);
+					}
+				})
+				.catch(error => console.error('Error fetching canyons:', error));
+			}
+
+			let canyonLayerGroup = L.layerGroup();
+
+			///////////////////////////
+			// arcgis server vector popups
+			// https://developers.arcgis.com/esri-leaflet/samples/feature-layer-popups/
+			///////////////////////////
+			
+			// function to simplify popup definition
+			function bindPopupToLayer(layer, formatString) {
+				layer.bindPopup(function (featureLayer) {
+					return L.Util.template(formatString, featureLayer.feature.properties);
+				});
+			}
+
+			// Function to bind popup to vector tile layers
+			function bindPopupToVectorTileLayer(layer, formatString) {
+				layer.on('click', function(e) {
+					const properties = e.layer.properties;
+					const popupContent = L.Util.template(formatString, properties);
+					L.popup()
+						.setLatLng(e.latlng)
+						.setContent(popupContent)
+						.openOn(map);
+				});
+			}
+			
+			// popup layers and format strings
+			bindPopupToLayer(vector_ss_trig, "{marktype}{marknumber}<br>{trigname}<br>{monumenttype}");
+			bindPopupToLayer(vector_ss_lots, "{lotnumber}/{plannumber}");
+			bindPopupToLayer(vector_ss_parish, "{parishname}<br>{countyname}<br>DP{parishdpno}");
+			bindPopupToLayer(vector_ss_county, "{countyname}");
+			bindPopupToLayer(vector_ga_historic_aerial_photos, "<p>Year: {YEAR_START}</p><p>{PREVIEW_URL}</p><p>{TIF_URL}</p>");
+			bindPopupToLayer(vector_ss_topo_index, 
+				`<p>{numbername} - 1:{scale}</p>			
+				pdf:
+				<a href="{collaron_2}" target="_blank">2011</a>
+				<a href="{collaron_3}" target="_blank">2014</a>
+				<a href="{collaron_4}" target="_blank">2015</a>
+				<a href="{collaron_5}" target="_blank">2016</a>
+				<a href="{collaron_6}" target="_blank">2017</a>
+				<a href="{collaron_7}" target="_blank">2022</a>
+				<br>
+				tif:
+				<a href="{collaroff_}" target="_blank">2011</a>
+				<a href="{collaroff1}" target="_blank">2014</a>
+				<a href="{collarof_1}" target="_blank">2015</a>
+				<a href="{collaron_2}" target="_blank">2016</a>
+				<a href="{collaron_3}" target="_blank">2017</a>
+				<a href="{collaron_4}" target="_blank">2018</a>
+				<a href="{collaron_5}" target="_blank">2022</a>
+			`);
+			bindPopupToLayer(vector_ga_topo_index_50k, 
+				`{MAP_CODE} {NAME} 1:{SCALE_1}<BR>
+				Published {PUB_YEAR}<BR>
+				<a href="{PID_URL}" target="_blank">Download</a>
+				`
+			);
+			bindPopupToLayer(vector_ga_topo_index_100k, 
+				`{MAPNUMBER} {MAPNAME} 1:{INDEX_}<BR>
+				Edition {Edition}<BR>
+				Published {Year_Published}<BR>
+				<a href="{PID_URL}" target="_blank">Download</a>
+				`
+			);
+			bindPopupToLayer(vector_ga_topo_index_250k, 
+				`{MAPNUMBER} {MAPNAME} 1:{Index_}<BR>
+				Edition {Edition}<BR>
+				Published {Year_Published}<BR>
+				<a href="{PID_URL}" target="_blank">Download</a>
+				`
+			);
+			bindPopupToLayer(vector_ga_topo_index_military_63360_nla,
+				`{Map_Number} {Map_Name} 1:63360<BR>
+				<a href="{URL_National_Library}" target="_blank">NLA Record</a>
+				`
+			);
+
+			///////////////////////////
+			// layer control 
+			// opacity slider
+			///////////////////////////
+
+			// base tree
+			var baseTree = [
+				{
+					label: 'SIX Maps',
+					children: [
+						{ label: 'POI', layer: basemap_raster_ss_nsw_poi_topo },
+						{ label: 'Raster', layer: basemap_raster_ss_nsw_raster_topo },
+						{ label: 'Series 1', layer: basemap_raster_ss_nsw_raster_topo_s1 },
+						{ label: 'Imagery', layer: basemap_raster_ss_nsw_imagery },
+					]
+				},
+				{
+					label: 'Other',
+					children: [
+						{ label: 'Google Imagery', layer: basemap_raster_google_imagery },
+						{ label: 'ESRI world imagery', layer: basemap_raster_esri_imagery },
+						{ label: 'ESRI basemap vector', layer: basemap_vectortile_esri_basemap },
+						{ label: 'ESRI topo raster', layer: basemap_raster_esri_topo },
+						{ label: 'GA NATMAP 1:250k 2008', layer: basemap_raster_ga_natmap_250k_2008 },
+						{ label: 'GA Topo', layer: basemap_raster_ga_topo_basemap },
+						{ label: 'ESRI Hillshade raster', layer: basemap_raster_esri_hillshade },
+						{ label: 'ESRI Contours vector tiles', layer: basemap_vectortile_esri_contours },
+						{ label: 'ESRI landsat 8', layer: basemap_raster_esri_landsat8 },
+						{ label: 'ESRI MODIS', layer: basemap_raster_esri_modis },
+						{ label: 'ESRI MODIS IR', layer: basemap_raster_esri_modis_ir },
+						{ label: 'ESRI VIIRS', layer: basemap_raster_esri_viirs },
+						{ label: 'ESRI VIIRS night time', layer: basemap_raster_esri_viirs_nighttime },
+
+					]
+				},
+			];
+			
+			// overlay tree
+			var overlaysTree = {
+				label: 'Overlays',
+				//selectAllCheckbox: 'Un/select all',
+				children: [
+					{
+						label: 'Historic Topo Maps',
+						selectAllCheckbox: true,
+						children: [
+							{
+								label: '1:31860',
+								selectAllCheckbox: true,
+								collapsed: true,
+								children: [
+									...nlaTopo31680Layers
+									
+								]
+							},
+							{
+								label: '1:63360',
+								selectAllCheckbox: true,
+								collapsed: true,
+								children: [
+									...nlaMilitary63360Layers
+								]
+							},
+							{
+								label: '1:253440',
+								selectAllCheckbox: true,
+								collapsed: true,
+								children: [
+									...nlaMilitary253440Layers
+								]
+							},
+						]
+					},
+					{
+						label: 'Parish Maps',
+						selectAllCheckbox: true,
+						children: [
+							{		
+								label: 'Cook',
+								selectAllCheckbox: true,
+								collapsed: true,
+								children: [
+									...nlaParishCookLayers
+								]
+							},{		
+								label: 'Westmoreland',
+								selectAllCheckbox: true,
+								collapsed: true,
+								children: [
+									...nlaParishWestmorelandLayers
+								]
+							},
+						]
+					},
+					{
+						label: 'Topo Map Downloads',
+						selectAllCheckbox: true,
+						children: [
+							{ label: 'NSW Topo', layer: vector_ss_topo_index },
+							{ label: 'GA Topo 50k', layer: vector_ga_topo_index_50k },
+							{ label: 'GA Topo 100k', layer: vector_ga_topo_index_100k },
+							{ label: 'GA Topo 250k', layer: vector_ga_topo_index_250k },
+							{ label: 'GA Topo Military 63360 NLA', layer: vector_ga_topo_index_military_63360_nla },
+							{ label: 'GA Topo Military 63360 all', layer: vector_ga_topo_index_military_63360_all },
+						]
+					},
+					{
+						label: 'Topography',
+						selectAllCheckbox: true,
+						children: [
+							{ label: 'ESRI hillshade', layer: basemap_raster_esri_hillshade_opacity },
+							{ label: 'NSW 5m hillshade', layer: basemap_raster_geonsw_hillshade_5m },
+							{ label: 'ESRI contours', layer: basemap_vectortile_esri_contours },							
+						]
+					},
+					{
+						label: 'Vegetation',
+						selectAllCheckbox: true,
+						children: [
+							{ label: 'NSW SVTM veg class and pct layers', layer: basemap_raster_env_svtm_veg_group },
+							{ label: '2019/20 Fires GEEBAM Vegetation index', layer: image_env_geebam_veg_index },
+							{ label: '2019/20 Fires GEEBAM Sentinel 2 imagery', layer: image_env_geebam_sentinel },
+						]
+					},
+					{
+						label: 'Geology',
+						selectAllCheckbox: true,
+						children: [
+							{ label: 'Geology WMTS', layer: basemap_raster_geonsw_geology_wmts },
+							{ label: 'Geology', layer: basemap_raster_geonsw_geology },
+							{ label: 'Geology simplifed', layer: basemap_raster_geonsw_geology_simplified },
+						]
+					},
+					{
+						label: 'Features',
+						selectAllCheckbox: true,
+						children: [
+							{ label: 'Named rivers', layer: vector_ss_waterTheme_namedRivers },
+							{ label: 'Canyons', layer: canyonLayerGroup },
+							{ label: 'Trig stations', layer: vector_ss_trig },						
+						]
+					},
+					{
+						label: 'Boundaries',
+						selectAllCheckbox: true,
+						children: [
+							{ label: 'Lots', layer: vector_ss_lots },
+							{ label: 'Parish', layer: vector_ss_parish },
+							{ label: 'County', layer: vector_ss_county },
+							{ label: 'Government property', layer: vector_env_gpi },
+							// { label: 'Schedule 1 catchment', layer: vector_wnsw_catchment_schedule_1 },
+							{ label: 'Declared wilderness', layer: vector_env_wilderness },
+						]
+					},
+					{
+						label: 'Crown Land',
+						selectAllCheckbox: true,
+						children: [
+							{ label: 'All', layer: vector_env_crownland_all },
+							{ label: 'Reserves', layer: vector_env_crownland_reserves },
+							{ label: 'Leases', layer: vector_env_crownland_leases },
+							{ label: 'Licences', layer: vector_env_crownland_licences },
+							{ label: 'Enclosure permits', layer: vector_env_crownland_enclosure },
+						]
+					},
+					{
+						label: 'Historic Imagery Photos',
+						selectAllCheckbox: true,
+						children: [
+							{ label: 'Historic GA aerial photo points', layer: vector_ga_historic_aerial_photos },
+							// { label: 'Historic SS NSW aerial photo points', layer: vector_ss_nsw_historic_aerial_photos },
+						]
+					},
+					{
+						label: 'Strava',
+						selectAllCheckbox: true,
+						children: [
+							{ label: 'Public hot all', layer: basemap_raster_strava_public_hot_all },
+							{ label: 'Public hot run', layer: basemap_raster_strava_public_hot_run },
+						]
+					},
+				]
+			};
+			
+
+			// define layer control and add
+			L.control.layers.tree(baseTree, overlaysTree, {
+				collapsed: false
+			}).addTo(map);
+
+			// load canyon layer from ropewiki
+			addCanyonsToLayerGroup(canyonLayerGroup);
+
+			// Add opacity slider
+			const opacitySlider = document.createElement('input');
+			opacitySlider.id = 'opacity-slider';
+			opacitySlider.type = 'range';
+			opacitySlider.min = 0;
+			opacitySlider.max = 1;
+			opacitySlider.step = 0.01;
+			opacitySlider.value = 1;
+			
+			// Function for implementing opacity depending on layer type
+			function updateLayerOpacity(layersArray, value) {
+				layersArray.forEach(item => {
+					let layer = item.layer;
+
+					if (typeof layer.setOpacity === 'function') {
+						// Works for raster and tile layers
+						layer.setOpacity(value);
+					} else if (layer.setStyle && layer instanceof L.Path) {
+						// For vector layers like polygons or polylines
+						layer.setStyle({opacity: value, fillOpacity: value});
+					} else if (layer.setStyle && layer.eachFeature) {
+						// For L.esri.featureLayer
+						layer.setStyle({opacity: value, fillOpacity: value}); // Assuming you can use setStyle on your feature layer
+					} else {
+						console.warn("Opacity adjustment not supported for this layer type");
+					}
+				});
+			}
+
+			// layers to be updated by opacity slider - note, it works on both basemap and overlay
+			let opacityLayers = [];
+			opacityLayers = opacityLayers.concat(
+				nlaTopo31680Layers,
+				nlaMilitary63360Layers,
+				nlaMilitary253440Layers,
+				nlaParishCookLayers,
+				nlaParishWestmorelandLayers,
+				{ label: 'ESRI Hillshade', layer: basemap_raster_esri_hillshade_opacity },
+				{ label: 'Vegetation index', layer: image_env_geebam_veg_index },
+				{ label: 'Sentinel 2 imagery', layer: image_env_geebam_sentinel },
+				{ label: 'Geology WMTS', layer: basemap_raster_geonsw_geology_wmts },
+				{ label: 'Geology', layer: basemap_raster_geonsw_geology },
+				{ label: 'Geology simplifed', layer: basemap_raster_geonsw_geology_simplified },
+				{ label: 'Public hot all', layer: basemap_raster_strava_public_hot_all },
+				{ label: 'Public hot run', layer: basemap_raster_strava_public_hot_run },
+				{ label: 'NSW SVTM veg class and pct layers', layer: basemap_raster_env_svtm_veg_group },
+			);
+
+			// Attach event listener to the opacity slider
+			opacitySlider.addEventListener('input', function(e) {
+				// Convert the slider value to a float since it comes as a string from the input
+				let newOpacity = parseFloat(e.target.value);
+
+				// Update opacity of all layers in the nlaWmsLayers array
+				updateLayerOpacity(opacityLayers, newOpacity);
+			});
+
+			// Create container div for title and slider
+			const opacityContainer = document.createElement('div');
+			opacityContainer.appendChild(opacitySlider);
+
+
+			// Add opacity container below overlay layer checkbox
+			const layerControlContainer = document.querySelector('.leaflet-control-layers');
+			layerControlContainer.appendChild(opacityContainer);
+
+
+			///////////////////////////
+			// zoom display 
+			// scale bar
+			// attribution
+			// gps
+			///////////////////////////
+			
+			// Define the custom zoom display
+			L.Control.ZoomDisplay = L.Control.extend({
+				onAdd: function(map) {
+					this._div = L.DomUtil.create('div', 'zoom-display');
+					this._div.style.padding = '6px';
+					this._div.style.backgroundColor = 'white';
+					this._div.style.borderRadius = '4px';
+					this._div.style.boxShadow = '0 0 5px rgba(0,0,0,0.5)';
+					this.update();
+					return this._div;
+				},
+				update: function() {
+					const zoom = this._map.getZoom();
+					this._div.innerHTML = 'Zoom Level: ' + zoom;
+				}
+			});
+			
+			// add custom zoom level display
+			var zoomDisplayControl = new L.Control.ZoomDisplay({ position: 'topleft' });
+			zoomDisplayControl.addTo(map);
+			map.on('zoomend', function() {
+				zoomDisplayControl.update();
+			});
+			
+			// scale bar
+			L.control.scale({
+				metric: true,
+				imperial: false
+			}).addTo(map);
+
+			// sourced from https://github.com/domoritz/leaflet-locatecontrol
+			map.addControl(
+			  L.control.locate({
+				locateOptions: {
+				  enableHighAccuracy: true
+				}
+			  })
+			);
+			
+
+        </script>
+    </body>
+</html>
