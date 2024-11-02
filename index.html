@@ -939,6 +939,20 @@
 			});
 
 			///////////////////////////
+			// river gauges
+			///////////////////////////
+
+			// esri gauge data from BOM, filtered on australia
+			const vector_esri_stream_gauge = L.esri.featureLayer({
+				url: "https://services9.arcgis.com/RHVPKKiFTONKtxq3/ArcGIS/rest/services/Live_Stream_Gauges_v1/FeatureServer/0",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: 'Source: USGS, NOAA and the GIS Community',
+				where: "governing_location='Australia'",
+				minZoom: 8
+			});
+
+			///////////////////////////
 			// strava
 			///////////////////////////
 
@@ -1367,6 +1381,13 @@
 				4 = Granted Claim Awaiting Transfer<br>
 				`
 			);
+			bindPopupToLayer(vector_esri_stream_gauge,
+				`<b>{name}</b><br>
+				Id: {stationid}<br>
+				Height: {stage_ft} ft<br>
+				Hrs since updated: {lastupdate_age}
+				`
+			);
 
 			///////////////////////////
 			// layer control 
@@ -1510,7 +1531,8 @@
 						children: [
 							{ label: 'Named rivers', layer: vector_ss_waterTheme_namedRivers },
 							{ label: 'Canyons', layer: canyonLayerGroup },
-							{ label: 'Trig stations', layer: vector_ss_trig },						
+							{ label: 'Trig stations', layer: vector_ss_trig },
+							{ label: 'Stream gauges', layer: vector_esri_stream_gauge},			
 						]
 					},
 					{
