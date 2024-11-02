@@ -871,6 +871,23 @@
 			]);
 
 			///////////////////////////
+			// nsw npws
+			///////////////////////////
+
+			// all npws tenure, including not yet decleared and flora reserves
+			const vector_env_npws_all = L.esri.featureLayer({
+				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Tenure/NPWS_AllManagedLand/MapServer/0",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_planning,
+				style: () => {
+					return {
+						color: "#82FA58" // green
+					};
+				}
+			});
+
+			///////////////////////////
 			// strava
 			///////////////////////////
 
@@ -1273,6 +1290,12 @@
 				<a href="{URL_National_Library}" target="_blank">NLA Record</a>
 				`
 			);
+			bindPopupToLayer(vector_env_npws_all,
+				`<b>{NAME}</b><BR>
+				{LOCATION}<br>
+				{TENURETYPE}<br>
+				`
+			);
 
 			///////////////////////////
 			// layer control 
@@ -1429,6 +1452,7 @@
 							{ label: 'Government property', layer: vector_env_gpi },
 							// { label: 'Schedule 1 catchment', layer: vector_wnsw_catchment_schedule_1 },
 							{ label: 'Declared wilderness', layer: vector_env_wilderness },
+							{ label: 'NPWS all managed', layer: vector_env_npws_all },
 						]
 					},
 					{
