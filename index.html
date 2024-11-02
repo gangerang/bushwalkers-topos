@@ -617,6 +617,19 @@
 					};
 				}
 			});
+			// vector government property index gpi ex crown land
+			const vector_env_gpi_ex_crown = L.esri.featureLayer({
+				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/Planning_Portal_GPI/MapServer/302",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_planning,
+				where: "SOURCE='GPR_OPENDATA_LOT'",
+				style: () => {
+					return {
+						color: "#6600cc" // purple
+					};
+				}
+			});
 			// vector nsw declared wilderness
 			const vector_env_wilderness = L.esri.featureLayer({
 				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/EDP/Identified_Wilderness/MapServer/0",
@@ -1296,6 +1309,8 @@
 				{TENURETYPE}<br>
 				`
 			);
+			bindPopupToLayer(vector_env_gpi, "{LOTREF}<br>{SOURCE}");
+			bindPopupToLayer(vector_env_gpi_ex_crown, "{LOTREF}<br>{SOURCE}");
 
 			///////////////////////////
 			// layer control 
@@ -1450,6 +1465,7 @@
 							{ label: 'Parish', layer: vector_ss_parish },
 							{ label: 'County', layer: vector_ss_county },
 							{ label: 'Government property', layer: vector_env_gpi },
+							{ label: 'Government property ex crown', layer: vector_env_gpi_ex_crown },
 							// { label: 'Schedule 1 catchment', layer: vector_wnsw_catchment_schedule_1 },
 							{ label: 'Declared wilderness', layer: vector_env_wilderness },
 							{ label: 'NPWS all managed', layer: vector_env_npws_all },
