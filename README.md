@@ -20,3 +20,4 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - government property layers - pop up on both gpi layers to give lot details
 - add - fcnsw estate layer - new layer for all forestry corp estate, including state forest, flora reserves and other managed estate
 - add - crown land layer popups - new popups for crown land layers (except 'all')
+- add - crown land under disposal layer - new layer for crown land which has a current disposal action

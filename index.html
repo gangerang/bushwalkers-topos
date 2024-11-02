@@ -656,6 +656,26 @@
 				}
 			});
 
+			// vector crown land all - with a current disposal action
+			// disposalstatus field is coded per below
+			// 0 = Undefined
+			// 1 = No Disposal Action Current
+			// 2 = Disposal Pending
+			// 3 = Contracted For Sale
+			// 4 = Granted Claim Awaiting Transfer
+			const vector_env_crownland_all_disposal = L.esri.featureLayer({
+				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/Planning_Portal_Crown_Land/MapServer/258",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_planning,
+				where: "DISPOSALSTATUS in (2,3,4)",
+				style: () => {
+					return {
+						color: "#FF0000" // red
+					};
+				}
+			});
+
 			// vector crown land - reserves
 			const vector_env_crownland_reserves = L.esri.featureLayer({
 				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/Planning_Portal_Crown_Land/MapServer/312",
@@ -1340,6 +1360,13 @@
 			bindPopupToLayer(vector_env_crownland_enclosure, "{account_class}<br>{purpose}");
 			bindPopupToLayer(vector_env_crownland_leases, "{account_class}<br>{purpose}<br>Account {crownaccountid}");
 			bindPopupToLayer(vector_env_crownland_licences, "{account_class}<br>{tenure_sub_type}<br>{purpose}<br>Account {crownaccountid}");
+			bindPopupToLayer(vector_env_crownland_all_disposal, 
+				`Disposal status: {DISPOSALSTATUS}<br>
+				2 = Disposal Pending<br>
+				3 = Contracted For Sale<br>
+				4 = Granted Claim Awaiting Transfer<br>
+				`
+			);
 
 			///////////////////////////
 			// layer control 
@@ -1510,6 +1537,7 @@
 							{ label: 'Leases', layer: vector_env_crownland_leases },
 							{ label: 'Licences', layer: vector_env_crownland_licences },
 							{ label: 'Enclosure permits', layer: vector_env_crownland_enclosure },
+							{ label: 'Under disposal', layer: vector_env_crownland_all_disposal },
 						]
 					},
 					{
