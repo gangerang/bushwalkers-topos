@@ -574,7 +574,8 @@
 				simplifyFactor: 0.5,
 				precision: 4,
 				attribution: attrib_nsw_ss,
-				where: "marktype='TS'"
+				where: "marktype='TS'",
+				minZoom: 10
 			});
 			// vector lots
 			const vector_ss_lots = L.esri.featureLayer({
@@ -588,7 +589,8 @@
 				url: "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Administrative_Boundaries_Theme/FeatureServer/5",
 				simplifyFactor: 0.5,
 				precision: 4,
-				attribution: attrib_nsw_ss
+				attribution: attrib_nsw_ss,
+				minZoom: 10
 			});
 			// vector county boundaries
 			const vector_ss_county = L.esri.featureLayer({
@@ -698,7 +700,8 @@
 				url: "https://services1.arcgis.com/wfNKYeHsOyaFyPw3/ArcGIS/rest/services/HistoricalAerialPhotography_AGOL_DIST_gdb/FeatureServer/0",
 				simplifyFactor: 0.5,
 				precision: 4,
-				where: "scanned=1"
+				where: "scanned=1",
+				minZoom: 11
 			});
 
 			// vector spatial services nsw historic aerial photos

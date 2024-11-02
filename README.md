@@ -12,4 +12,5 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 
 ## change log
 ### v0.1
-- modify - trig station layer - add survey sketch link to trig station pop up and additional attributes
+- modify - trig station layer - add survey sketch link to trig station pop up and additional 
+- modify - trig, parish, ga photos layers - add minzoom levels to prevent loading too many features
