@@ -1330,6 +1330,16 @@
 			bindPopupToLayer(vector_env_gpi, "{LOTREF}<br>{SOURCE}");
 			bindPopupToLayer(vector_env_gpi_ex_crown, "{LOTREF}<br>{SOURCE}");
 			bindPopupToLayer(vector_fcnsw_estate, "<b>{OperationalSFName}</b><br>Reserve No. {OperationalSFNo}");
+			bindPopupToLayer(vector_env_crownland_reserves, 
+				`{crownlregno}<br>
+				{reserve_name}<br>
+				{purpose}<br>
+				{manager}
+				`
+			);
+			bindPopupToLayer(vector_env_crownland_enclosure, "{account_class}<br>{purpose}");
+			bindPopupToLayer(vector_env_crownland_leases, "{account_class}<br>{purpose}<br>Account {crownaccountid}");
+			bindPopupToLayer(vector_env_crownland_licences, "{account_class}<br>{tenure_sub_type}<br>{purpose}<br>Account {crownaccountid}");
 
 			///////////////////////////
 			// layer control 
