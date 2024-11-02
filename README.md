@@ -18,3 +18,4 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - npws all managed land layer - new layer for all npws managed land, not just reserves
 - add - gov property ex crown layer - new layer based on existing government property index layer, removing crown land lots
 - add - government property layers - pop up on both gpi layers to give lot details
+- add - fcnsw estate layer - new layer for all forestry corp estate, including state forest, flora reserves and other managed estate

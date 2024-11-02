@@ -442,6 +442,7 @@
 			const attrib_ga = '&copy; Commonwealth of Australia (Geoscience Australia).' + licence_cc_by_4_0
 			const attrib_nsw_dcceew = '&copy;  State Government of NSW and NSW Department of Climate Change, Energy, the Environment and Water 2023.' + licence_cc_by_4_0
 			const attrib_nsw_planning = '&copy; State Government of NSW and NSW Department of Planning, Housing and Infrastructure 2021.' + licence_cc_by_4_0
+			const attrib_fcnsw = '&copy; State Government of NSW and Forestry Corporation of NSW 2024' + licence_cc_by_4_0
 
 			///////////////////////////
 			//	basemaps
@@ -901,6 +902,23 @@
 			});
 
 			///////////////////////////
+			// nsw state forest / fcnsw
+			///////////////////////////
+
+			// all nsw forestry corp (fcnsw) estate, including state forest, flora reserve and other
+			const vector_fcnsw_estate = L.esri.featureLayer({
+				url: "https://services2.arcgis.com/iCBB4zKDwkw2iwDD/ArcGIS/rest/services/FCNSW_Estate/FeatureServer/0",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_fcnsw,
+				style: () => {
+					return {
+						color: "#BFFF00" // yellow-green
+					};
+				}
+			});
+
+			///////////////////////////
 			// strava
 			///////////////////////////
 
@@ -1311,6 +1329,7 @@
 			);
 			bindPopupToLayer(vector_env_gpi, "{LOTREF}<br>{SOURCE}");
 			bindPopupToLayer(vector_env_gpi_ex_crown, "{LOTREF}<br>{SOURCE}");
+			bindPopupToLayer(vector_fcnsw_estate, "<b>{OperationalSFName}</b><br>Reserve No. {OperationalSFNo}");
 
 			///////////////////////////
 			// layer control 
@@ -1469,6 +1488,7 @@
 							// { label: 'Schedule 1 catchment', layer: vector_wnsw_catchment_schedule_1 },
 							{ label: 'Declared wilderness', layer: vector_env_wilderness },
 							{ label: 'NPWS all managed', layer: vector_env_npws_all },
+							{ label: 'FCNSW estate', layer: vector_fcnsw_estate}
 						]
 					},
 					{
