@@ -67,7 +67,14 @@ def load_height():
 
 def load_stations():
     station_info = pd.read_csv(station_file_path)
-    return station_info[station_info['SensorType'] == 'water level gauge']
+    print("Station Info Columns:", station_info.columns)  # Debugging line
+    # Only proceed if 'SensorType' exists in the columns
+    if 'SensorType' in station_info.columns:
+        return station_info[station_info['SensorType'] == 'water level gauge']
+    else:
+        print("Error: 'SensorType' column not found.")
+        return station_info
+
 
 def join_stations_with_height(stream_height_data, station_info):
     return pd.merge(stream_height_data, station_info, left_on="SiteId", right_on="SiteId")
