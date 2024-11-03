@@ -969,7 +969,7 @@
 			});
 
 			// load geojson stream height data
-			fetch("https://gangerang.github.io/bushwalkers-topos/datasets/nsw_stream_gauges.geojson")
+			fetch("https://maps.al3x.au/datasets/nsw_stream_gauges.geojson")
 				.then(response => response.json())
 				.then(data => {
 					vector_hosted_stream_heights_nsw_geojson.addData(data); // Add the GeoJSON data to the layer
