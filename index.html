@@ -954,6 +954,28 @@
 				minZoom: 8
 			});
 
+			// geojson stream height data - layer def
+			const vector_s3_stream_heights_nsw_geojson = L.geoJSON(null, {
+				onEachFeature: function (feature, layer) {
+					layer.bindPopup(feature.properties.name);
+				},
+				style: function (feature) {
+					return {
+						color: "#3388ff",
+						weight: 2,
+						opacity: 1
+					};
+				}
+			});
+
+			// load geojson stream height data
+			fetch("https://gangerang-geodata.s3.us-west-2.amazonaws.com/nsw_streams.geojson")
+				.then(response => response.json())
+				.then(data => {
+					vector_s3_stream_heights_nsw_geojson.addData(data); // Add the GeoJSON data to the layer
+				})
+				.catch(error => console.error("Error loading GeoJSON:", error)
+			);
 
 			///////////////////////////
 			// strava
@@ -1391,6 +1413,15 @@
 				Hrs since updated: {lastupdate_age}
 				`
 			);
+			bindPopupToLayer(vector_s3_stream_heights_nsw_geojson,
+				`<b>{NAME}</b><br>
+				Id: {SENSORID}<br>
+				Height: {RealValue} {Unit}<br>
+				As at: {ObservationTimestamp}<br>
+				<a href="http://www.bom.gov.au/fwo/IDN60233/IDN60233.{STATIONID}.plt.shtml" target="_blank">Latest online plot</a> (Sydney only)
+				`
+			);
+
 
 			///////////////////////////
 			// layer control 
@@ -1535,8 +1566,8 @@
 							{ label: 'Named rivers', layer: vector_ss_waterTheme_namedRivers },
 							{ label: 'Canyons', layer: canyonLayerGroup },
 							{ label: 'Trig stations', layer: vector_ss_trig },
-							{ label: 'Stream gauges', layer: vector_esri_stream_gauge },			
-							{ label: 'Stream gauges gpkg', layer: vector_local_stream_heights },			
+							{ label: 'Stream gauges ESRI', layer: vector_esri_stream_gauge },			
+							{ label: 'NSW Stream gauges geojson', layer: vector_s3_stream_heights_nsw_geojson },			
 						]
 					},
 					{

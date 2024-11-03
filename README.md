@@ -21,4 +21,5 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - fcnsw estate layer - new layer for all forestry corp estate, including state forest, flora reserves and other managed estate
 - add - crown land layer popups - new popups for crown land layers (except 'all')
 - add - crown land under disposal layer - new layer for crown land which has a current disposal action
-- add - stream gauge layer - new layer and popup for stream gauge river height from esri filtered on australia only
+- add - stream gauge esri layer - new layer and popup for stream gauge river height from esri filtered on australia only
+- add - nsw stream gauge geojson layer - new layer and popup for stream gauge river height in nsw, based on bom processed data stored in s3 as geojson
