@@ -40,6 +40,7 @@ def get_stations():
         return station_info
     else:
         print("Failed to download station file. Status code:", response.status_code)
+        print(f"url was: {station_url}")
         return None  # Return None if the download fails
 
 
