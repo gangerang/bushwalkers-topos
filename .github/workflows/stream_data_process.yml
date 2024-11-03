@@ -11,10 +11,13 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          # Fetch all history for the branch to allow commits
+          fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
@@ -28,10 +31,17 @@ jobs:
           FTP_HOST: "ftp.bom.gov.au"
           FTP_DIRECTORY: "/anon/gen/fwo/"
           STATION_URL: "http://reg.bom.gov.au/catalogue/rain_river_station_list.csv"
-        run: python scripts/stream_data_process.py
+        run: python scripts/data_process.py
 
-      - name: Upload Datasets to Repository
-        uses: actions/upload-artifact@v3
-        with:
-          name: datasets
-          path: datasets
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit and Push Changes
+        run: |
+          git add datasets
+          git commit -m "Update datasets with new data"
+          git push origin ${{ github.ref_name }}  # Push to the same branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
