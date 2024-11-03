@@ -31,7 +31,7 @@ jobs:
           FTP_HOST: "ftp.bom.gov.au"
           FTP_DIRECTORY: "/anon/gen/fwo/"
           STATION_URL: "http://reg.bom.gov.au/catalogue/rain_river_station_list.csv"
-        run: python scripts/stream_data_process.py
+        run: python scripts/data_process.py
 
       - name: Configure Git
         run: |
