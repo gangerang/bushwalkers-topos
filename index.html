@@ -173,9 +173,11 @@
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.81.0/dist/L.Control.Locate.min.css" />
 		<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.81.0/dist/L.Control.Locate.min.js" charset="utf-8"></script>
 		
-
 		<!-- Leaflet plugin for vector tiles support -->
 		<script type="text/javascript"  src="https://unpkg.com/leaflet.vectorgrid@1.2.0"></script>
+
+		<!-- Leaflet plugin for geopackage support -->
+		<script src="https://unpkg.com/@ngageoint/leaflet-geopackage@4.1.3/dist/leaflet-geopackage.min.js"></script>
 
         <script type="text/javascript">
 
@@ -952,6 +954,7 @@
 				minZoom: 8
 			});
 
+
 			///////////////////////////
 			// strava
 			///////////////////////////
@@ -1532,7 +1535,8 @@
 							{ label: 'Named rivers', layer: vector_ss_waterTheme_namedRivers },
 							{ label: 'Canyons', layer: canyonLayerGroup },
 							{ label: 'Trig stations', layer: vector_ss_trig },
-							{ label: 'Stream gauges', layer: vector_esri_stream_gauge},			
+							{ label: 'Stream gauges', layer: vector_esri_stream_gauge },			
+							{ label: 'Stream gauges gpkg', layer: vector_local_stream_heights },			
 						]
 					},
 					{
