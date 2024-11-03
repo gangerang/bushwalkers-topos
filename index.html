@@ -955,7 +955,7 @@
 			});
 
 			// geojson stream height data - layer def
-			const vector_s3_stream_heights_nsw_geojson = L.geoJSON(null, {
+			const vector_hosted_stream_heights_nsw_geojson = L.geoJSON(null, {
 				onEachFeature: function (feature, layer) {
 					layer.bindPopup(feature.properties.name);
 				},
@@ -969,10 +969,10 @@
 			});
 
 			// load geojson stream height data
-			fetch("https://gangerang-geodata.s3.us-west-2.amazonaws.com/nsw_streams.geojson")
+			fetch("https://gangerang.github.io/bushwalkers-topos/datasets/nsw_stream_gauges.geojson")
 				.then(response => response.json())
 				.then(data => {
-					vector_s3_stream_heights_nsw_geojson.addData(data); // Add the GeoJSON data to the layer
+					vector_hosted_stream_heights_nsw_geojson.addData(data); // Add the GeoJSON data to the layer
 				})
 				.catch(error => console.error("Error loading GeoJSON:", error)
 			);
@@ -1413,7 +1413,7 @@
 				Hrs since updated: {lastupdate_age}
 				`
 			);
-			bindPopupToLayer(vector_s3_stream_heights_nsw_geojson,
+			bindPopupToLayer(vector_hosted_stream_heights_nsw_geojson,
 				`<b>{NAME}</b><br>
 				Id: {SENSORID}<br>
 				Height: {RealValue} {Unit}<br>

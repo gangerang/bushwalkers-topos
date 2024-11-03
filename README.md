@@ -22,4 +22,4 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - crown land layer popups - new popups for crown land layers (except 'all')
 - add - crown land under disposal layer - new layer for crown land which has a current disposal action
 - add - stream gauge esri layer - new layer and popup for stream gauge river height from esri filtered on australia only
-- add - nsw stream gauge geojson layer - new layer and popup for stream gauge river height in nsw, based on bom processed data stored in s3 as geojson
+- add - nsw stream gauge geojson layer - new layer and popup for stream gauge river height in nsw, based on bom processed data stored on github pages as geojson
