@@ -21,7 +21,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pandas geopandas requests ftplib
+          pip install pandas geopandas requests
 
       - name: Run Data Processing Script
         env:
@@ -31,7 +31,7 @@ jobs:
         run: python scripts/stream_data_process.py
 
       - name: Upload Datasets to Repository
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: datasets
           path: datasets
