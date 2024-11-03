@@ -74,19 +74,25 @@ def load_height():
 def load_stations():
     station_file_path = "datasets/rain_river_station_list.csv"
     station_info = pd.read_csv(station_file_path)
-    if 'SensorType' in station_info.columns:
-        return station_info[station_info['SensorType'] == 'water level gauge']
+    if 'SENSOR_TYPE' in station_info.columns:
+        return station_info[station_info['SENSOR_TYPE'] == 'water level gauge']
     else:
-        print("Error: 'SensorType' column not found.")
+        print("Error: 'SENSOR_TYPE' column not found.")
         return station_info  # Adjust as needed based on actual structure
 
 def join_stations_with_height(stream_height_data, station_info):
-    return pd.merge(stream_height_data, station_info, left_on="SiteId", right_on="SiteId")
+    merged_data = pd.merge(
+        stream_height_data, 
+        station_info, 
+        left_on="SiteId", 
+        right_on="SENSORID"
+    )
+    return merged_data
 
 def create_spatial_files(merged_data):
     gdf = gpd.GeoDataFrame(
         merged_data,
-        geometry=gpd.points_from_xy(merged_data['Longitude'], merged_data['Latitude'])
+        geometry=gpd.points_from_xy(merged_data['LONG'], merged_data['LAT'])
     )
     gdf = gdf.set_crs("EPSG:4326")
     gdf.to_file(geojson_file_path, driver="GeoJSON")
