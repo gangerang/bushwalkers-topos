@@ -31,8 +31,9 @@ nsw_geojson_file_path = os.path.join(local_directory, 'nsw_stream_gauges.geojson
 gpkg_file_path = os.path.join(local_directory, 'au_stream_gauges.gpkg')
 
 def get_stations():
-    # Attempt to download and read the station file directly into a DataFrame
-    response = requests.get(station_url)
+    session = requests.Session()
+    # Force use of HTTP only by setting 'verify=False'
+    response = session.get(station_url, verify=False)  # Disable SSL verification
     if response.status_code == 200:
         # Load data into a DataFrame directly without saving to disk
         station_info = pd.read_csv(pd.compat.StringIO(response.text))
@@ -40,7 +41,6 @@ def get_stations():
         return station_info
     else:
         print("Failed to download station file. Status code:", response.status_code)
-        print(f"url was: {station_url}")
         return None  # Return None if the download fails
 
 
