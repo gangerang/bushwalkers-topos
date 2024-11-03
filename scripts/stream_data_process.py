@@ -14,15 +14,16 @@ ftp_host = os.getenv("FTP_HOST")
 ftp_directory = os.getenv("FTP_DIRECTORY")
 height_file_pattern = r"IDZ65910_\d+\.hcs"
 height_file_path = os.path.join(local_directory, 'IDZ65910.csv')
-
-# Station file details
-station_file_path = os.path.join(local_directory, 'rain_river_station_list.csv')
-station_url = os.getenv("STATION_URL")
-station_header = [
+height_file_header = [
     "IndexNo", "SensorType", "SensorDataType", "SiteIdType", "SiteId",
     "ObservationTimestamp", "RealValue", "Unit", "SensorParam1",
     "SensorParam2", "Quality", "Comment"
 ]
+
+# Station file details
+station_file_path = os.path.join(local_directory, 'rain_river_station_list.csv')
+station_url = os.getenv("STATION_URL")
+
 
 # Output filenames
 geojson_file_path = os.path.join(local_directory, 'au_stream_gauges.geojson')
@@ -55,7 +56,7 @@ def get_height():
                 ftp.retrbinary(f"RETR {latest_file}", temp_file.write)
 
             df = pd.read_csv(latest_file, skiprows=8, header=None)
-            df.columns = station_header
+            df.columns = height_file_header
             df.to_csv(csv_file_path, index=False)
             df.to_csv(height_file_path, index=False)
             os.remove(latest_file)
