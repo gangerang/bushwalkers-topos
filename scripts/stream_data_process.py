@@ -96,7 +96,7 @@ def create_spatial_files(merged_data):
     )
     gdf = gdf.set_crs("EPSG:4326")
     gdf.to_file(geojson_file_path, driver="GeoJSON")
-    gdf[gdf['State'] == 'NSW'].to_file(nsw_geojson_file_path, driver="GeoJSON")
+    gdf[gdf['STATE'] == 'NSW'].to_file(nsw_geojson_file_path, driver="GeoJSON")
     gdf.to_file(gpkg_file_path, driver="GPKG", layer="stream_heights")
 
 if __name__ == "__main__":
