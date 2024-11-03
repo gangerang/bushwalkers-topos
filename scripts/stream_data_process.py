@@ -31,16 +31,17 @@ nsw_geojson_file_path = os.path.join(local_directory, 'nsw_stream_gauges.geojson
 gpkg_file_path = os.path.join(local_directory, 'au_stream_gauges.gpkg')
 
 def get_stations():
-    if not os.path.isfile(station_file_path):
-        response = requests.get(station_url)
-        if response.status_code == 200:
-            with open(station_file_path, "wb") as file:
-                file.write(response.content)
-            print("Station download complete.")
-        else:
-            print("Failed to download station file. Status code:", response.status_code)
+    # Attempt to download and read the station file directly into a DataFrame
+    response = requests.get(station_url)
+    if response.status_code == 200:
+        # Load data into a DataFrame directly without saving to disk
+        station_info = pd.read_csv(pd.compat.StringIO(response.text))
+        print("Station data loaded in memory.")
+        return station_info
     else:
-        print("Station file already exists.")
+        print("Failed to download station file. Status code:", response.status_code)
+        return None  # Return None if the download fails
+
 
 def get_height():
     with FTP(ftp_host) as ftp:
@@ -67,14 +68,17 @@ def load_height():
     return pd.read_csv(height_file_path)
 
 def load_stations():
-    station_info = pd.read_csv(station_file_path)
-    print("Station Info Columns:", station_info.columns)  # Debugging line
-    # Only proceed if 'SensorType' exists in the columns
-    if 'SensorType' in station_info.columns:
-        return station_info[station_info['SensorType'] == 'water level gauge']
+    station_info = get_stations()  # Call get_stations and get the data directly
+    if station_info is not None:
+        # Ensure the DataFrame has the expected columns before filtering
+        if 'SensorType' in station_info.columns:
+            return station_info[station_info['SensorType'] == 'water level gauge']
+        else:
+            print("Error: 'SensorType' column not found.")
+            return station_info  # Adjust as needed based on actual structure
     else:
-        print("Error: 'SensorType' column not found.")
-        return station_info
+        print("No station data available.")
+        return None
 
 
 def join_stations_with_height(stream_height_data, station_info):
@@ -91,9 +95,13 @@ def create_spatial_files(merged_data):
     gdf.to_file(gpkg_file_path, driver="GPKG", layer="stream_heights")
 
 if __name__ == "__main__":
-    get_stations()
-    get_height()
-    stream_height_data = load_height()
+    # Get station data
     station_info = load_stations()
-    merged_data = join_stations_with_height(stream_height_data, station_info)
-    create_spatial_files(merged_data)
+    if station_info is None:
+        print("Station data could not be loaded. Exiting script.")
+    else:
+        # Proceed with remaining operations only if station data is available
+        get_height()
+        stream_height_data = load_height()
+        merged_data = join_stations_with_height(stream_height_data, station_info)
+        create_spatial_files(merged_data)
