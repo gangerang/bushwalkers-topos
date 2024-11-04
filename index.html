@@ -205,6 +205,28 @@
 				return layersArray;
 			}	
 
+			// function to create many esri tile layers
+			function createEsriTileLayers({
+				layersConfig,
+				maxZoom = 21,
+				maxNativeZoom = 18,
+				attribution = ''
+			}) {
+				return layersConfig.map(config => {
+					const { label, url } = config;
+
+					return {
+						label: label,
+						layer: L.esri.tiledMapLayer({
+							url: url,
+							maxZoom: maxZoom,
+							maxNativeZoom: maxNativeZoom,
+							attribution: attribution
+						})
+					};
+				});
+			};
+
 			///////////////////////////
 			//	custom search box
 			///////////////////////////	
@@ -1081,6 +1103,54 @@
 			});
 
 			///////////////////////////
+			// nsw historic imagery
+			///////////////////////////
+		
+			const nswHistoricConfig = [
+				{ label: "Historic Imagery 1943", url: "https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/sydney1943/MapServer"},
+				{ label: "Historic Imagery 1944", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1944/MapServer"},
+				{ label: "Historic Imagery 1947", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1947/MapServer" },
+				{ label: "Historic Imagery 1955", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1955/MapServer" },
+				{ label: "Historic Imagery 1965", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1965/MapServer" },
+				{ label: "Historic Imagery 1966", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1966/MapServer" },
+				{ label: "Historic Imagery 1969", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1969/MapServer" },
+				{ label: "Historic Imagery 1970", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1970/MapServer" },
+				{ label: "Historic Imagery 1971", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1971/MapServer" },
+				{ label: "Historic Imagery 1972", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1972/MapServer" },
+				{ label: "Historic Imagery 1975", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1975/MapServer" },
+				{ label: "Historic Imagery 1976", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1976/MapServer" },
+				{ label: "Historic Imagery 1978", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1978/MapServer" },
+				{ label: "Historic Imagery 1979", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1979/MapServer" },
+				{ label: "Historic Imagery 1980", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1980/MapServer" },
+				{ label: "Historic Imagery 1982", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1982/MapServer" },
+				{ label: "Historic Imagery 1983", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1983/MapServer" },
+				{ label: "Historic Imagery 1984", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1984/MapServer" },
+				{ label: "Historic Imagery 1986", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1986/MapServer" },
+				{ label: "Historic Imagery 1987", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1987/MapServer" },
+				{ label: "Historic Imagery 1989", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1989/MapServer" },
+				{ label: "Historic Imagery 1990", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1990/MapServer" },
+				{ label: "Historic Imagery 1991", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1991/MapServer" },
+				{ label: "Historic Imagery 1993", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1993/MapServer" },
+				{ label: "Historic Imagery 1994", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1994/MapServer" },
+				{ label: "Historic Imagery 1996", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1996/MapServer" },
+				{ label: "Historic Imagery 1998", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1998/MapServer" },
+				{ label: "Historic Imagery 1998 BW", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1998_BW/MapServer" },
+				{ label: "Historic Imagery 2001", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery2001/MapServer" },
+				{ label: "Historic Imagery 2004", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery2004/MapServer" },
+				{ label: "Historic Imagery 2005", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery2005/MapServer" },
+				{ label: "Historic Imagery 2006", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery2006/MapServer" },
+				{ label: "Historic Imagery 2013", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery2013/MapServer" },
+				{ label: "Historic Imagery Towns 2006", url: "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImageryTowns2006/MapServer" }
+			];
+
+			const raster_ss_historic_imagery_list =  createEsriTileLayers({
+				layersConfig: nswHistoricConfig,
+				attribution: attrib_nsw_ss
+			});
+
+
+
+			///////////////////////////
 			// NLA Map Search WMS list
 			// see https://mapsearch.nla.gov.au
 			///////////////////////////
@@ -1607,6 +1677,13 @@
 						]
 					},
 					{
+						label: 'Historic Imagery',
+						selectAllCheckbox: true,
+						children: [
+							...raster_ss_historic_imagery_list,
+						]
+					},
+					{
 						label: 'Strava',
 						selectAllCheckbox: true,
 						children: [
@@ -1672,6 +1749,7 @@
 				{ label: 'Public hot all', layer: basemap_raster_strava_public_hot_all },
 				{ label: 'Public hot run', layer: basemap_raster_strava_public_hot_run },
 				{ label: 'NSW SVTM veg class and pct layers', layer: basemap_raster_env_svtm_veg_group },
+				raster_ss_historic_imagery_list,
 			);
 
 			// Attach event listener to the opacity slider
