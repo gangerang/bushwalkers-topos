@@ -23,4 +23,5 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - crown land under disposal layer - new layer for crown land which has a current disposal action
 - add - stream gauge esri layer - new layer and popup for stream gauge river height from esri filtered on australia only
 - add - nsw stream gauge geojson layer - new layer and popup for stream gauge river height in nsw, based on bom processed data stored on github pages as geojson
-- add - nsw stream gauge geojson file creation - via github actions, automation to create the dataset which is then referenced as a layer 
+- add - nsw stream gauge geojson file creation - via github actions, automation to create the dataset which is then referenced as a layer
+- add - nsw historic aerial imagery layers - new raster layers for historic aerial imagery in nsw. 34 layers between years 1943 to 2013
