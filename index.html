@@ -968,9 +968,9 @@
 				}
 			});
 
-			const nsw_stream_gauges_url = `https://gangerang.github.io/bushwalkers-topos/datasets/nsw_stream_gauges.geojson?cache_buster=${Math.random()}`;
+			const nsw_stream_gauges_url = `https://raw.githubusercontent.com/gangerang/bushwalkers-topos/refs/heads/main/datasets/au_stream_gauges.geojson?cache_buster=${Math.random()}`;
 			// load geojson stream height data
-			fetch("https://maps.al3x.au/datasets/nsw_stream_gauges.geojson")
+			fetch(nsw_stream_gauges_url)
 				.then(response => response.json())
 				.then(data => {
 					vector_hosted_stream_heights_nsw_geojson.addData(data); // Add the GeoJSON data to the layer
