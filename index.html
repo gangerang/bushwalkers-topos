@@ -227,6 +227,37 @@
 				});
 			};
 
+			// function for creation of geojson layers from a file url
+			function createGeoJsonLayer({ url, popupField = 'name', styleOptions = {} }) {
+				// Define the GeoJSON layer with the specified popup and style
+				const geoJsonLayer = L.geoJSON(null, {
+					onEachFeature: function (feature, layer) {
+						if (feature.properties && feature.properties[popupField]) {
+							layer.bindPopup(feature.properties[popupField]);
+						}
+					},
+					style: function () {
+						// Apply default or custom style options
+						return {
+							color: styleOptions.color || "#3388ff",
+							weight: styleOptions.weight || 2,
+							opacity: styleOptions.opacity || 1
+						};
+					}
+				});
+
+				// Load GeoJSON data and add it to the layer
+				fetch(url)
+					.then(response => response.json())
+					.then(data => {
+					geoJsonLayer.addData(data); // Add data to the layer
+					})
+					.catch(error => console.error("Error loading GeoJSON:", error));
+
+				return geoJsonLayer; // Return the configured GeoJSON layer
+			}
+
+
 			///////////////////////////
 			//	custom search box
 			///////////////////////////	
@@ -976,29 +1007,18 @@
 				minZoom: 8
 			});
 
-			// geojson stream height data - layer def
-			const vector_hosted_stream_heights_nsw_geojson = L.geoJSON(null, {
-				onEachFeature: function (feature, layer) {
-					layer.bindPopup(feature.properties.name);
-				},
-				style: function (feature) {
-					return {
-						color: "#3388ff",
-						weight: 2,
-						opacity: 1
-					};
+
+			// load geojson stream height data
+			const nsw_stream_gauges_url = `https://raw.githubusercontent.com/gangerang/bushwalkers-topos/refs/heads/main/datasets/au_stream_gauges.geojson?cache_buster=${Math.random()}`;
+			const vector_hosted_stream_heights_nsw_geojson = createGeoJsonLayer({
+				url: nsw_stream_gauges_url,
+				// popupField: 'name',
+				styleOptions: {
+					color: "#3388ff",
+					weight: 2,
+					opacity: 1
 				}
 			});
-
-			const nsw_stream_gauges_url = `https://raw.githubusercontent.com/gangerang/bushwalkers-topos/refs/heads/main/datasets/au_stream_gauges.geojson?cache_buster=${Math.random()}`;
-			// load geojson stream height data
-			fetch(nsw_stream_gauges_url)
-				.then(response => response.json())
-				.then(data => {
-					vector_hosted_stream_heights_nsw_geojson.addData(data); // Add the GeoJSON data to the layer
-				})
-				.catch(error => console.error("Error loading GeoJSON:", error)
-			);
 
 			///////////////////////////
 			// strava
@@ -1147,8 +1167,6 @@
 				layersConfig: nswHistoricConfig,
 				attribution: attrib_nsw_ss
 			});
-
-
 
 			///////////////////////////
 			// NLA Map Search WMS list
