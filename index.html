@@ -817,14 +817,14 @@
 				// stroke: false
 			});
 
-			// vector wnsw schedule 1 catchment
-			// note - doesn't load due to CORS error - removed from layer list
-			const vector_wnsw_catchment_schedule_1 = L.esri.featureLayer({
-				url: "https://mapprod.waternsw.com.au/arcgis/rest/services/Public/Greater_Sydney_Declared_Catchment_and_Water_Supply_System/FeatureServer/1",
-				simplifyFactor: 0.5,
-				precision: 4,
-				where: "Schedule=1",
-				useCors: true
+			// vector wnsw schedule 1 and 2 catchment boundaries
+			const vector_wnsw_catchment_schedule_1 = createGeoJsonLayer({
+				url: "https://raw.githubusercontent.com/gangerang/bushwalkers-topos/refs/heads/dev/datasets/wnsw_schedule_1.geojson",
+				popupField: 'Class'
+			});
+			const vector_wnsw_catchment_schedule_2= createGeoJsonLayer({
+				url: "https://raw.githubusercontent.com/gangerang/bushwalkers-topos/refs/heads/dev/datasets/wnsw_schedule_2.geojson",
+				popupField: 'Class'
 			});
 			
 			
@@ -1668,7 +1668,8 @@
 							{ label: 'County', layer: vector_ss_county },
 							{ label: 'Government property', layer: vector_env_gpi },
 							{ label: 'Government property ex crown', layer: vector_env_gpi_ex_crown },
-							// { label: 'Schedule 1 catchment', layer: vector_wnsw_catchment_schedule_1 },
+							{ label: 'Schedule 1 catchment', layer: vector_wnsw_catchment_schedule_1 },
+							{ label: 'Schedule 2 catchment', layer: vector_wnsw_catchment_schedule_2 },
 							{ label: 'Declared wilderness', layer: vector_env_wilderness },
 							{ label: 'NPWS all managed', layer: vector_env_npws_all },
 							{ label: 'FCNSW estate', layer: vector_fcnsw_estate}
