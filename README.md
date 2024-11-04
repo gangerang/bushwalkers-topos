@@ -25,3 +25,4 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - nsw stream gauge geojson layer - new layer and popup for stream gauge river height in nsw, based on bom processed data stored on github pages as geojson
 - add - nsw stream gauge geojson file creation - via github actions, automation to create the dataset which is then referenced as a layer
 - add - nsw historic aerial imagery layers - new raster layers for historic aerial imagery in nsw. 34 layers between years 1943 to 2013
+- add - schedule 1 and 2 catchment layers - new vector layers from geojsons for waternsw schedule 1 and 2 catchment boundaries
