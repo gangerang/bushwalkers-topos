@@ -28,4 +28,4 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - schedule 1 and 2 catchment layers - new vector layers from geojsons for waternsw schedule 1 and 2 catchment boundaries
 
 ### v0.2
-- add - fems fire layers - new fire extent and severity mapping layers for nsw, 2016-2024
+- add - fesm fire layers - new fire extent and severity mapping layers for nsw, 2016-2024

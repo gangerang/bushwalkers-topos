@@ -880,23 +880,23 @@
 
 			
 			///////////////////////////
-			// NSW FEMS - fire extent and severity mapping
+			// NSW FESM - fire extent and severity mapping
 			///////////////////////////
 
-			const nswWmsFEMSConfig = [
-				{ label: "FEMS 2023-24", layerid: '1'},
-				{ label: "FEMS 2022-23", layerid: '2'},
-				{ label: "FEMS 2021-22", layerid: '3'},
-				{ label: "FEMS 2020-21", layerid: '4'},
-				{ label: "FEMS 2019-20", layerid: '5'},
-				{ label: "FEMS 2018-19", layerid: '6'},
-				{ label: "FEMS 2017-18", layerid: '7'},
-				{ label: "FEMS 2016-17", layerid: '8'},
+			const nswWmsFESMConfig = [
+				{ label: "FESM 2023-24", layerid: '1'},
+				{ label: "FESM 2022-23", layerid: '2'},
+				{ label: "FESM 2021-22", layerid: '3'},
+				{ label: "FESM 2020-21", layerid: '4'},
+				{ label: "FESM 2019-20", layerid: '5'},
+				{ label: "FESM 2018-19", layerid: '6'},
+				{ label: "FESM 2017-18", layerid: '7'},
+				{ label: "FESM 2016-17", layerid: '8'},
 			];
 
-			const raster_env_fems_wms_list = createWmsLayers(
+			const raster_env_fesm_wms_list = createWmsLayers(
 				'https://mapprod3.environment.nsw.gov.au/arcgis/services/Fire/FESM/MapServer/WMSServer',
-				nswWmsFEMSConfig
+				nswWmsFESMConfig
 			);
 
 
@@ -1685,7 +1685,7 @@
 						label: 'Fire',
 						collapsed: true,
 						children: [
-							...raster_env_fems_wms_list,
+							...raster_env_fesm_wms_list,
 						]
 					},
 					{
