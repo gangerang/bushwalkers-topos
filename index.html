@@ -1601,6 +1601,7 @@
 				children: [
 					{
 						label: 'Historic Topo Maps',
+						collapsed: true,
 						children: [
 							{
 								label: '1:31860',
@@ -1631,6 +1632,7 @@
 					},
 					{
 						label: 'Parish Maps',
+						collapsed: true,
 						children: [
 							{		
 								label: 'Cook',
@@ -1651,6 +1653,7 @@
 					},
 					{
 						label: 'Topo Map Downloads',
+						collapsed: true,
 						children: [
 							{ label: 'NSW Topo', layer: vector_ss_topo_index },
 							{ label: 'GA Topo 50k', layer: vector_ga_topo_index_50k },
@@ -1662,6 +1665,7 @@
 					},
 					{
 						label: 'Topography',
+						collapsed: true,
 						children: [
 							{ label: 'ESRI hillshade', layer: basemap_raster_esri_hillshade_opacity },
 							{ label: 'NSW 5m hillshade', layer: basemap_raster_geonsw_hillshade_5m },
@@ -1670,6 +1674,7 @@
 					},
 					{
 						label: 'Vegetation',
+						collapsed: true,
 						children: [
 							{ label: 'NSW SVTM vegetation', layer: basemap_raster_env_svtm_veg_group },
 							{ label: '19/20 Fires veg index', layer: image_env_geebam_veg_index },
@@ -1678,12 +1683,14 @@
 					},
 					{
 						label: 'Fire',
+						collapsed: true,
 						children: [
 							...raster_env_fems_wms_list,
 						]
 					},
 					{
 						label: 'Geology',
+						collapsed: true,
 						children: [
 							{ label: 'Geology WMTS', layer: basemap_raster_geonsw_geology_wmts },
 							{ label: 'Geology', layer: basemap_raster_geonsw_geology },
@@ -1692,6 +1699,7 @@
 					},
 					{
 						label: 'Features',
+						collapsed: true,
 						children: [
 							{ label: 'Named rivers', layer: vector_ss_waterTheme_namedRivers },
 							{ label: 'Canyons', layer: canyonLayerGroup },
@@ -1702,6 +1710,7 @@
 					},
 					{
 						label: 'Boundaries',
+						collapsed: true,
 						children: [
 							{ label: 'Lots', layer: vector_ss_lots },
 							{ label: 'Parish', layer: vector_ss_parish },
@@ -1717,6 +1726,7 @@
 					},
 					{
 						label: 'Crown Land',
+						collapsed: true,
 						children: [
 							{ label: 'All', layer: vector_env_crownland_all },
 							{ label: 'Reserves', layer: vector_env_crownland_reserves },
@@ -1728,6 +1738,7 @@
 					},
 					{
 						label: 'Historic Imagery Photos',
+						collapsed: true,
 						children: [
 							{ label: 'Historic GA aerial photo points', layer: vector_ga_historic_aerial_photos },
 							// { label: 'Historic SS NSW aerial photo points', layer: vector_ss_nsw_historic_aerial_photos },
