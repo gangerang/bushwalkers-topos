@@ -204,7 +204,7 @@
 				});
 
 				return layersArray;
-			}	
+			}
 
 			// function to create many esri tile layers
 			function createEsriTileLayers({
@@ -227,6 +227,25 @@
 					};
 				});
 			};
+
+			// function to create many wms layers
+			function createWmsLayers(wmsUrl, labelAndLayerId) {
+				const layersArray = [];
+
+				labelAndLayerId.forEach(item => {
+					const { label, layerid } = item;
+					const layer = L.tileLayer.wms(wmsUrl + '?', {
+						layers: layerid,
+						format: 'image/png',
+						transparent: true,
+						version: '1.3.0',
+						uppercase: true,
+					});
+					layersArray.push({ label: label, layer: layer });
+				});
+
+				return layersArray;
+			}
 
 			// function for creation of geojson layers from a file url
 			function createGeoJsonLayer({ url, popupField = 'name', styleOptions = {} }) {
@@ -858,7 +877,29 @@
 				maxZoom: 21,
 				maxNativeZoom: 16
 			});
+
 			
+			///////////////////////////
+			// NSW FEMS - fire extent and severity mapping
+			///////////////////////////
+
+			const nswWmsFEMSConfig = [
+				{ label: "FEMS 2023-24", layerid: '1'},
+				{ label: "FEMS 2022-23", layerid: '2'},
+				{ label: "FEMS 2021-22", layerid: '3'},
+				{ label: "FEMS 2020-21", layerid: '4'},
+				{ label: "FEMS 2019-20", layerid: '5'},
+				{ label: "FEMS 2018-19", layerid: '6'},
+				{ label: "FEMS 2017-18", layerid: '7'},
+				{ label: "FEMS 2016-17", layerid: '8'},
+			];
+
+			const raster_env_fems_wms_list = createWmsLayers(
+				'https://mapprod3.environment.nsw.gov.au/arcgis/services/Fire/FESM/MapServer/WMSServer',
+				nswWmsFEMSConfig
+			);
+
+
 			//	// rasater env veg pct 50m - not working
 			//	const raster_env_veg_pct_50m = L.esri.tiledMapLayer({url: 'https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/VIS/SVTM_NSW_PCT_TNM_50M/MapServer/6',
 			//		maxZoom: 21,
@@ -1633,6 +1674,12 @@
 							{ label: 'NSW SVTM veg class and pct layers', layer: basemap_raster_env_svtm_veg_group },
 							{ label: '2019/20 Fires GEEBAM Vegetation index', layer: image_env_geebam_veg_index },
 							{ label: '2019/20 Fires GEEBAM Sentinel 2 imagery', layer: image_env_geebam_sentinel },
+						]
+					},
+					{
+						label: 'Fire',
+						children: [
+							...raster_env_fems_wms_list,
 						]
 					},
 					{
