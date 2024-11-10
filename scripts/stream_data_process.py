@@ -6,6 +6,11 @@ from ftplib import FTP
 import re
 import io
 
+# takes bom watergauage data and produces steam height spatial files
+# all au - geojson and geopackage
+# nsw only - geojson
+
+
 # Local directory to save the files
 local_directory = "datasets"
 os.makedirs(local_directory, exist_ok=True)  # Ensure the local directory exists
