@@ -180,6 +180,14 @@
 		<!-- Leaflet plugin for geopackage support -->
 		<script src="https://unpkg.com/@ngageoint/leaflet-geopackage@4.1.3/dist/leaflet-geopackage.min.js"></script>
 
+		<!-- Maplibre GL -->
+		<link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
+		<script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+
+		<!-- Maplibre GL Leaflet  -->
+		<script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js"></script>
+
+
         <script type="text/javascript">
 
 			// Define map with initial view
@@ -632,7 +640,7 @@
 			const basemap_vectortile_esri_hillshade = L.esri.Vector.vectorTileLayer(
 				"https://basemaps.arcgis.com/arcgis/rest/services/World_Hillshade_v2/VectorTileServer"
 			);
-			
+
 			
 			///////////////////////////
 			//	overlay layers
