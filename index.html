@@ -526,6 +526,7 @@
 			const attrib_nsw_dcceew = '&copy;  State Government of NSW and NSW Department of Climate Change, Energy, the Environment and Water 2023.' + licence_cc_by_4_0
 			const attrib_nsw_planning = '&copy; State Government of NSW and NSW Department of Planning, Housing and Infrastructure 2021.' + licence_cc_by_4_0
 			const attrib_fcnsw = '&copy; State Government of NSW and Forestry Corporation of NSW 2024' + licence_cc_by_4_0
+			const attrib_ofm = '<a href="https://openfreemap.org">OpenFreeMap</a> <a href="https://openmaptiles.org">&copy; OpenMapTiles</a> Data from <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 
 			///////////////////////////
 			//	basemaps
@@ -640,7 +641,12 @@
 			const basemap_vectortile_esri_hillshade = L.esri.Vector.vectorTileLayer(
 				"https://basemaps.arcgis.com/arcgis/rest/services/World_Hillshade_v2/VectorTileServer"
 			);
-
+			
+			// vector tile open free map - https://openfreemap.org/quick_start/
+			const basemap_vectortile_ofm_liberty = L.maplibreGL({
+				style: 'https://tiles.openfreemap.org/styles/liberty',
+				attribution: attrib_ofm
+			});
 			
 			///////////////////////////
 			//	overlay layers
@@ -1579,6 +1585,7 @@
 						{ label: 'SIX imagery', layer: basemap_raster_ss_nsw_imagery },
 						{ label: 'Google imagery', layer: basemap_raster_google_imagery },
 						{ label: 'ESRI topo raster', layer: basemap_raster_esri_topo },
+						{ label: 'OSM', layer: basemap_vectortile_ofm_liberty },
 					]
 				},
 				{
