@@ -31,3 +31,4 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - fesm fire layers - new fire extent and severity mapping layers for nsw, 2016-2024
 - add - osm basemap - new OpenStreetMap basemap sourced via OpenFreeMap.org
 - add - additional boundaries - new boundary layers for suburb, lga, state seats and federal seats, for nsw
+- add - OpenTopoMap basemap - new OpenTopoMap basemap which is based on OSM data but styled as a topographic map with hillshade, souced via opentopomap.org

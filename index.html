@@ -527,6 +527,7 @@
 			const attrib_nsw_planning = '&copy; State Government of NSW and NSW Department of Planning, Housing and Infrastructure 2021.' + licence_cc_by_4_0
 			const attrib_fcnsw = '&copy; State Government of NSW and Forestry Corporation of NSW 2024' + licence_cc_by_4_0
 			const attrib_ofm = '<a href="https://openfreemap.org">OpenFreeMap</a> <a href="https://openmaptiles.org">&copy; OpenMapTiles</a> Data from <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+			const attrib_opentilemaps = 'Map data: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM & Map display: &copy; <a href="http://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
 
 			///////////////////////////
 			//	basemaps
@@ -648,6 +649,14 @@
 				attribution: attrib_ofm
 			});
 			
+			// raster OpenTopoMap - https://opentopomap.org/about
+			const basemap_raster_open_topo_maps = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+				maxZoom: 21,
+				maxNativeZoom: 17,
+				subdomains: ['a', 'b', 'c'],
+				attribution: attrib_opentilemaps
+			});
+
 			///////////////////////////
 			//	overlay layers
 			///////////////////////////
@@ -1637,7 +1646,8 @@
 						{ label: 'SIX imagery', layer: basemap_raster_ss_nsw_imagery },
 						{ label: 'Google imagery', layer: basemap_raster_google_imagery },
 						{ label: 'ESRI topo raster', layer: basemap_raster_esri_topo },
-						{ label: 'OSM', layer: basemap_vectortile_ofm_liberty },
+						{ label: 'OpenFreeMaps', layer: basemap_vectortile_ofm_liberty },
+						{ label: 'OpenTopoMap', layer: basemap_raster_open_topo_maps },
 					]
 				},
 				{
