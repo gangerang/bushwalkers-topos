@@ -543,7 +543,7 @@
 				notFoundMessage: 'Sorry, that address could not be found.',
 				keepResult: true,
 				autoComplete: true,
-				autoCompleteDelay: 500, // 500ms delay before autocomplete search
+				autoCompleteDelay: 1000, // 1s delay before autocomplete search
 				popupFormat: ({ query, result }) => {
 					// Access the raw response for additional data
 					const response = result.raw;
@@ -559,7 +559,15 @@
 						</p>
 						<p><em>Place type:</em> ${response.type + '/' + response.class  || 'N/A'}</p>
 					`;
-				}
+				},
+				resultFormat: ({ result }) => {
+					// Access the raw response for additional data
+					const response = result.raw;
+
+					return `${response.name} ${response.address.suburb || response.address.town || response.address.suburb || response.address.municipality || ''} 
+					${response.address.state || ''}
+					`;
+				},
 			});	
 
 
