@@ -34,3 +34,4 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - OpenTopoMap basemap - new OpenTopoMap basemap which is based on OSM data but styled as a topographic map with hillshade, souced via opentopomap.org
 - add - ESRI OSM basemap - new OSM basemap sourced via ESRI vector tiles
 - add - OSM seach function - new search tool which returns results from OSM for Australia. Uses leaflet-geosearch plugin and OSM Nominatim api
+- add - NSW vector topo basemap - new basemap for NSW spatial services vector tile topo map. Combined with esri hillshade

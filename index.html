@@ -614,7 +614,12 @@
 				maxNativeZoom: 16,
 				attribution: attrib_nsw_ss
 			});
-			
+
+			// NSW topo vector tile basemap
+			const basemap_vectortile_ss_basemap = L.esri.Vector.vectorTileLayer(
+				"https://portal.spatial.nsw.gov.au/vectortileservices/rest/services/Hosted/NSW_BaseMap_VectorTile/VectorTileServer"
+			);
+
 			// Geoscience Australia 250k topo 2008
 			const basemap_raster_ga_natmap_250k_2008 = L.esri.tiledMapLayer({url: 'http://services.ga.gov.au/gis/rest/services/NATMAP_Maps_250K_2008/MapServer',
 				maxZoom: 21,
@@ -715,6 +720,12 @@
 				attribution: attrib_opentilemaps
 			});
 
+			// combine nsw vector tile topo and hillshade into one group
+			const basemap_vectortile_ss_basemap_with_hillshade = L.layerGroup([
+				basemap_vectortile_ss_basemap,
+				basemap_raster_esri_hillshade
+			]);
+
 			///////////////////////////
 			//	overlay layers
 			///////////////////////////
@@ -741,6 +752,19 @@
 				simplifyFactor: 0.5,
 				precision: 4,
 				attribution: attrib_nsw_ss
+			});
+			// vector easements
+			const vector_ss_easements = L.esri.featureLayer({
+				url: "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Land_Parcel_Property_Theme/FeatureServer/9",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_ss,
+				style: () => {
+					return {
+						color: "#ff0000" // red
+					};
+				},
+				minZoom: 10
 			});
 			// vector parish boundaries
 			const vector_ss_parish = L.esri.featureLayer({
@@ -1699,6 +1723,7 @@
 					collapsed: true,
 					children: [
 						{ label: 'SIX topo', layer: basemap_raster_ss_nsw_poi_topo },
+						{ label: 'SIX vector topo', layer: basemap_vectortile_ss_basemap_with_hillshade },
 						{ label: 'SIX raster topo', layer: basemap_raster_ss_nsw_raster_topo },
 						{ label: 'SIX series 1 topo', layer: basemap_raster_ss_nsw_raster_topo_s1 },
 						{ label: 'SIX imagery', layer: basemap_raster_ss_nsw_imagery },
@@ -1805,7 +1830,8 @@
 						children: [
 							{ label: 'ESRI hillshade', layer: basemap_raster_esri_hillshade_opacity },
 							{ label: 'NSW 5m hillshade', layer: basemap_raster_geonsw_hillshade_5m },
-							{ label: 'ESRI contours', layer: basemap_vectortile_esri_contours },							
+							{ label: 'ESRI contours', layer: basemap_vectortile_esri_contours },
+							{ label: 'SIX vector topo', layer: basemap_vectortile_ss_basemap },					
 						]
 					},
 					{
@@ -1849,6 +1875,7 @@
 						collapsed: true,
 						children: [
 							{ label: 'Lots', layer: vector_ss_lots },
+							{ label: 'Easements', layer: vector_ss_easements },
 							{ label: 'Parish', layer: vector_ss_parish },
 							{ label: 'County', layer: vector_ss_county },
 							{ label: 'Suburb', layer: vector_ss_suburb },
