@@ -695,6 +695,54 @@
 					};
 				}
             });
+			// vector lga boundaries
+			const vector_ss_lga = L.esri.featureLayer({
+				url: "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Administrative_Boundaries_Theme/FeatureServer/8",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_ss,
+				style: () => {
+					return {
+						color: "#ff0000" // red
+					};
+				}
+            });
+			// vector state electoral boundaries
+			const vector_ss_state_electoral = L.esri.featureLayer({
+				url: "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Administrative_Boundaries_Theme/FeatureServer/4",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_ss,
+				style: () => {
+					return {
+						color: "#ff0000" // red
+					};
+				}
+            });
+			// vector federal electoral boundaries
+			const vector_ss_federal_electoral = L.esri.featureLayer({
+				url: "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Administrative_Boundaries_Theme/FeatureServer/9",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_ss,
+				style: () => {
+					return {
+						color: "#ff0000" // red
+					};
+				}
+            });
+			// vector suburb boundaries
+			const vector_ss_suburb = L.esri.featureLayer({
+				url: "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Administrative_Boundaries_Theme/FeatureServer/2",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_ss,
+				style: () => {
+					return {
+						color: "#ff0000" // red
+					};
+				}
+            });
 			// vector government property index gpi
 			const vector_env_gpi = L.esri.featureLayer({
 				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/Planning_Portal_GPI/MapServer/302",
@@ -1566,6 +1614,10 @@
 				<a href="http://www.bom.gov.au/fwo/IDN60233/IDN60233.{STATIONID}.plt.shtml" target="_blank">Latest online plot</a> (Sydney only)
 				`
 			);
+			bindPopupToLayer(vector_ss_suburb, 'Suburb: {suburbname}<br>Postcode: {postcode}');
+			bindPopupToLayer(vector_ss_lga, 'LGA: {lganame}');
+			bindPopupToLayer(vector_ss_state_electoral, 'State seat: {districtname}');
+			bindPopupToLayer(vector_ss_federal_electoral, 'Federal seat: {divisionname}');
 
 
 			///////////////////////////
@@ -1730,6 +1782,10 @@
 							{ label: 'Lots', layer: vector_ss_lots },
 							{ label: 'Parish', layer: vector_ss_parish },
 							{ label: 'County', layer: vector_ss_county },
+							{ label: 'Suburb', layer: vector_ss_suburb },
+							{ label: 'LGA', layer: vector_ss_lga },
+							{ label: 'State seats', layer: vector_ss_state_electoral },
+							{ label: 'Federal seats', layer: vector_ss_federal_electoral },
 							{ label: 'Government property', layer: vector_env_gpi },
 							{ label: 'Government prop. ex. crown', layer: vector_env_gpi_ex_crown },
 							{ label: 'Schedule 1 catchment', layer: vector_wnsw_catchment_schedule_1 },
