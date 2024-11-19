@@ -187,6 +187,9 @@
 		<!-- Maplibre GL Leaflet  -->
 		<script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js"></script>
 
+		<!-- leaflet-geosearch  https://github.com/smeijer/leaflet-geosearch -->
+		<link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@4.0.0/dist/geosearch.css" />
+		<script src="https://unpkg.com/leaflet-geosearch@4.0.0/dist/geosearch.umd.js"></script>
 
         <script type="text/javascript">
 
@@ -516,6 +519,30 @@
 				window.closeModal = closeModal;
 				window.onclick = clickOffModal;
 			});
+
+			///////////////////////////
+			//	osm nominatim searchbox
+			///////////////////////////
+
+			// Create and add the GeoSearch control
+			// see params here - https://nominatim.org/release-docs/develop/api/Search/#parameters
+			const provider = new GeoSearch.OpenStreetMapProvider({
+				params: {
+					countrycodes: 'au', // limit search results to australia
+				}
+			});
+
+			const searchControl = new GeoSearch.GeoSearchControl({
+				provider: provider,
+				style: 'button', // alteratively 'bar' which is a bar at the top of the screen
+				showMarker: true,
+				retainZoomLevel: true,
+				autoClose: true,
+				searchLabel: 'Enter address or feature name',
+				notFoundMessage: 'Sorry, that address could not be found.',
+				keepResult: true
+			});	
+
 
 			// source attribution vars
 			const licence_cc_by_4_0 = 'This product is released under the <a href="http://creativecommons.org/licenses/by/4.0/legalcode">Creative Commons Attribution 4.0 International Licence.</a>'
@@ -1931,6 +1958,7 @@
 			// scale bar
 			// attribution
 			// gps
+			// search box
 			///////////////////////////
 			
 			// Define the custom zoom display
@@ -1971,6 +1999,9 @@
 				}
 			  })
 			);
+
+			// search box
+			map.addControl(searchControl);
 			
 
         </script>
