@@ -529,6 +529,7 @@
 			const provider = new GeoSearch.OpenStreetMapProvider({
 				params: {
 					countrycodes: 'au', // limit search results to australia
+					addressdetails: 1
 				}
 			});
 
@@ -540,7 +541,25 @@
 				autoClose: true,
 				searchLabel: 'Enter address or feature name',
 				notFoundMessage: 'Sorry, that address could not be found.',
-				keepResult: true
+				keepResult: true,
+				autoComplete: true,
+				autoCompleteDelay: 500, // 500ms delay before autocomplete search
+				popupFormat: ({ query, result }) => {
+					// Access the raw response for additional data
+					const response = result.raw;
+
+					// Create custom popup content
+					return `
+						<strong>${response.name || response.display_name}</strong>
+						<p>
+							${response.address.house_number ? response.address.house_number + ' ' : ''}
+							${response.address.road || ''}
+							${response.address.suburb || ''}
+							${response.address.state || ''} ${response.address.postcode || ''}
+						</p>
+						<p><em>Place type:</em> ${response.type + '/' + response.class  || 'N/A'}</p>
+					`;
+				}
 			});	
 
 
