@@ -642,6 +642,10 @@
 			const basemap_vectortile_esri_hillshade = L.esri.Vector.vectorTileLayer(
 				"https://basemaps.arcgis.com/arcgis/rest/services/World_Hillshade_v2/VectorTileServer"
 			);
+			// vector tile esri osm
+			const basemap_vectortile_esri_osm = L.esri.Vector.vectorTileLayer(
+				"https://basemaps.arcgis.com/arcgis/rest/services/OpenStreetMap_v2/VectorTileServer"
+			);
 			
 			// vector tile open free map - https://openfreemap.org/quick_start/
 			const basemap_vectortile_ofm_liberty = L.maplibreGL({
@@ -1646,6 +1650,7 @@
 						{ label: 'SIX imagery', layer: basemap_raster_ss_nsw_imagery },
 						{ label: 'Google imagery', layer: basemap_raster_google_imagery },
 						{ label: 'ESRI topo raster', layer: basemap_raster_esri_topo },
+						{ label: 'ESRI OSM', layer: basemap_vectortile_esri_basemap },
 						{ label: 'OpenFreeMaps', layer: basemap_vectortile_ofm_liberty },
 						{ label: 'OpenTopoMap', layer: basemap_raster_open_topo_maps },
 					]
