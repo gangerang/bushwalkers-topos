@@ -180,13 +180,6 @@
 		<!-- Leaflet plugin for geopackage support -->
 		<script src="https://unpkg.com/@ngageoint/leaflet-geopackage@4.1.3/dist/leaflet-geopackage.min.js"></script>
 
-		<!-- Maplibre GL -->
-		<link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
-		<script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
-
-		<!-- Maplibre GL Leaflet  -->
-		<script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js"></script>
-
 		<!-- leaflet-geosearch  https://github.com/smeijer/leaflet-geosearch -->
 		<link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@4.0.0/dist/geosearch.css" />
 		<script src="https://unpkg.com/leaflet-geosearch@4.0.0/dist/geosearch.umd.js"></script>
@@ -707,7 +700,7 @@
 			);
 			
 			// vector tile open free map - https://openfreemap.org/quick_start/
-			const basemap_vectortile_ofm_liberty = L.maplibreGL({
+			const basemap_vectortile_ofm_liberty = L.esri.Vector.maplibreGLJSLayer({
 				style: 'https://tiles.openfreemap.org/styles/liberty',
 				attribution: attrib_ofm
 			});
