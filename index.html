@@ -177,7 +177,7 @@
 		<!-- Leaflet plugin for vector tiles support -->
 		<script type="text/javascript"  src="https://unpkg.com/leaflet.vectorgrid@1.2.0"></script>
 
-		<!-- Leaflet plugin for geopackage support -->
+		<!-- Leaflet plugin for geopackage support https://github.com/ngageoint/leaflet-geopackage -->
 		<script src="https://unpkg.com/@ngageoint/leaflet-geopackage@4.1.3/dist/leaflet-geopackage.min.js"></script>
 
 		<!-- leaflet-geosearch  https://github.com/smeijer/leaflet-geosearch -->
@@ -251,10 +251,11 @@
 				return layersArray;
 			}
 
-			// function for creation of geojson layers from a file url
-			function createGeoJsonLayer({ url, popupField = 'name', styleOptions = {} }) {
-				// Define the GeoJSON layer with the specified popup and style
+			// Function for creation of GeoJSON layers from a file URL with extended options
+			function createGeoJsonLayer({ url, popupField = 'name', styleOptions = {}, layerOptions = {} }) {
+				// Define the GeoJSON layer with the specified popup, style, and standard layer options
 				const geoJsonLayer = L.geoJSON(null, {
+					...layerOptions, // Include standard layer properties such as minZoom, maxZoom, attribution, etc.
 					onEachFeature: function (feature, layer) {
 						if (feature.properties && feature.properties[popupField]) {
 							layer.bindPopup(feature.properties[popupField]);
@@ -274,7 +275,7 @@
 				fetch(url)
 					.then(response => response.json())
 					.then(data => {
-					geoJsonLayer.addData(data); // Add data to the layer
+						geoJsonLayer.addData(data); // Add data to the layer
 					})
 					.catch(error => console.error("Error loading GeoJSON:", error));
 
@@ -961,11 +962,12 @@
 			});
 
 			// vector spatial services nsw historic aerial photos
-
+			// this is too slow to load is isn't used (when all are loaded)
 			const vector_ss_nsw_historic_aerial_photos = L.esri.featureLayer({
 				url: "https://portal.spatial.nsw.gov.au/agolproxy/Yb2UeNWvQYEwyYDl/arcgis/rest/services/Historical_Image_Index_view/FeatureServer/0",
 				// where: "image_name='CAC_28_1376'",
 				where: "key_diagra='91301930'",
+				returnCentroid: true,
 				// onEachFeature: function (feature, layer) {
 				// 	// Check if the layer is a polygon
 				// 	if (layer instanceof L.Polygon) {
@@ -981,6 +983,15 @@
 				// },
 				fill: false,
 				// stroke: false
+			});
+
+			// vector spatial services nsw historic aerial photos - based on static geojson just of sydney
+			const vector_ss_nsw_historic_aerial_photos_static_sydney = createGeoJsonLayer({
+				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/ss_nsw_historic_aerial_imagery_index_sydney_extract.geojson',
+				layerOptions: {
+					minZoom: 15,
+					attribution: attrib_nsw_ss,
+    			}
 			});
 
 			// vector wnsw schedule 1 and 2 catchment boundaries
@@ -1703,6 +1714,17 @@
 			bindPopupToLayer(vector_ss_state_electoral, 'State seat: {districtname}');
 			bindPopupToLayer(vector_ss_federal_electoral, 'Federal seat: {divisionname}');
 			bindPopupToLayer(vector_env_wilderness, '{NAME} Wilderness');
+			bindPopupToLayer(vector_ss_nsw_historic_aerial_photos_static_sydney,
+					`Date: {date}<br>
+					Scale/Height: {scale} @ {ahdz}m<br>
+					Sheet: {sheetname} - {sheetnum}<br>
+					Run/Film/Fram: {run}/{film}/{frame}<br>
+					Name: {image_name}<br>
+					<a href="{thumb_file_url}" target="_blank">Preview</a>					
+					<a href="{full_file_url}" target="_blank">Download</a><br>
+					<img src="{thumb_file_url}" alt="Image" style="width:100%; max-height:500px; object-fit:contain; margin-top:5px;">				
+					`
+			);
 
 			///////////////////////////
 			// layer control 
@@ -1901,6 +1923,7 @@
 						collapsed: true,
 						children: [
 							{ label: 'Geoscience Aust.', layer: vector_ga_historic_aerial_photos },
+							{ label: 'Sydney', layer: vector_ss_nsw_historic_aerial_photos_static_sydney },
 							// { label: 'Historic SS NSW aerial photo points', layer: vector_ss_nsw_historic_aerial_photos },
 						]
 					},
