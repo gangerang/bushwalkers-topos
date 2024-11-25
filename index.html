@@ -184,6 +184,11 @@
 		<link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@4.0.0/dist/geosearch.css" />
 		<script src="https://unpkg.com/leaflet-geosearch@4.0.0/dist/geosearch.umd.js"></script>
 
+		<!-- Leaflet.MetricGrid https://github.com/bill-chadwick/Leaflet.MetricGrid -->
+		<script src="https://cdn.jsdelivr.net/gh/bill-chadwick/Leaflet.MetricGrid@master/Leaflet.MetricGrid.min.js"></script>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
+
         <script type="text/javascript">
 
 			// Define map with initial view
@@ -1335,6 +1340,48 @@
 			});
 
 			///////////////////////////
+			// utm grid
+			// zone 49-56s to cover australia
+			///////////////////////////	
+
+			function createUTMGridLayerGroup(zones) {
+				const layerGroup = L.layerGroup();
+
+				zones.forEach(({ zone, isSouthern, color }) => {
+					const latLonClipBounds = isSouthern
+						? [[-45, -180 + (zone - 1) * 6], [-10, -180 + zone * 6]]
+						: [[0, -180 + (zone - 1) * 6], [80, -180 + zone * 6]];
+
+					const gridLayer = L.utmGrid(zone, isSouthern, {
+						color: color || '#000', // Default color is black if not specified
+						latLonClipBounds: latLonClipBounds,
+						drawClip: false,
+						showAxisLabels: [100, 1000, 10000, 100000],
+						showSquareLabels: [100000], // Label 100km grid squares
+						showAxis100km: true
+					});
+
+					layerGroup.addLayer(gridLayer);
+				});
+
+				return layerGroup;
+			}
+
+			// Example usage:
+			const utmZones = [
+				{ zone: 49, isSouthern: true, color: '#800' },
+				{ zone: 50, isSouthern: true, color: '#008' },
+				{ zone: 51, isSouthern: true, color: '#800' },
+				{ zone: 52, isSouthern: true, color: '#008' },
+				{ zone: 53, isSouthern: true, color: '#800' },
+				{ zone: 54, isSouthern: true, color: '#008' },
+				{ zone: 55, isSouthern: true, color: '#800' },
+				{ zone: 56, isSouthern: true, color: '#008' }
+			];
+
+			const utmGridLayerGroup = createUTMGridLayerGroup(utmZones);
+
+			///////////////////////////
 			// nsw historic imagery
 			///////////////////////////
 		
@@ -1967,6 +2014,13 @@
 							{ label: 'Public hot run', layer: basemap_raster_strava_public_hot_run },
 						]
 					},
+					{
+						label: 'Map grids',
+						collapsed: true,
+						children: [
+							{ label: 'UTM z49-56s', layer: utmGridLayerGroup },
+						]
+					},
 				]
 			};
 			
@@ -2097,7 +2151,6 @@
 
 			// search box
 			map.addControl(searchControl);
-			
 
         </script>
     </body>
