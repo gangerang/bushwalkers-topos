@@ -36,3 +36,4 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - OSM seach function - new search tool which returns results from OSM for Australia. Uses leaflet-geosearch plugin and OSM Nominatim api
 - add - NSW vector topo basemap - new basemap for NSW spatial services vector tile topo map. Combined with esri hillshade
 - add - Sydney historic imagery photos - new layer for historic imagery points for sydney. A subset of the NSW dataset from Spatial Services served as a geopackage
+- add - Crown road sales - new layers for proposed crown road sales, both current and past

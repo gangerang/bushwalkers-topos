@@ -955,8 +955,16 @@
 				}
 			});
 
+			// vector crown road sales - active
+			const vector_crown_road_sales_active = createGeoJsonLayer({
+				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/crown_road_sales_active.geojson'
+			});
 
-			
+			// vector crown road sales - inactive
+			const vector_crown_road_sales_inactive = createGeoJsonLayer({
+				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/crown_road_sales_inactive.geojson'
+			});
+
 			// vector ga historic aerial photos
 			const vector_ga_historic_aerial_photos = L.esri.featureLayer({
 				url: "https://services1.arcgis.com/wfNKYeHsOyaFyPw3/ArcGIS/rest/services/HistoricalAerialPhotography_AGOL_DIST_gdb/FeatureServer/0",
@@ -1775,26 +1783,58 @@
 			bindPopupToLayer(vector_ss_federal_electoral, 'Federal seat: {divisionname}');
 			bindPopupToLayer(vector_env_wilderness, '{NAME} Wilderness');
 			bindPopupToLayer(vector_ss_nsw_historic_aerial_photos_static_sydney,
-					`Date: {date}<br>
-					Scale/Height: {scale} @ {ahdz}m<br>
-					Sheet: {sheetname} - {sheetnum}<br>
-					Run/Film/Fram: {run}/{film}/{frame}<br>
-					Name: {image_name}<br>
-					<a href="{thumb_file_url}" target="_blank">Preview</a>					
-					<a href="{full_file_url}" target="_blank">Download</a><br>
-					<img src="{thumb_file_url}" alt="Image" style="width:100%; max-height:500px; object-fit:contain; margin-top:5px;">				
-					`
+				`Date: {date}<br>
+				Scale/Height: {scale} @ {ahdz}m<br>
+				Sheet: {sheetname} - {sheetnum}<br>
+				Run/Film/Fram: {run}/{film}/{frame}<br>
+				Name: {image_name}<br>
+				<a href="{thumb_file_url}" target="_blank">Preview</a>					
+				<a href="{full_file_url}" target="_blank">Download</a><br>
+				<img src="{thumb_file_url}" alt="Image" style="width:100%; max-height:500px; object-fit:contain; margin-top:5px;">				
+				`
 			);
 			bindPopupToLayer(vector_ss_nsw_historic_aerial_photos_static_sydney_gpkg,
-					`Date: {date}<br>
-					Scale/Height: {scale} @ {ahdz}m<br>
-					Sheet: {sheetname} - {sheetnum}<br>
-					Run/Film/Fram: {run}/{film}/{frame}<br>
-					Name: {image_name}<br>
-					<a href="{thumb_file_url}" target="_blank">Preview</a>					
-					<a href="{full_file_url}" target="_blank">Download</a><br>
-					<img src="{thumb_file_url}" alt="Image" style="width:100%; max-height:500px; object-fit:contain; margin-top:5px;">				
-					`
+				`Date: {date}<br>
+				Scale/Height: {scale} @ {ahdz}m<br>
+				Sheet: {sheetname} - {sheetnum}<br>
+				Run/Film/Fram: {run}/{film}/{frame}<br>
+				Name: {image_name}<br>
+				<a href="{thumb_file_url}" target="_blank">Preview</a>					
+				<a href="{full_file_url}" target="_blank">Download</a><br>
+				<img src="{thumb_file_url}" alt="Image" style="width:100%; max-height:500px; object-fit:contain; margin-top:5px;">				
+				`
+			);
+			bindPopupToLayer(vector_crown_road_sales_active,
+				`Proposed crown road sale - current<br>
+				{lga}<br>
+				{locality}<br>
+				id: {advert_id} cluster: {cluster}<br>
+				ref: {file_ref}<br>
+				advertised: {advert_date} to {expiry_date}<br>
+				contact: {contact_email}<br><br>
+				{description}
+				<a href="https://roads.crownland.nsw.gov.au/image-download?cluster_id={cluster_id}" target="_blank">
+					<img src="https://roads.crownland.nsw.gov.au/image-download?cluster_id={cluster_id}" 
+						alt="Image" 
+						style="width:100%; max-height:1000px; object-fit:contain; margin-top:5px;">
+				</a>
+				`
+			);
+			bindPopupToLayer(vector_crown_road_sales_inactive,
+			`Proposed crown road sale - past<br>
+				{lga}<br>
+				{locality}<br>
+				id: {advert_id} cluster: {cluster}<br>
+				ref: {file_ref}<br>
+				advertised: {advert_date} to {expiry_date}<br>
+				contact: {contact_email}<br><br>
+				{description}
+				<a href="https://roads.crownland.nsw.gov.au/image-download?cluster_id={cluster_id}" target="_blank">
+					<img src="https://roads.crownland.nsw.gov.au/image-download?cluster_id={cluster_id}" 
+						alt="Image" 
+						style="width:100%; max-height:1000px; object-fit:contain; margin-top:5px;">
+				</a>
+				`
 			);
 
 			///////////////////////////
@@ -1987,6 +2027,8 @@
 							{ label: 'Licences', layer: vector_env_crownland_licences },
 							{ label: 'Enclosure permits', layer: vector_env_crownland_enclosure },
 							{ label: 'Under disposal', layer: vector_env_crownland_all_disposal },
+							{ label: 'Road sales - current', layer: vector_crown_road_sales_active },
+							{ label: 'Road sales - past', layer: vector_crown_road_sales_inactive },
 						]
 					},
 					{
