@@ -994,6 +994,19 @@
     			}
 			});
 
+			const vector_ss_nsw_historic_aerial_photos_static_sydney_gpkg = L.geoPackageFeatureLayer([], {
+				geoPackageUrl: 'https://gangerang-geodata.s3.us-west-2.amazonaws.com/ss_nsw_historic_aerial_imagery_index_sydney_extract.gpkg',
+				layerName: 'v_ss_historical_image_index_copy',
+				style: {
+					radius: 6, // Radius for circle markers
+					fillColor: "#ff7800", // Fill color
+					color: "#000", // Border color
+					weight: 1, // Border width
+					opacity: 1, // Border opacity
+					fillOpacity: 0.8 // Fill opacity
+				}
+			});
+
 			// vector wnsw schedule 1 and 2 catchment boundaries
 			const vector_wnsw_catchment_schedule_1 = createGeoJsonLayer({
 				url: "https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/wnsw_schedule_1.geojson",
@@ -1725,6 +1738,17 @@
 					<img src="{thumb_file_url}" alt="Image" style="width:100%; max-height:500px; object-fit:contain; margin-top:5px;">				
 					`
 			);
+			bindPopupToLayer(vector_ss_nsw_historic_aerial_photos_static_sydney_gpkg,
+					`Date: {date}<br>
+					Scale/Height: {scale} @ {ahdz}m<br>
+					Sheet: {sheetname} - {sheetnum}<br>
+					Run/Film/Fram: {run}/{film}/{frame}<br>
+					Name: {image_name}<br>
+					<a href="{thumb_file_url}" target="_blank">Preview</a>					
+					<a href="{full_file_url}" target="_blank">Download</a><br>
+					<img src="{thumb_file_url}" alt="Image" style="width:100%; max-height:500px; object-fit:contain; margin-top:5px;">				
+					`
+			);
 
 			///////////////////////////
 			// layer control 
@@ -1923,7 +1947,8 @@
 						collapsed: true,
 						children: [
 							{ label: 'Geoscience Aust.', layer: vector_ga_historic_aerial_photos },
-							{ label: 'Sydney', layer: vector_ss_nsw_historic_aerial_photos_static_sydney },
+							// { label: 'Sydney', layer: vector_ss_nsw_historic_aerial_photos_static_sydney },
+							{ label: 'Sydney', layer: vector_ss_nsw_historic_aerial_photos_static_sydney_gpkg },
 							// { label: 'Historic SS NSW aerial photo points', layer: vector_ss_nsw_historic_aerial_photos },
 						]
 					},
