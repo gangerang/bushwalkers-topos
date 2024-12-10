@@ -1373,6 +1373,23 @@
 				}
 			});
 
+			// nsw trig survey map
+			// 1912 from nla via geoserver
+			// const raster_nla_trig_progress_sketch_1912 =  new L.TileLayer.WMTS('https://geoserver.cloud.al3x.au/geoserver/geodata/gwc/service/wmts', {
+			// 	layer: 'geodata:nsw-trigs_1912_nla-233482781_jpeg',
+			// 	format: 'image/png',
+			// 	//transparent: true,
+			// 	version: '1.3.0',
+			// });
+			const raster_nla_trig_progress_sketch_1912 = L.tileLayer.wms('https://geoserver.cloud.al3x.au/geoserver/geodata/wms?', {
+				layers: 'geodata:nsw-trigs_1912_nla-233482781_jpeg',
+				format: 'image/png',
+				transparent: true,
+				version: '1.3.0',
+				maxNativeZoom: 10,
+			});
+
+
 			///////////////////////////
 			// utm grid
 			// zone 49-56s to cover australia
@@ -2017,9 +2034,16 @@
 						children: [
 							{ label: 'Named rivers', layer: vector_ss_waterTheme_namedRivers },
 							{ label: 'Canyons', layer: canyonLayerGroup },
-							{ label: 'Trig stations', layer: vector_ss_trig },
 							{ label: 'Stream gauges ESRI', layer: vector_esri_stream_gauge },			
 							{ label: 'NSW Stream gauges geojson', layer: vector_hosted_stream_heights_nsw_geojson },			
+						]
+					},
+					{
+						label: 'Trigs',
+						collapsed: true,
+						children: [
+							{ label: 'Trig stations', layer: vector_ss_trig },
+							{ label: 'Trig progress sketch 1912 ', layer: raster_nla_trig_progress_sketch_1912 },
 						]
 					},
 					{
@@ -2152,6 +2176,7 @@
 				{ label: 'Public hot all', layer: basemap_raster_strava_public_hot_all },
 				{ label: 'Public hot run', layer: basemap_raster_strava_public_hot_run },
 				{ label: 'NSW SVTM veg class and pct layers', layer: basemap_raster_env_svtm_veg_group },
+				{ label: 'Trig progress sketch 1912 ', layer: raster_nla_trig_progress_sketch_1912 },
 				raster_ss_historic_imagery_list,
 				raster_env_fesm_wms_list,
 			);

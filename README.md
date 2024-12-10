@@ -38,3 +38,4 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - Sydney historic imagery photos - new layer for historic imagery points for sydney. A subset of the NSW dataset from Spatial Services served as a geopackage
 - add - Crown road sales - new layers for proposed crown road sales, both current and past
 - add - authenticated strava heatmap layers - based on authenticated data served via a proxy, providing a higher resolution to public version
+- add - 1912 trig progress map - historic map of trig survey progress as of 1912, via georeferenced map from NLA surved via geoserver
