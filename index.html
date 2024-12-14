@@ -1641,6 +1641,26 @@
 			const nlaParishWestmorelandLayers = createNlaWmsReferences(nlaParishWestmorelandWmsList);
 			const nlaParishCookLayers = createNlaWmsReferences(nlaParishCookWmsList);
 			
+
+			///////////////////////////
+			// 100k topo maps from ga
+			// served via geoserver after being cropped and processed
+			///////////////////////////
+
+			const geoserver_topo_100k_config = [
+				{ label: "100k 8930 katoomba", layerid: 'topo_100k:8930_katoomba'},
+				{ label: "100k 8931 wallerawang", layerid: 'topo_100k:8931_wallerawang'},
+				{ label: "100k 8932 mount pomany", layerid: 'topo_100k:8932_mount_pomany'},
+				{ label: "100k 9030 penrith", layerid: 'topo_100k:9030_penrith'},
+				{ label: "100k 9031 st albans", layerid: 'topo_100k:9031_st_albans'},
+				{ label: "100k 9032 howes valley", layerid: 'topo_100k:9032_howes_valley'},
+			];
+
+			const raster_geoserver_topo_100k = createWmsLayers(
+				'https://geoserver.cloud.al3x.au/geoserver/topo_100k/wms',
+				geoserver_topo_100k_config
+			);
+
 			///////////////////////////
 			// functions to display canyons from ropewiki
 			// it needs to have layer created first and then call function to add additional points
@@ -1956,6 +1976,14 @@
 								collapsed: true,
 								children: [
 									...nlaMilitary253440Layers
+								]
+							},
+							{
+								label: '1:100k',
+								selectAllCheckbox: true,
+								collapsed: true,
+								children: [
+									...raster_geoserver_topo_100k
 								]
 							},
 						]
