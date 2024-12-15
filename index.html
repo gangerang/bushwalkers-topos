@@ -260,6 +260,26 @@
 				return layersArray;
 			}
 
+			// function to create many wmts layers. Works differently from createWmsLayers
+			function createWmtsLayers(config) {
+				const { wmtsUrl, tilematrixSet, version, layersConfig, options = {} } = config;
+				const layersArray = [];
+
+				layersConfig.forEach(item => {
+					const { label, layerid } = item; // Ensure `layerId` is used correctly
+					const layer = new L.TileLayer.WMTS(wmtsUrl, {
+						layer: layerid, // Pass the layer ID here
+						tilematrixSet: tilematrixSet,
+						format: options.format || 'image/png',
+						version: version || '1.1.0',
+						...options, // Spread additional options
+					});
+					layersArray.push({ label, layer });
+				});
+
+				return layersArray;
+			}
+
 			// Function for creation of GeoJSON layers from a file URL with extended options
 			function createGeoJsonLayer({ url, popupField = 'name', styleOptions = {}, layerOptions = {} }) {
 				// Define the GeoJSON layer with the specified popup, style, and standard layer options
@@ -1649,6 +1669,7 @@
 
 			const geoserver_topo_100k_config = [
 				{ label: "100k 8930 katoomba", layerid: 'topo_100k:8930_katoomba'},
+				{ label: "100k 8930 katoomba wm", layerid: 'topo_100k:8930_katoomba_webmerc'},
 				{ label: "100k 8931 wallerawang", layerid: 'topo_100k:8931_wallerawang'},
 				{ label: "100k 8932 mount pomany", layerid: 'topo_100k:8932_mount_pomany'},
 				{ label: "100k 9030 penrith", layerid: 'topo_100k:9030_penrith'},
@@ -1656,10 +1677,13 @@
 				{ label: "100k 9032 howes valley", layerid: 'topo_100k:9032_howes_valley'},
 			];
 
-			const raster_geoserver_topo_100k = createWmsLayers(
-				'https://geoserver.cloud.al3x.au/geoserver/topo_100k/wms',
-				geoserver_topo_100k_config
-			);
+			const raster_geoserver_topo_100k = createWmtsLayers({
+				wmtsUrl: 'https://geoserver.cloud.al3x.au/geoserver/topo_100k/gwc/service/wmts',
+				tilematrixSet: 'EPSG:900913',
+				version: '1.1.0',
+				layersConfig: geoserver_topo_100k_config
+			});
+
 
 			///////////////////////////
 			// functions to display canyons from ropewiki
@@ -1983,7 +2007,7 @@
 								selectAllCheckbox: true,
 								collapsed: true,
 								children: [
-									...raster_geoserver_topo_100k
+									...raster_geoserver_topo_100k,
 								]
 							},
 						]
