@@ -1703,6 +1703,43 @@
 				layersConfig: geoserver_topo_100k_config
 			});
 
+			const geoserver_topo_50k_config = [
+				{ label: '50k 8932-4 Growee Gulph', layerid: 'topo_50k:8932_4_Growee_Gulph' },
+				{ label: '50k 8932-1 Mount Pomany', layerid: 'topo_50k:8932_1_Mount_Pomany' },
+				{ label: '50k 9032-4 Glen Gallic', layerid: 'topo_50k:9032_4_Glen_Gallic' },
+				{ label: '50k 9032-1 Doyles Creek', layerid: 'topo_50k:9032_1_Doyles_Creek' },
+				{ label: '50k 8932-3 Olinda', layerid: 'topo_50k:8932_3_Olinda' },
+				{ label: '50k 8932-2 Coricudgy', layerid: 'topo_50k:8932_2_Coricudgy' },
+				{ label: '50k 9032-3 Putty', layerid: 'topo_50k:9032_3_Putty' },
+				{ label: '50k 9032-2 Howes Valley', layerid: 'topo_50k:9032_2_Howes_Valley' },
+				{ label: '50k 8931-4 Glen Alice', layerid: 'topo_50k:8931_4_Glen_Alice' },
+				{ label: '50k 8931-1 Glen Davis', layerid: 'topo_50k:8931_1_Glen_Davis' },
+				{ label: '50k 9031-4 Mellong', layerid: 'topo_50k:9031_4_Mellong' },
+				{ label: '50k 9031-1 Bala', layerid: 'topo_50k:9031_1_Bala' },
+				{ label: '50k 9031-3 Colo', layerid: 'topo_50k:9031_3_Colo' },
+				{ label: '50k 8829-1 Porters Retreat', layerid: 'topo_50k:8829_1_Porters_Retreat' },
+				{ label: '50k 8929-1 Burragorang', layerid: 'topo_50k:8929_1_Burragorang' },
+				{ label: '50k 9029-1 Campbelltown', layerid: 'topo_50k:9029_1_Campbelltown' },
+				{ label: '50k 8829-2 Taralga', layerid: 'topo_50k:8829_2_Taralga' },
+				{ label: '50k 8929-3 Bullio', layerid: 'topo_50k:8929_3_Bullio' },
+				{ label: '50k 8929-2 Mittagong', layerid: 'topo_50k:8929_2_Mittagong' },
+				{ label: '50k 9029-3 Avon', layerid: 'topo_50k:9029_3_Avon' },
+				{ label: '50k 8828-1 Towrang', layerid: 'topo_50k:8828_1_Towrang' },
+				{ label: '50k 8928-4 Wingello', layerid: 'topo_50k:8928_4_Wingello' },
+				{ label: '50k 8928-1 Moss Vale', layerid: 'topo_50k:8928_1_Moss_Vale' },
+				{ label: '50k 9028-4 Robertson', layerid: 'topo_50k:9028_4_Robertson' },
+				{ label: '50k 8828-2 Bungonia', layerid: 'topo_50k:8828_2_Bungonia' },
+				{ label: '50k 8928-3 Touga', layerid: 'topo_50k:8928_3_Touga' },
+				{ label: '50k 8928-2 Yalwal', layerid: 'topo_50k:8928_2_Yalwal' },
+			];
+
+			const raster_geoserver_topo_50k = createWmtsLayers({
+				wmtsUrl: 'https://geoserver.cloud.al3x.au/geoserver/topo_50k/gwc/service/wmts',
+				tilematrixSet: 'EPSG:900913',
+				version: '1.1.0',
+				layersConfig: geoserver_topo_50k_config
+			});
+
 
 			///////////////////////////
 			// functions to display canyons from ropewiki
@@ -2022,6 +2059,14 @@
 								]
 							},
 							{
+								label: '1:50k',
+								selectAllCheckbox: true,
+								collapsed: true,
+								children: [
+									...raster_geoserver_topo_50k,
+								]
+							},
+							{
 								label: '1:100k',
 								selectAllCheckbox: true,
 								collapsed: true,
@@ -2251,6 +2296,7 @@
 				raster_ss_historic_imagery_list,
 				raster_env_fesm_wms_list,
 				raster_geoserver_topo_100k,
+				raster_geoserver_topo_50k,
 			);
 
 			// Attach event listener to the opacity slider

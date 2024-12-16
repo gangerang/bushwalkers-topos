@@ -40,3 +40,4 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - authenticated strava heatmap layers - based on authenticated data served via a proxy, providing a higher resolution to public version
 - add - 1912 trig progress map - historic map of trig survey progress as of 1912, via georeferenced map from NLA surved via geoserver
 - add - 100k topo maps - older topo maps from ga at 100k scale. tiffs stiched seamlessly and served via geoserver
+- add - 50k topo maps - older topo maps from ga at 50k scale. tiffs stiched seamlessly and served via geoserver
