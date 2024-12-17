@@ -196,7 +196,11 @@
         <script type="text/javascript">
 
 			// Define map with initial view
-            const map = L.map('map').setView([-33.754, 150.270], 10);
+            const map = L.map('map', {
+				zoomDelta: 0.5,
+				zoomSnap: 0.5,
+				wheelPxPerZoomLevel: 50
+			}).setView([-33.754, 150.270], 10);
 
 			// function to create the NLA Map Search layers based on a list
 			
