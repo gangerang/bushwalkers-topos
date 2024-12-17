@@ -1744,6 +1744,16 @@
 				layersConfig: geoserver_topo_50k_config
 			});
 
+			///////////////////////////
+			// Himawari-9 satellite 
+			///////////////////////////
+
+			const raster_ga_himawari = L.tileLayer.wms('https://hotspots.dea.ga.gov.au/geoserver/wms?', {
+						layers: 'public:himawari9_mosaic',
+						format: 'image/png',
+						transparent: true,
+						version: '1.3.0',
+			});	
 
 			///////////////////////////
 			// functions to display canyons from ropewiki
@@ -2015,6 +2025,7 @@
 						{ label: 'ESRI basemap vector', layer: basemap_vectortile_esri_basemap },
 						{ label: 'GA NATMAP 1:250k 2008', layer: basemap_raster_ga_natmap_250k_2008 },
 						{ label: 'GA Topo', layer: basemap_raster_ga_topo_basemap },
+						{ label: 'GA Himawari', layer: raster_ga_himawari },
 						{ label: 'ESRI Hillshade raster', layer: basemap_raster_esri_hillshade },
 						// { label: 'ESRI Contours vector tiles', layer: basemap_vectortile_esri_contours },
 						{ label: 'ESRI landsat 8', layer: basemap_raster_esri_landsat8 },
