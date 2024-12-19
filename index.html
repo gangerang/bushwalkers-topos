@@ -1757,6 +1757,39 @@
 			});	
 
 			///////////////////////////
+			// rainviewer weather radar 
+			///////////////////////////
+			
+			let raster_rv_weather_radar = L.tileLayer('', {
+				attribution: 'Weather data © RainViewer',
+				opacity: 0.8
+			});
+
+
+			fetch('https://tilecache.rainviewer.com/api/maps.json')
+            .then(response => response.json())
+            .then(times => {
+                if (times.length === 0) {
+                    console.error("No times available for the radar layer.");
+                    return;
+                }
+
+                // Get the most recent timestamp
+                const ts = times[times.length - 1];
+
+                // Construct the radar tile URL
+                const radarTileUrl = `https://tilecache.rainviewer.com/v2/radar/${ts}/512/{z}/{x}/{y}/2/1_1.png`;
+
+                // Update the radar layer with the correct URL
+                raster_rv_weather_radar.setUrl(radarTileUrl);
+            })
+            .catch(error => {
+                console.error("Failed to fetch radar data:", error);
+            });
+
+
+
+			///////////////////////////
 			// functions to display canyons from ropewiki
 			// it needs to have layer created first and then call function to add additional points
 			// otherwise layer will fail creating as no data returned
@@ -2241,6 +2274,15 @@
 							{ label: 'Public hot run', layer: basemap_raster_strava_public_hot_run },
 						]
 					},
+					{
+						label: 'Weather',
+						collapsed: true,
+						children: [
+							{ label: 'Rain Viewer radar', layer: raster_rv_weather_radar },
+							{ label: 'GA Himawari', layer: raster_ga_himawari },
+							]
+					},
+					
 					{
 						label: 'Map grids',
 						collapsed: true,
