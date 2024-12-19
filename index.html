@@ -2299,6 +2299,15 @@
 				collapsed: false
 			}).addTo(map);
 
+			// Track layer toggles with Umami
+			map.on('overlayadd', function (event) {
+				umami.track(`Layer added: ${event.name}`);
+			});
+
+			map.on('overlayremove', function (event) {
+				umami.track(`Layer removed: ${event.name}`);
+			});
+
 			// load canyon layer from ropewiki
 			addCanyonsToLayerGroup(canyonLayerGroup);
 
