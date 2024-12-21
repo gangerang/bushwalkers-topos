@@ -777,15 +777,22 @@
 			// vector lots
 			const vector_ss_lots = L.esri.featureLayer({
 				url: "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Land_Parcel_Property_Theme/FeatureServer/8",
-				simplifyFactor: 0.5,
-				precision: 4,
+				// simplifyFactor: 0.5,
+				// precision: 4,
+				attribution: attrib_nsw_ss
+			});
+			// vector roads
+			const vector_ss_roads = L.esri.featureLayer({
+				url: "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Land_Parcel_Property_Theme/FeatureServer/6",
+				// simplifyFactor: 0.5,
+				// precision: 4,
 				attribution: attrib_nsw_ss
 			});
 			// vector easements
 			const vector_ss_easements = L.esri.featureLayer({
 				url: "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Land_Parcel_Property_Theme/FeatureServer/9",
-				simplifyFactor: 0.5,
-				precision: 4,
+				// simplifyFactor: 0.5,
+				// precision: 4,
 				attribution: attrib_nsw_ss,
 				style: () => {
 					return {
@@ -865,8 +872,8 @@
 			// vector government property index gpi
 			const vector_env_gpi = L.esri.featureLayer({
 				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/Planning_Portal_GPI/MapServer/302",
-				simplifyFactor: 0.5,
-				precision: 4,
+				// simplifyFactor: 0.5,
+				// precision: 4,
 				attribution: attrib_nsw_planning,
 				style: () => {
 					return {
@@ -877,8 +884,8 @@
 			// vector government property index gpi ex crown land
 			const vector_env_gpi_ex_crown = L.esri.featureLayer({
 				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/Planning_Portal_GPI/MapServer/302",
-				simplifyFactor: 0.5,
-				precision: 4,
+				// simplifyFactor: 0.5,
+				// precision: 4,
 				attribution: attrib_nsw_planning,
 				where: "SOURCE='GPR_OPENDATA_LOT'",
 				style: () => {
@@ -902,8 +909,8 @@
 			// vector crown land all
 			const vector_env_crownland_all = L.esri.featureLayer({
 				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/Planning_Portal_Crown_Land/MapServer/258",
-				simplifyFactor: 0.5,
-				precision: 4,
+				// simplifyFactor: 0.5,
+				// precision: 4,
 				attribution: attrib_nsw_planning,
 				style: () => {
 					return {
@@ -921,8 +928,8 @@
 			// 4 = Granted Claim Awaiting Transfer
 			const vector_env_crownland_all_disposal = L.esri.featureLayer({
 				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/Planning_Portal_Crown_Land/MapServer/258",
-				simplifyFactor: 0.5,
-				precision: 4,
+				// simplifyFactor: 0.5,
+				// precision: 4,
 				attribution: attrib_nsw_planning,
 				where: "DISPOSALSTATUS in (2,3,4)",
 				style: () => {
@@ -935,8 +942,8 @@
 			// vector crown land - reserves
 			const vector_env_crownland_reserves = L.esri.featureLayer({
 				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/Planning_Portal_Crown_Land/MapServer/312",
-				simplifyFactor: 0.5,
-				precision: 4,
+				// simplifyFactor: 0.5,
+				// precision: 4,
 				attribution: attrib_nsw_planning,
 				style: () => {
 					return {
@@ -948,8 +955,8 @@
 			// vector crown land - leases
 			const vector_env_crownland_leases = L.esri.featureLayer({
 				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/Planning_Portal_Crown_Land/MapServer/313",
-				simplifyFactor: 0.5,
-				precision: 4,
+				// simplifyFactor: 0.5,
+				// precision: 4,
 				attribution: attrib_nsw_planning,
 				style: () => {
 					return {
@@ -961,8 +968,8 @@
 			// vector crown land - licences
 			const vector_env_crownland_licences = L.esri.featureLayer({
 				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/Planning_Portal_Crown_Land/MapServer/314",
-				simplifyFactor: 0.5,
-				precision: 4,
+				// simplifyFactor: 0.5,
+				// precision: 4,
 				attribution: attrib_nsw_planning,
 				style: () => {
 					return {
@@ -974,8 +981,8 @@
 			// vector crown land - enclosure permit
 			const vector_env_crownland_enclosure = L.esri.featureLayer({
 				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/Planning_Portal_Crown_Land/MapServer/315",
-				simplifyFactor: 0.5,
-				precision: 4,
+				// simplifyFactor: 0.5,
+				// precision: 4,
 				attribution: attrib_nsw_planning,
 				style: () => {
 					return {
@@ -2216,6 +2223,7 @@
 						collapsed: true,
 						children: [
 							{ label: 'Lots', layer: vector_ss_lots },
+							{ label: 'Roads', layer: vector_ss_roads },
 							{ label: 'Easements', layer: vector_ss_easements },
 							{ label: 'Parish', layer: vector_ss_parish },
 							{ label: 'County', layer: vector_ss_county },
