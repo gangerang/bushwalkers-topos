@@ -2292,21 +2292,70 @@
 					},
 				]
 			};
+
+			// Create maps to store layer information
+			const layerNameMap = new Map();
+			const layerPathMap = new Map();
+			const layerIdMap = new Map();
+
+			// Function to recursively process the tree and build the layer mappings
+			function buildLayerMappings(node, parentPath = '') {
+				const currentPath = parentPath ? `${parentPath}/${node.label}` : node.label;
+				
+				if (node.layer) {
+					// Store the human-readable name
+					layerNameMap.set(node.layer, node.label);
+					
+					// Store the full path
+					layerPathMap.set(node.layer, currentPath);
+					
+					// Store the layer identifier (assuming it's a variable name)
+					// This tries to find the variable name by searching through window object
+					for (let prop in window) {
+						if (window[prop] === node.layer) {
+							layerIdMap.set(node.layer, prop);
+							break;
+						}
+					}
+				}
+				
+				if (node.children) {
+					node.children.forEach(child => buildLayerMappings(child, currentPath));
+				}
+			}
+
+			// Add event listeners for layer tracking
+			map.on('overlayadd', function (event) {
+				const layerName = layerNameMap.get(event.layer) || 'Unknown Layer';
+				const layerPath = layerPathMap.get(event.layer) || layerName;
+				const layerId = layerIdMap.get(event.layer) || 'unknown_id';
+				
+				umami.track('Layer Event', {
+					event_type: 'layer_added',
+					layer_id: layerId,
+					layer_path: layerPath
+				});
+			});
+
+			map.on('overlayremove', function (event) {
+				const layerName = layerNameMap.get(event.layer) || 'Unknown Layer';
+				const layerPath = layerPathMap.get(event.layer) || layerName;
+				const layerId = layerIdMap.get(event.layer) || 'unknown_id';
+				
+				umami.track('Layer Event', {
+					event_type: 'layer_removed',
+					layer_id: layerId,
+					layer_path: layerPath
+				});
+			});
 			
+			// Process the overlay tree to build the mapping
+			buildLayerNameMap(overlaysTree);
 
 			// define layer control and add
 			L.control.layers.tree(baseTree, overlaysTree, {
 				collapsed: false
 			}).addTo(map);
-
-			// Track layer toggles with Umami
-			map.on('overlayadd', function (event) {
-				umami.track(`Layer added: ${event.name}`);
-			});
-
-			map.on('overlayremove', function (event) {
-				umami.track(`Layer removed: ${event.name}`);
-			});
 
 			// load canyon layer from ropewiki
 			addCanyonsToLayerGroup(canyonLayerGroup);
