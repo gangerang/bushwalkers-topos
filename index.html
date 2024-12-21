@@ -1927,6 +1927,28 @@
 						.openOn(map);
 				});
 			}
+
+			function bindPopupToHistoricAerialPhotosLayer(layer) {
+				layer.bindPopup(function (featureLayer) {
+					const properties = featureLayer.feature.properties;
+
+					// Extract the URL from the PREVIEW_URL field
+					const previewUrlMatch = properties.PREVIEW_URL.match(/href="([^"]+)"/);
+					const previewUrl = previewUrlMatch ? previewUrlMatch[1] : '';
+					const tifUrlMatch = properties.TIF_URL.match(/href="([^"]+)"/);
+					const tifUrl = tifUrlMatch ? tifUrlMatch[1] : '';
+
+					// Construct the popup content
+					return `
+						<div>
+							<strong>Year:</strong> ${properties.YEAR_START || 'N/A'}<br>
+							<a href="${previewUrl}" target="_blank">Preview</a><br>
+							<a href="${tifUrl}" target="_blank">Download</a><br>
+							${previewUrl ? `<img src="${previewUrl}" alt="Image" style="width:100%; max-height:500px; object-fit:contain; margin-top:5px;">` : '<em>No preview available</em>'}
+						</div>
+					`;
+				});
+			}
 			
 			// popup layers and format strings
 			bindPopupToLayer(vector_ss_trig, 
@@ -1939,7 +1961,15 @@
 			bindPopupToLayer(vector_ss_lots, "{lotnumber}/{plannumber}");
 			bindPopupToLayer(vector_ss_parish, "{parishname}<br>{countyname}<br>DP{parishdpno}");
 			bindPopupToLayer(vector_ss_county, "{countyname}");
-			bindPopupToLayer(vector_ga_historic_aerial_photos, "<p>Year: {YEAR_START}</p><p>{PREVIEW_URL}</p><p>{TIF_URL}</p>");
+			bindPopupToHistoricAerialPhotosLayer(vector_ga_historic_aerial_photos);
+			// bindPopupToLayer(vector_ga_historic_aerial_photos, "<p>Year: {YEAR_START}</p><p>{PREVIEW_URL}</p><p>{TIF_URL}</p>");
+			// bindPopupToLayer(vector_ga_historic_aerial_photos,
+			// 	`Year: {YEAR_START}<br>
+			// 	<a href="{PREVIEW_URL}" target="_blank">Preview</a>
+			// 	<a href="{TIF_URL}" target="_blank">Download</a><br>
+			// 	<img src="{PREVIEW_URL}" alt="Image" style="width:100%; max-height:500px; object-fit:contain; margin-top:5px;">				
+			// 	`
+			// );
 			bindPopupToLayer(vector_ss_topo_index, 
 				`<p>{numbername} - 1:{scale}</p>			
 				pdf:
