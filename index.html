@@ -2292,21 +2292,65 @@
 					},
 				]
 			};
-			
 
-			// define layer control and add
-			L.control.layers.tree(baseTree, overlaysTree, {
-				collapsed: false
-			}).addTo(map);
+			// Create maps to store layer information
+			const layerNameMap = new Map();
+			const layerPathMap = new Map();
 
-			// Track layer toggles with Umami
+			// Function to recursively process the tree and build the layer mappings
+			function buildLayerMappings(node, parentPath = '') {
+				const currentPath = parentPath ? `${parentPath}/${node.label}` : node.label;
+
+				if (node.layer) {
+					layerNameMap.set(node.layer, node.label);
+					layerPathMap.set(node.layer, currentPath);
+				}
+
+				if (node.children) {
+					node.children.forEach(child => buildLayerMappings(child, currentPath));
+				}
+			}
+
+			// Process both overlay and base trees to build the mapping
+			buildLayerMappings(overlaysTree);
+			baseTree.forEach(tree => buildLayerMappings(tree)); // Process all base tree elements
+
+			// Add event listeners for overlay tracking
 			map.on('overlayadd', function (event) {
-				umami.track(`Layer added: ${event.name}`);
+				const layerName = layerNameMap.get(event.layer) || 'Unknown Layer';
+				const layerPath = layerPathMap.get(event.layer) || layerName;
+
+				umami.track('Layer Event', {
+					event_type: 'layer_added',
+					layer_path: layerPath
+				});
 			});
 
 			map.on('overlayremove', function (event) {
-				umami.track(`Layer removed: ${event.name}`);
+				const layerName = layerNameMap.get(event.layer) || 'Unknown Layer';
+				const layerPath = layerPathMap.get(event.layer) || layerName;
+
+				umami.track('Layer Event', {
+					event_type: 'layer_removed',
+					layer_path: layerPath
+				});
 			});
+
+			// Add event listener for basemap changes
+			map.on('baselayerchange', function (event) {
+				const layerName = layerNameMap.get(event.layer) || 'Unknown Layer';
+				const layerPath = layerPathMap.get(event.layer) || layerName;
+
+				umami.track('Layer Event', {
+					event_type: 'changed_basemap',
+					layer_path: layerPath
+				});
+			});
+
+			// Define layer control and add it to the map
+			L.control.layers.tree(baseTree, overlaysTree, {
+				collapsed: false
+			}).addTo(map);
 
 			// load canyon layer from ropewiki
 			addCanyonsToLayerGroup(canyonLayerGroup);
