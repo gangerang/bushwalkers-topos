@@ -42,3 +42,4 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - 100k topo maps - older topo maps from ga at 100k scale. tiffs stiched seamlessly and served via geoserver
 - add - 50k topo maps - older topo maps from ga at 50k scale. tiffs stiched seamlessly and served via geoserver
 - add - weather radar layer - from rain viewer, rain radar weather layer for most recent observations
+- add - NSW historic imagery photos - replaces the sydney only layer, served via geoserver

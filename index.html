@@ -191,9 +191,6 @@
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
 
-		<!-- leaflet-geoserver-request https://github.com/iamtekson/leaflet-geoserver-request -->
-		<!-- <script src="https://unpkg.com/leaflet-geoserver-request@1.3.0/src/L.Geoserver.js"></script> -->
-
         <script type="text/javascript">
 
 			// Define map with initial view
@@ -316,6 +313,75 @@
 				return geoJsonLayer; // Return the configured GeoJSON layer
 			}
 
+			function addDynamicWfsLayer(map, options) {
+				const {
+					baseLayerUrl,
+					layers,
+					srsname = 'EPSG:4326',
+					layerName,
+					attribution = '',
+					style = {},
+					limit = 1000,
+					popupContent = feature =>
+						Object.entries(feature.properties || {})
+							.map(([key, value]) => `<strong>${key}</strong>: ${value}`)
+							.join('<br>')
+				} = options;
+
+				// Create the GeoJSON layer
+				const geojsonLayer = L.geoJSON(null, {
+					onEachFeature: function (feature, layer) {
+						if (feature.properties) {
+							layer.bindPopup(popupContent(feature));
+						}
+					},
+					pointToLayer: function (feature, latlng) {
+						return L.circleMarker(latlng, {
+							radius: 8,
+							fillColor: style.fillColor || "#FF0000",
+							color: style.color || "#000",
+							weight: style.weight || 1,
+							opacity: style.opacity || 1,
+							fillOpacity: style.fillOpacity || 0.8
+						});
+					}
+				});
+
+				// Fetch GeoJSON data from GeoServer based on map bounds
+				function fetchGeoJsonByBBox() {
+					const bounds = map.getBounds();
+					const bbox = `${bounds.getWest()},${bounds.getSouth()},${bounds.getEast()},${bounds.getNorth()}`;
+
+					const wfsUrl = `${baseLayerUrl}?service=WFS&version=1.0.0&request=GetFeature&typeName=${layers}&srsname=${srsname}&outputFormat=json&bbox=${bbox}&maxFeatures=${limit}`;
+
+					fetch(wfsUrl)
+						.then(response => response.json())
+						.then(data => {
+							geojsonLayer.clearLayers();
+							geojsonLayer.addData(data);
+						})
+						.catch(error => console.error(`Error fetching GeoJSON for ${layerName}:`, error));
+				}
+
+				// Add layer toggle behavior
+				map.on('overlayadd', function (event) {
+					if (event.layer === geojsonLayer) {
+						fetchGeoJsonByBBox(); // Initial fetch
+						map.on('moveend', fetchGeoJsonByBBox); // Fetch on map move
+					}
+				});
+
+				map.on('overlayremove', function (event) {
+					if (event.layer === geojsonLayer) {
+						map.off('moveend', fetchGeoJsonByBBox); // Stop fetching when layer is deselected
+					}
+				});
+
+				// Add attribution if specified
+				geojsonLayer.getAttribution = () => attribution;
+
+				return geojsonLayer;
+			}
 
 			///////////////////////////
 			//	custom search box
@@ -1018,28 +1084,12 @@
 				minZoom: 11
 			});
 
-			// vector spatial services nsw historic aerial photos
-			// this is too slow to load is isn't used (when all are loaded)
-			const vector_ss_nsw_historic_aerial_photos = L.esri.featureLayer({
-				url: "https://portal.spatial.nsw.gov.au/agolproxy/Yb2UeNWvQYEwyYDl/arcgis/rest/services/Historical_Image_Index_view/FeatureServer/0",
-				// where: "image_name='CAC_28_1376'",
-				where: "key_diagra='91301930'",
-				returnCentroid: true,
-				// onEachFeature: function (feature, layer) {
-				// 	// Check if the layer is a polygon
-				// 	if (layer instanceof L.Polygon) {
-				// 		// Get the bounds of the polygon and calculate its center
-				// 		var center = layer.getBounds().getCenter();
-						
-				// 		// Add a marker at the calculated centroid
-				// 		L.marker(center).addTo(map);
-
-				// 		// Optionally remove the polygon from the map
-				// 		map.removeLayer(layer);
-				// 	}
-				// },
-				fill: false,
-				// stroke: false
+			// vector spatial services nsw historic aerial photos - all via geoserver from geopackage
+			const vector_geoserver_nsw_historic_aerial_photos = addDynamicWfsLayer(map, {
+				baseLayerUrl: 'https://geoserver.cloud.al3x.au/geoserver/geodata/ows',
+				layers: 'geodata:ss_nsw_historic_aerial_imagery_index',
+				layerName: 'nsw_historic_aerial_photos_config',
+				limit: 5000
 			});
 
 			// vector spatial services nsw historic aerial photos - based on static geojson just of sydney
@@ -1980,22 +2030,11 @@
 			bindPopupToLayer(vector_ss_state_electoral, 'State seat: {districtname}');
 			bindPopupToLayer(vector_ss_federal_electoral, 'Federal seat: {divisionname}');
 			bindPopupToLayer(vector_env_wilderness, '{NAME} Wilderness');
-			bindPopupToLayer(vector_ss_nsw_historic_aerial_photos_static_sydney,
+			bindPopupToLayer(vector_geoserver_nsw_historic_aerial_photos,
 				`Date: {date}<br>
 				Scale/Height: {scale} @ {ahdz}m<br>
 				Sheet: {sheetname} - {sheetnum}<br>
-				Run/Film/Fram: {run}/{film}/{frame}<br>
-				Name: {image_name}<br>
-				<a href="{thumb_file_url}" target="_blank">Preview</a>					
-				<a href="{full_file_url}" target="_blank">Download</a><br>
-				<img src="{thumb_file_url}" alt="Image" style="width:100%; max-height:500px; object-fit:contain; margin-top:5px;">				
-				`
-			);
-			bindPopupToLayer(vector_ss_nsw_historic_aerial_photos_static_sydney_gpkg,
-				`Date: {date}<br>
-				Scale/Height: {scale} @ {ahdz}m<br>
-				Sheet: {sheetname} - {sheetnum}<br>
-				Run/Film/Fram: {run}/{film}/{frame}<br>
+				Run/Film/Frame: {run}/{film}/{frame}<br>
 				Name: {image_name}<br>
 				<a href="{thumb_file_url}" target="_blank">Preview</a>					
 				<a href="{full_file_url}" target="_blank">Download</a><br>
@@ -2260,9 +2299,7 @@
 						collapsed: true,
 						children: [
 							{ label: 'Geoscience Aust.', layer: vector_ga_historic_aerial_photos },
-							// { label: 'Sydney', layer: vector_ss_nsw_historic_aerial_photos_static_sydney },
-							{ label: 'Sydney', layer: vector_ss_nsw_historic_aerial_photos_static_sydney_gpkg },
-							// { label: 'Historic SS NSW aerial photo points', layer: vector_ss_nsw_historic_aerial_photos },
+							{ label: 'Historic SS NSW aerial photo points', layer: vector_geoserver_nsw_historic_aerial_photos },
 						]
 					},
 					{
