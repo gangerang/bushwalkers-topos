@@ -1,7 +1,7 @@
 # Bushwalkers Topos
 An interactive map designed for bushwalkers in NSW
 
-[Try it out](https://gangerang.github.io/bushwalkers-topos/index.html)
+[Try it out](https://maps.al3x.au)
 
 Based on leaflet
 
