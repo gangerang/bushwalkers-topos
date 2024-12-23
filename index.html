@@ -387,17 +387,24 @@
 				return geojsonLayer;
 			}
 
-			// Function to determine colour based on the 'date' property
+			// Function to determine color based on year, supporting both 'date' and 'YEAR_START'
 			function getPointColourByYear(feature) {
-				const date = feature.properties.date; // Access the date property
-				const year = date ? parseInt(date.split('-')[0], 10) : null; // Extract the year from the date string
+				// Determine the year property to use
+				const year =
+					feature.properties.date
+						? parseInt(feature.properties.date.split('-')[0], 10) // Extract year from 'date'
+						: feature.properties.YEAR_START
+						? parseInt(feature.properties.YEAR_START, 10) // Use 'YEAR_START' directly
+						: null; // Default to null if no valid year is found
 
-				if (!year) return "#000000"; // Default color for missing or invalid dates
+				if (!year) return "#000000"; // Default color for missing or invalid years
+
+				// Determine the color based on the year
 				if (year < 1940) return "#330000"; // -1939
 				if (year < 1960) return "#990000"; // 1940-1959
 				if (year < 1980) return "#ff0000"; // 1960-1979
 				if (year < 2000) return "#ff8080"; // 1980-1999
-				return "#ffcccc";		           // 2000 and later
+				return "#ffcccc";                  // 2000 and later
 			}
 
 			///////////////////////////
@@ -1099,16 +1106,30 @@
 				simplifyFactor: 0.5,
 				precision: 4,
 				where: "SCANNED=1 and AWS_FILENAME<>null", // just because it is scanned, doesn't mean there is a file
-				minZoom: 11
+				minZoom: 11,
+				attribution: attrib_ga,
+				pointToLayer: function (geojson, latlng) {
+					const colour = getPointColourByYear(geojson); // Get color based on YEAR_START
+					// const color = "#000"; // Get color based on YEAR_START
+					return L.circleMarker(latlng, {
+						radius: 8,
+						fillColor: colour,
+						color: "#000",
+						weight: 1,
+						opacity: 1,
+						fillOpacity: 0.8
+					});
+				}
 			});
 
-			// vector spatial services nsw historic aerial photos - all via geoserver from geopackage
+			// vector spatial services nsw historic aerial photos - all via geoserver from geopackage, excluding invalid images
 			const vector_geoserver_nsw_historic_aerial_photos = addDynamicWfsLayer(map, {
 				baseLayerUrl: 'https://geoserver.cloud.al3x.au/geoserver/geodata/ows',
 				layers: 'geodata:ss_nsw_historic_aerial_imagery_index',
 				layerName: 'nsw_historic_aerial_photos_config',
 				limit: 5000,
-				getColor: getPointColourByYear
+				getColor: getPointColourByYear,
+				attribution: attrib_nsw_ss,
 			});
 
 			// vector spatial services nsw historic aerial photos - based on static geojson just of sydney
@@ -1957,13 +1978,29 @@
 			bindPopupToLayer(vector_ss_lots, "{lotnumber}/{plannumber}");
 			bindPopupToLayer(vector_ss_parish, "{parishname}<br>{countyname}<br>DP{parishdpno}");
 			bindPopupToLayer(vector_ss_county, "{countyname}");
+			bindPopupToLayer(vector_geoserver_nsw_historic_aerial_photos,
+				`DCS Spatial Services<br>
+				Date: {date}<br>
+				Scale/Height: {scale} @ {ahdz}m<br>
+				Sheet: {sheetname} - {sheetnum}<br>
+				Run/Film/Frame: {run}/{film}/{frame}<br>
+				Name: {image_name}<br>
+				<a href="{thumb_file_url}" target="_blank">Preview</a>					
+				<a href="{full_file_url}" target="_blank">Download</a><br>
+				<a href="{full_file_url}" target="_blank">
+					<img src="{thumb_file_url}" alt="Image" style="width:100%; max-height:500px; object-fit:contain; margin-top:5px;">
+				</a>
+				`
+			);
 			bindPopupToLayer(vector_ga_historic_aerial_photos,
-				`Year: {YEAR_START}<br>
-				ObjectId: {OBJECTID}<br>
+				`Geoscience Australia
+				Year: {YEAR_START}<br>
 				Run/Film/Frame: {RUN}/{FILM_NUMBER}/{FRAME}<br>
 				<a href="https://aerialphotography.ga.gov.au/Scanned/{AWS_FOLDER}/Preview/{AWS_FILENAME}_preview.jpg" target="_blank">Preview</a>
 				<a href="https://aerialphotography.ga.gov.au/Scanned/{AWS_FOLDER}/{AWS_FILENAME}.tif" target="_blank">Download</a><br>
-				<img src="https://aerialphotography.ga.gov.au/Scanned/{AWS_FOLDER}/Preview/{AWS_FILENAME}_preview.jpg" alt="Image" style="width:100%; max-height:500px; object-fit:contain; margin-top:5px;">				
+				<a href="https://aerialphotography.ga.gov.au/Scanned/{AWS_FOLDER}/Preview/{AWS_FILENAME}_preview.jpg" target="_blank">
+					<img src="https://aerialphotography.ga.gov.au/Scanned/{AWS_FOLDER}/Preview/{AWS_FILENAME}_preview.jpg" alt="Image" style="width:100%; max-height:500px; object-fit:contain; margin-top:5px;">				
+				</a>
 				`
 			);
 			bindPopupToLayer(vector_ss_topo_index, 
@@ -2056,17 +2093,6 @@
 			bindPopupToLayer(vector_ss_state_electoral, 'State seat: {districtname}');
 			bindPopupToLayer(vector_ss_federal_electoral, 'Federal seat: {divisionname}');
 			bindPopupToLayer(vector_env_wilderness, '{NAME} Wilderness');
-			bindPopupToLayer(vector_geoserver_nsw_historic_aerial_photos,
-				`Date: {date}<br>
-				Scale/Height: {scale} @ {ahdz}m<br>
-				Sheet: {sheetname} - {sheetnum}<br>
-				Run/Film/Frame: {run}/{film}/{frame}<br>
-				Name: {image_name}<br>
-				<a href="{thumb_file_url}" target="_blank">Preview</a>					
-				<a href="{full_file_url}" target="_blank">Download</a><br>
-				<img src="{thumb_file_url}" alt="Image" style="width:100%; max-height:500px; object-fit:contain; margin-top:5px;">				
-				`
-			);
 			bindPopupToLayer(vector_crown_road_sales_active,
 				`Proposed crown road sale - current<br>
 				{lga}<br>
