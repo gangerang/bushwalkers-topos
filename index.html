@@ -313,6 +313,7 @@
 				return geoJsonLayer; // Return the configured GeoJSON layer
 			}
 
+			// function to displaying wfs point data for the current bounding box, works for geoserver
 			function addDynamicWfsLayer(map, options) {
 				const {
 					baseLayerUrl,
@@ -322,6 +323,7 @@
 					attribution = '',
 					style = {},
 					limit = 1000,
+					getColor = () => "#FF0000", // Default color function
 					popupContent = feature =>
 						Object.entries(feature.properties || {})
 							.map(([key, value]) => `<strong>${key}</strong>: ${value}`)
@@ -336,13 +338,15 @@
 						}
 					},
 					pointToLayer: function (feature, latlng) {
+						const fillColor = getColor(feature); // Use the custom color function
+
 						return L.circleMarker(latlng, {
 							radius: 8,
-							fillColor: style.fillColor || "#FF0000",
-							color: style.color || "#000",
-							weight: style.weight || 1,
-							opacity: style.opacity || 1,
-							fillOpacity: style.fillOpacity || 0.8
+							fillColor: fillColor,
+							color: "#000",
+							weight: 1,
+							opacity: 1,
+							fillOpacity: 0.8
 						});
 					}
 				});
@@ -381,6 +385,19 @@
 				geojsonLayer.getAttribution = () => attribution;
 
 				return geojsonLayer;
+			}
+
+			// Function to determine colour based on the 'date' property
+			function getPointColourByYear(feature) {
+				const date = feature.properties.date; // Access the date property
+				const year = date ? parseInt(date.split('-')[0], 10) : null; // Extract the year from the date string
+
+				if (!year) return "#000000"; // Default color for missing or invalid dates
+				if (year < 1940) return "#330000"; // -1939
+				if (year < 1960) return "#990000"; // 1940-1959
+				if (year < 1980) return "#ff0000"; // 1960-1979
+				if (year < 2000) return "#ff8080"; // 1980-1999
+				return "#ffcccc";		           // 2000 and later
 			}
 
 			///////////////////////////
@@ -1090,7 +1107,8 @@
 				baseLayerUrl: 'https://geoserver.cloud.al3x.au/geoserver/geodata/ows',
 				layers: 'geodata:ss_nsw_historic_aerial_imagery_index',
 				layerName: 'nsw_historic_aerial_photos_config',
-				limit: 5000
+				limit: 5000,
+				getColor: getPointColourByYear
 			});
 
 			// vector spatial services nsw historic aerial photos - based on static geojson just of sydney
