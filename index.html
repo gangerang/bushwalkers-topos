@@ -1077,10 +1077,11 @@
 
 			// vector ga historic aerial photos
 			const vector_ga_historic_aerial_photos = L.esri.featureLayer({
-				url: "https://services1.arcgis.com/wfNKYeHsOyaFyPw3/ArcGIS/rest/services/HistoricalAerialPhotography_AGOL_DIST_gdb/FeatureServer/0",
+				// url: "https://services1.arcgis.com/wfNKYeHsOyaFyPw3/ArcGIS/rest/services/HistoricalAerialPhotography_AGOL_DIST_gdb/FeatureServer/0", // old service
+				url: "https://services-ap1.arcgis.com/ypkPEy1AmwPKGNNv/ArcGIS/rest/services/HistoricalAerialPhotography_AGOL_DIST_2023_09_gdb/FeatureServer/1",
 				simplifyFactor: 0.5,
 				precision: 4,
-				where: "scanned=1",
+				where: "SCANNED=1 and AWS_FILENAME<>null", // just because it is scanned, doesn't mean there is a file
 				minZoom: 11
 			});
 
@@ -1926,30 +1927,7 @@
 						.setContent(popupContent)
 						.openOn(map);
 				});
-			}
-
-			function bindPopupToHistoricAerialPhotosLayer(layer) {
-				layer.bindPopup(function (featureLayer) {
-					const properties = featureLayer.feature.properties;
-
-					// Extract the URL from the PREVIEW_URL field
-					const previewUrlMatch = properties.PREVIEW_URL.match(/href="([^"]+)"/);
-					const previewUrl = previewUrlMatch ? previewUrlMatch[1] : '';
-					const tifUrlMatch = properties.TIF_URL.match(/href="([^"]+)"/);
-					const tifUrl = tifUrlMatch ? tifUrlMatch[1] : '';
-
-					// Construct the popup content
-					return `
-						<div>
-							<strong>Year:</strong> ${properties.YEAR_START || 'N/A'}<br>
-							<a href="${previewUrl}" target="_blank">Preview</a><br>
-							<a href="${tifUrl}" target="_blank">Download</a><br>
-							${previewUrl ? `<img src="${previewUrl}" alt="Image" style="width:100%; max-height:500px; object-fit:contain; margin-top:5px;">` : '<em>No preview available</em>'}
-						</div>
-					`;
-				});
-			}
-			
+			}			
 			// popup layers and format strings
 			bindPopupToLayer(vector_ss_trig, 
 				`<b>{marktype}{marknumber} - {trigname}</b><br>
@@ -1961,15 +1939,15 @@
 			bindPopupToLayer(vector_ss_lots, "{lotnumber}/{plannumber}");
 			bindPopupToLayer(vector_ss_parish, "{parishname}<br>{countyname}<br>DP{parishdpno}");
 			bindPopupToLayer(vector_ss_county, "{countyname}");
-			bindPopupToHistoricAerialPhotosLayer(vector_ga_historic_aerial_photos);
-			// bindPopupToLayer(vector_ga_historic_aerial_photos, "<p>Year: {YEAR_START}</p><p>{PREVIEW_URL}</p><p>{TIF_URL}</p>");
-			// bindPopupToLayer(vector_ga_historic_aerial_photos,
-			// 	`Year: {YEAR_START}<br>
-			// 	<a href="{PREVIEW_URL}" target="_blank">Preview</a>
-			// 	<a href="{TIF_URL}" target="_blank">Download</a><br>
-			// 	<img src="{PREVIEW_URL}" alt="Image" style="width:100%; max-height:500px; object-fit:contain; margin-top:5px;">				
-			// 	`
-			// );
+			bindPopupToLayer(vector_ga_historic_aerial_photos,
+				`Year: {YEAR_START}<br>
+				ObjectId: {OBJECTID}<br>
+				Run/Film/Frame: {RUN}/{FILM_NUMBER}/{FRAME}<br>
+				<a href="https://aerialphotography.ga.gov.au/Scanned/{AWS_FOLDER}/Preview/{AWS_FILENAME}_preview.jpg" target="_blank">Preview</a>
+				<a href="https://aerialphotography.ga.gov.au/Scanned/{AWS_FOLDER}/{AWS_FILENAME}.tif" target="_blank">Download</a><br>
+				<img src="https://aerialphotography.ga.gov.au/Scanned/{AWS_FOLDER}/Preview/{AWS_FILENAME}_preview.jpg" alt="Image" style="width:100%; max-height:500px; object-fit:contain; margin-top:5px;">				
+				`
+			);
 			bindPopupToLayer(vector_ss_topo_index, 
 				`<p>{numbername} - 1:{scale}</p>			
 				pdf:
