@@ -45,3 +45,4 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - NSW historic imagery photos - replaces the sydney only layer, served via geoserver
 - add - improve usability on mobile - when viewing on a small screen, basemaps and layers selectable via a popup modal instead of tree
 - add - port hacking tourist 1966 - tourist map of port hacking from 1966, served via geoserver
+- add - bruces walk 1931 map - tourist map of bruces walk from 1931, served via geoserver

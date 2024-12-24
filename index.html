@@ -1599,9 +1599,15 @@
 				format: 'image/png',
 				version: '1.1.0',
 				tilematrixSet: 'EPSG:900913',
-				// maxNativeZoom: 10,
 			});
 
+			// misc - port hacking tourist map
+			const raster_geoserver_nla_bruces_walk_1931 = L.tileLayer.wmts('https://geoserver.cloud.al3x.au/geoserver/geodata/gwc/service/wmts?', {
+				layer: 'geodata:bruces-walk-1931_nla-obj-499787680-3',
+				format: 'image/png',
+				version: '1.1.0',
+				tilematrixSet: 'EPSG:900913',
+			});
 
 			///////////////////////////
 			// utm grid
@@ -2345,6 +2351,7 @@
 						label: 'Other Historic Maps',
 						collapsed: true,
 						children: [
+							{ label: 'Bruces Walk 1931', layer: raster_geoserver_nla_bruces_walk_1931 },
 							{ label: 'Port Hacking Tourist 1966', layer: raster_geoserver_nla_port_hacking_tourist_1966 },
 						]
 					},
@@ -2756,6 +2763,7 @@
 				{ label: 'NSW SVTM veg class and pct layers', layer: basemap_raster_env_svtm_veg_group },
 				{ label: 'Trig progress sketch 1912 ', layer: raster_geoserver_nla_trig_progress_sketch_1912 },
 				{ label: 'Port Hacking Tourist 1966', layer: raster_geoserver_nla_port_hacking_tourist_1966 },
+				{ label: 'Bruces Walk 1931', layer: raster_geoserver_nla_bruces_walk_1931 },
 				raster_ss_historic_imagery_list,
 				raster_env_fesm_wms_list,
 				raster_geoserver_topo_100k,
