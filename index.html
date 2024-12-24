@@ -1,10 +1,10 @@
 <html>
-    <head>
-        <title>Bushwalkers Topo</title>
-        <meta charset="utf-8"/>
-		<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" /> -->
+	<head>
+		<title>Bushwalkers Topo</title>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='green'/%3E%3C/svg%3E">
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 		<script defer src="https://umami.cloud.al3x.au/script.js" data-website-id="172fa8c4-d2c9-4d70-a750-be3cc4897583"></script>
 		<style>
 			body, #map {
@@ -14,7 +14,7 @@
 			.modal {
 				display: none;
 				position: fixed;
-				z-index: 1000;
+				z-index: 2000;
 				padding-top: 100px;
 				left: 0;
 				top: 0;
@@ -27,7 +27,7 @@
 				margin: auto;
 				padding: 20px;
 				border: 1px solid #888;
-				width: 600px;
+				width: 80%; /* Adjusted for better mobile compatibility */
 				border-radius: 4px;
 				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 				max-height: 80vh;
@@ -43,6 +43,75 @@
 			.close:hover {
 				color: black;
 			}
+			.tree-group {
+				margin: 10px 0;
+				padding-left: 10px;
+				border-left: 2px solid #ccc; /* Indicate hierarchy visually */
+			}
+			.tree-group-header {
+				cursor: pointer;
+				padding: 5px;
+				border-radius: 4px;
+				transition: background-color 0.2s, color 0.2s;
+			}
+			.tree-group-header:hover {
+				background-color: #f0f0f0; /* Light background on hover */
+			}
+			.tree-group-header.active {
+				background-color: #0078d7;
+				color: white;
+				font-weight: bold;
+			}
+			.tree-children {
+				margin-left: 15px;
+			}
+			.layer-item {
+				cursor: pointer;
+				padding: 5px;
+				margin: 5px 0;
+				border-radius: 4px;
+				transition: background-color 0.2s, color 0.2s;
+			}
+			.layer-item:hover {
+				background-color: #f0f0f0; /* Light background on hover */
+			}
+			.layer-item.active {
+				background-color: #0078d7;
+				color: white;
+				font-weight: bold;
+			}
+			.toggle-button {
+				font-size: 12px;
+				color: #0078d7;
+			}
+			.tree-label {
+				font-weight: bold;
+				margin-bottom: 5px;
+			}
+			.layer-button {
+				position: fixed;
+				z-index: 1001;
+				right: 20px; /* Align both buttons to the bottom-right corner */
+				padding: 10px 20px;
+				background: #0078d7;
+				color: white;
+				border: none;
+				border-radius: 5px;
+				cursor: pointer;
+				font-size: 16px;
+			}
+			.layer-button:hover {
+				background-color: #005bb5;
+			}
+			#basemapsButton {
+				bottom: 70px; /* Position above the Layers button */
+			}
+			#layersButton {
+				bottom: 20px; /* Position at the bottom */
+			}
+			.layer-control-item input {
+				margin-right: 10px;
+			}
 			.modal-content input,
 			.modal-content button {
 				width: 100%;
@@ -53,7 +122,6 @@
 				display: flex;
 				gap: 10px; /* Space between buttons */
 			}
-
 			.button-container .search,
 			.button-container .clear {
 				width: 50%; /* Each button takes up half the space of the container */
@@ -89,7 +157,7 @@
 				cursor: pointer;
 			}
 		</style>
-    </head>
+	</head>	
     <body>
         <div id="map"></div>
 
@@ -153,6 +221,26 @@
 					<button class="clear" onclick="clearMap()">Clear</button>
 				</div>
 				<table id="gnrResultsTable" class="results-table"></table>
+			</div>
+		</div>
+
+		<!-- Buttons for Basemaps and Layers -->
+		<button id="basemapsButton" class="layer-button">Basemaps</button>
+		<button id="layersButton" class="layer-button">Layers</button>
+
+		<!-- Basemaps Modal -->
+		<div id="basemapsModal" class="modal" style="display: none;">
+			<div class="modal-content">
+				<span class="close">&times;</span>
+				<div id="basemapsControlContainer"></div>
+			</div>
+		</div>
+
+		<!-- Layers Modal -->
+		<div id="layersModal" class="modal" style="display: none;">
+			<div class="modal-content">
+				<span class="close">&times;</span>
+				<div id="layersControlContainer"></div>
 			</div>
 		</div>
 
@@ -2444,44 +2532,194 @@
 				});
 			});
 
-			// Define layer control and add it to the map
-			L.control.layers.tree(baseTree, overlaysTree, {
-				collapsed: false
-			}).addTo(map);
 
-			// load canyon layer from ropewiki
-			addCanyonsToLayerGroup(canyonLayerGroup);
+			const modalState = {
+				basemaps: {},
+				overlays: {}
+			};
 
-			// Add opacity slider
-			const opacitySlider = document.createElement('input');
-			opacitySlider.id = 'opacity-slider';
-			opacitySlider.type = 'range';
-			opacitySlider.min = 0;
-			opacitySlider.max = 1;
-			opacitySlider.step = 0.01;
-			opacitySlider.value = 1;
-			
-			// Function for implementing opacity depending on layer type
+			document.addEventListener('DOMContentLoaded', function () {
+				const basemapsButton = document.getElementById('basemapsButton');
+				const layersButton = document.getElementById('layersButton');
+				const basemapsModal = document.getElementById('basemapsModal');
+				const layersModal = document.getElementById('layersModal');
+				const basemapsContainer = document.getElementById('basemapsControlContainer');
+				const layersContainer = document.getElementById('layersControlContainer');
+				let layerControlTree; // Reference to the desktop layer control tree
+
+				const closeModal = (modal) => {
+					modal.style.display = 'none';
+				};
+
+				const renderControl = (container, tree, stateKey, singleSelect = false) => {
+					container.innerHTML = ''; // Clear previous content
+
+					// Recursive function to create tree nodes
+					function createTreeNode(node, stateKey) {
+						const treeContainer = document.createElement('div');
+						treeContainer.classList.add('tree-group');
+
+						if (node.label) {
+							const groupHeader = document.createElement('div');
+							groupHeader.textContent = node.label;
+							groupHeader.classList.add('tree-group-header');
+
+							if (node.children && node.children.length > 0) {
+								const toggleButton = document.createElement('span');
+								const groupState = modalState[stateKey][node.label] || { collapsed: node.collapsed };
+								toggleButton.textContent = groupState.collapsed ? '[+]' : '[-]';
+								toggleButton.classList.add('toggle-button');
+								toggleButton.style.cursor = 'pointer';
+								toggleButton.style.marginLeft = '10px';
+
+								const childContainer = document.createElement('div');
+								childContainer.style.display = groupState.collapsed ? 'none' : 'block';
+
+								toggleButton.onclick = () => {
+									const expanded = toggleButton.textContent === '[+]';
+									toggleButton.textContent = expanded ? '[-]' : '[+]';
+									childContainer.style.display = expanded ? 'block' : 'none';
+
+									// Update state
+									modalState[stateKey][node.label] = { collapsed: !expanded };
+								};
+
+								groupHeader.appendChild(toggleButton);
+								treeContainer.appendChild(groupHeader);
+
+								// Recursively create children
+								node.children.forEach((child) => {
+									const childNode = createTreeNode(child, stateKey);
+									childContainer.appendChild(childNode);
+								});
+
+								treeContainer.appendChild(childContainer);
+							} else {
+								// If no children, treat as a layer
+								const layerState = modalState[stateKey][node.label] || { active: map.hasLayer(node.layer) };
+								if (layerState.active) {
+									groupHeader.classList.add('active');
+								}
+
+								groupHeader.onclick = () => {
+									if (singleSelect) {
+										// Single-select: deactivate other basemaps
+										map.eachLayer((layer) => map.removeLayer(layer));
+										map.addLayer(node.layer);
+
+										// Highlight the active layer
+										Array.from(container.querySelectorAll('.tree-group-header')).forEach((el) =>
+											el.classList.remove('active')
+										);
+										groupHeader.classList.add('active');
+										modalState[stateKey][node.label] = { active: true };
+									} else {
+										// Multi-select: toggle layer
+										if (map.hasLayer(node.layer)) {
+											map.removeLayer(node.layer);
+											groupHeader.classList.remove('active');
+											modalState[stateKey][node.label] = { active: false };
+										} else {
+											map.addLayer(node.layer);
+											groupHeader.classList.add('active');
+											modalState[stateKey][node.label] = { active: true };
+										}
+									}
+								};
+
+								treeContainer.appendChild(groupHeader);
+							}
+						}
+
+						return treeContainer;
+					}
+
+					// Check if the tree is an array or object
+					if (Array.isArray(tree)) {
+						tree.forEach((node) => {
+							const rootNode = createTreeNode(node, stateKey);
+							container.appendChild(rootNode);
+						});
+					} else if (typeof tree === 'object' && tree !== null) {
+						const rootNode = createTreeNode(tree, stateKey);
+						container.appendChild(rootNode);
+					} else {
+						console.error('Invalid tree structure:', tree);
+					}
+				};
+
+				// Show buttons or tree control based on screen size
+				if (window.innerWidth > 768) {
+					console.log('Adding desktop layer control tree');
+					basemapsButton.style.display = 'none';
+					layersButton.style.display = 'none';
+
+					// Add desktop layer control tree
+					layerControlTree = L.control.layers.tree(baseTree, overlaysTree, {
+						collapsed: false // Tree should be expanded by default
+					}).addTo(map);
+
+					// Add opacity slider to the desktop layer control
+					const layerControlContainer = document.querySelector('.leaflet-control-layers');
+					if (layerControlContainer) {
+						const opacitySlider = document.createElement('input');
+						opacitySlider.type = 'range';
+						opacitySlider.min = 0;
+						opacitySlider.max = 1;
+						opacitySlider.step = 0.01;
+						opacitySlider.value = 1;
+
+						opacitySlider.addEventListener('input', function (e) {
+							const newOpacity = parseFloat(e.target.value);
+							updateLayerOpacity(opacityLayers, newOpacity);
+						});
+
+						layerControlContainer.appendChild(opacitySlider);
+					}
+				} else {
+					console.log('Showing mobile buttons');
+					basemapsButton.style.display = 'block';
+					layersButton.style.display = 'block';
+				}
+
+				// Open modals on button click
+				basemapsButton.onclick = () => {
+					basemapsModal.style.display = 'block';
+					renderControl(basemapsContainer, baseTree, 'basemaps', true); // Single-select
+				};
+
+				layersButton.onclick = () => {
+					layersModal.style.display = 'block';
+					renderControl(layersContainer, overlaysTree, 'overlays', false); // Multi-select
+				};
+
+				// Close modals
+				basemapsModal.querySelector('.close').onclick = () => closeModal(basemapsModal);
+				layersModal.querySelector('.close').onclick = () => closeModal(layersModal);
+				window.onclick = (event) => {
+					if (event.target === basemapsModal) closeModal(basemapsModal);
+					if (event.target === layersModal) closeModal(layersModal);
+				};
+			});
+
+			// Function for updating opacity
 			function updateLayerOpacity(layersArray, value) {
-				layersArray.forEach(item => {
-					let layer = item.layer;
+				layersArray.forEach((item) => {
+					const layer = item.layer;
 
 					if (typeof layer.setOpacity === 'function') {
-						// Works for raster and tile layers
-						layer.setOpacity(value);
+						layer.setOpacity(value); // Raster layers
 					} else if (layer.setStyle && layer instanceof L.Path) {
-						// For vector layers like polygons or polylines
-						layer.setStyle({opacity: value, fillOpacity: value});
+						layer.setStyle({ opacity: value, fillOpacity: value }); // Vector layers
 					} else if (layer.setStyle && layer.eachFeature) {
-						// For L.esri.featureLayer
-						layer.setStyle({opacity: value, fillOpacity: value}); // Assuming you can use setStyle on your feature layer
+						layer.setStyle({ opacity: value, fillOpacity: value }); // Feature layers
 					} else {
 						console.warn("Opacity adjustment not supported for this layer type");
 					}
 				});
 			}
 
-			// layers to be updated by opacity slider - note, it works on both basemap and overlay
+			// Layers to be updated by opacity slider
 			let opacityLayers = [];
 			opacityLayers = opacityLayers.concat(
 				nlaTopo31680Layers,
@@ -2507,24 +2745,8 @@
 				raster_geoserver_topo_50k,
 			);
 
-			// Attach event listener to the opacity slider
-			opacitySlider.addEventListener('input', function(e) {
-				// Convert the slider value to a float since it comes as a string from the input
-				let newOpacity = parseFloat(e.target.value);
-
-				// Update opacity of all layers in the nlaWmsLayers array
-				updateLayerOpacity(opacityLayers, newOpacity);
-			});
-
-			// Create container div for title and slider
-			const opacityContainer = document.createElement('div');
-			opacityContainer.appendChild(opacitySlider);
-
-
-			// Add opacity container below overlay layer checkbox
-			const layerControlContainer = document.querySelector('.leaflet-control-layers');
-			layerControlContainer.appendChild(opacityContainer);
-
+			// load canyon layer from ropewiki
+			addCanyonsToLayerGroup(canyonLayerGroup);
 
 			///////////////////////////
 			// zoom display 
