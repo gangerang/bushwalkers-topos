@@ -1585,12 +1585,21 @@
 
 			// nsw trig survey map
 			// 1912 from nla via geoserver
-			const raster_nla_trig_progress_sketch_1912 = L.tileLayer.wmts('https://geoserver.cloud.al3x.au/geoserver/geodata/gwc/service/wmts?', {
+			const raster_geoserver_nla_trig_progress_sketch_1912 = L.tileLayer.wmts('https://geoserver.cloud.al3x.au/geoserver/geodata/gwc/service/wmts?', {
 				layer: 'geodata:nsw-trigs_1912_nla-233482781_jpeg',
 				format: 'image/png',
 				version: '1.1.0',
 				tilematrixSet: 'EPSG:900913',
 				maxNativeZoom: 10,
+			});
+
+			// misc - port hacking tourist map
+			const raster_geoserver_nla_port_hacking_tourist_1966 = L.tileLayer.wmts('https://geoserver.cloud.al3x.au/geoserver/geodata/gwc/service/wmts?', {
+				layer: 'geodata:port-hacking-tourist-1966',
+				format: 'image/png',
+				version: '1.1.0',
+				tilematrixSet: 'EPSG:900913',
+				// maxNativeZoom: 10,
 			});
 
 
@@ -2333,6 +2342,13 @@
 						]
 					},
 					{
+						label: 'Other Historic Maps',
+						collapsed: true,
+						children: [
+							{ label: 'Port Hacking Tourist 1966', layer: raster_geoserver_nla_port_hacking_tourist_1966 },
+						]
+					},
+					{
 						label: 'Topo Map Downloads',
 						collapsed: true,
 						children: [
@@ -2394,7 +2410,7 @@
 						collapsed: true,
 						children: [
 							{ label: 'Trig stations', layer: vector_ss_trig },
-							{ label: 'Trig progress sketch 1912 ', layer: raster_nla_trig_progress_sketch_1912 },
+							{ label: 'Trig progress sketch 1912 ', layer: raster_geoserver_nla_trig_progress_sketch_1912 },
 						]
 					},
 					{
@@ -2738,7 +2754,8 @@
 				{ label: 'Public hot all', layer: basemap_raster_strava_public_hot_all },
 				{ label: 'Public hot run', layer: basemap_raster_strava_public_hot_run },
 				{ label: 'NSW SVTM veg class and pct layers', layer: basemap_raster_env_svtm_veg_group },
-				{ label: 'Trig progress sketch 1912 ', layer: raster_nla_trig_progress_sketch_1912 },
+				{ label: 'Trig progress sketch 1912 ', layer: raster_geoserver_nla_trig_progress_sketch_1912 },
+				{ label: 'Port Hacking Tourist 1966', layer: raster_geoserver_nla_port_hacking_tourist_1966 },
 				raster_ss_historic_imagery_list,
 				raster_env_fesm_wms_list,
 				raster_geoserver_topo_100k,

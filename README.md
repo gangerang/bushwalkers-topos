@@ -44,3 +44,4 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - weather radar layer - from rain viewer, rain radar weather layer for most recent observations
 - add - NSW historic imagery photos - replaces the sydney only layer, served via geoserver
 - add - improve usability on mobile - when viewing on a small screen, basemaps and layers selectable via a popup modal instead of tree
+- add - port hacking tourist 1966 - tourist map of port hacking from 1966, served via geoserver
