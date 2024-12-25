@@ -46,3 +46,4 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - improve usability on mobile - when viewing on a small screen, basemaps and layers selectable via a popup modal instead of tree
 - add - port hacking tourist 1966 - tourist map of port hacking from 1966, served via geoserver
 - add - bruces walk 1931 map - tourist map of bruces walk from 1931, served via geoserver
+- add - ssc historic aerial layers - historic aerial layers of sutherland shire council from 1930 to 2010

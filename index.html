@@ -1252,9 +1252,21 @@
 				popupField: 'Class'
 			});
 			
-			// sutherland shire 1930 historic aerial imagery
-			const image_ssc_aerial_1930 = L.esri.imageMapLayer({url: 'https://geoimage.ssc.nsw.gov.au/arcgis/rest/services/AER_1930FEB/ImageServer'
-			});
+			// sutherland shire historic aerial imagery
+			const image_ssc_aerial_1930 = L.esri.imageMapLayer({url: 'https://geoimage.ssc.nsw.gov.au/arcgis/rest/services/AER_1930FEB/ImageServer'});
+			const image_ssc_aerial_1942 = L.esri.imageMapLayer({url: 'https://geoimage.ssc.nsw.gov.au/arcgis/rest/services/AER_1942/ImageServer'});	
+			const image_ssc_aerial_1943 = L.esri.imageMapLayer({url: 'https://geoimage.ssc.nsw.gov.au/arcgis/rest/services/AER_1943_COMPOSITE/ImageServer'});
+			const image_ssc_aerial_1955 = L.esri.imageMapLayer({url: 'https://geoimage.ssc.nsw.gov.au/arcgis/rest/services/AER_1955/ImageServer'});	
+			const image_ssc_aerial_1961 = L.esri.imageMapLayer({url: 'https://geoimage.ssc.nsw.gov.au/arcgis/rest/services/AER_1961/ImageServer'});	
+			const image_ssc_aerial_1970 = L.esri.imageMapLayer({url: 'https://geoimage.ssc.nsw.gov.au/arcgis/rest/services/AER_1970/ImageServer'});	
+			const image_ssc_aerial_1978 = L.esri.imageMapLayer({url: 'https://geoimage.ssc.nsw.gov.au/arcgis/rest/services/AER_1978/ImageServer'});	
+			const image_ssc_aerial_1984 = L.esri.imageMapLayer({url: 'https://geoimage.ssc.nsw.gov.au/arcgis/rest/services/AER_1984OCT/ImageServer'});	
+			const image_ssc_aerial_1994 = L.esri.imageMapLayer({url: 'https://geoimage.ssc.nsw.gov.au/arcgis/rest/services/AER_1994JUN/ImageServer'});	
+			const image_ssc_aerial_2001 = L.esri.imageMapLayer({url: 'https://geoimage.ssc.nsw.gov.au/arcgis/rest/services/AER_2001SEP/ImageServer'});	
+			const image_ssc_aerial_2001_bf = L.esri.imageMapLayer({url: 'https://geoimage.ssc.nsw.gov.au/arcgis/rest/services/AER_BUSHFIRES2001/ImageServer'});	
+			const image_ssc_aerial_2005 = L.esri.imageMapLayer({url: 'https://geoimage.ssc.nsw.gov.au/arcgis/rest/services/AER_2005JAN/ImageServer'});	
+			const image_ssc_aerial_2006 = L.esri.imageMapLayer({url: 'https://geoimage.ssc.nsw.gov.au/arcgis/rest/services/AER_2006MAR/ImageServer'});	
+			const image_ssc_aerial_2010 = L.esri.imageMapLayer({url: 'https://geoimage.ssc.nsw.gov.au/arcgis/rest/services/AER_2010JAN/ImageServer'});
 
 			///////////////////////////
 			// 2019-20 fire layers
@@ -2474,6 +2486,19 @@
 						children: [
 							...raster_ss_historic_imagery_list,
 							{ label: 'SSC 1930', layer: image_ssc_aerial_1930 },
+							{ label: 'SSC 1942', layer: image_ssc_aerial_1942 },
+							{ label: 'SSC 1943', layer: image_ssc_aerial_1943 },
+							{ label: 'SSC 1955', layer: image_ssc_aerial_1955 },
+							{ label: 'SSC 1961', layer: image_ssc_aerial_1961 },
+							{ label: 'SSC 1970', layer: image_ssc_aerial_1970 },
+							{ label: 'SSC 1978', layer: image_ssc_aerial_1978 },
+							{ label: 'SSC 1984', layer: image_ssc_aerial_1984 },
+							{ label: 'SSC 1994', layer: image_ssc_aerial_1994 },
+							{ label: 'SSC 2001', layer: image_ssc_aerial_2001 },
+							{ label: 'SSC 2001 BF', layer: image_ssc_aerial_2001_bf },
+							{ label: 'SSC 2005', layer: image_ssc_aerial_2005 },
+							{ label: 'SSC 2006', layer: image_ssc_aerial_2006 },
+							{ label: 'SSC 2010', layer: image_ssc_aerial_2010 },
 						]
 					},
 					{
@@ -2772,6 +2797,20 @@
 				raster_env_fesm_wms_list,
 				raster_geoserver_topo_100k,
 				raster_geoserver_topo_50k,
+				{ label: 'SSC 1930', layer: image_ssc_aerial_1930 },
+				{ label: 'SSC 1942', layer: image_ssc_aerial_1942 },
+				{ label: 'SSC 1943', layer: image_ssc_aerial_1943 },
+				{ label: 'SSC 1955', layer: image_ssc_aerial_1955 },
+				{ label: 'SSC 1961', layer: image_ssc_aerial_1961 },
+				{ label: 'SSC 1970', layer: image_ssc_aerial_1970 },
+				{ label: 'SSC 1978', layer: image_ssc_aerial_1978 },
+				{ label: 'SSC 1984', layer: image_ssc_aerial_1984 },
+				{ label: 'SSC 1994', layer: image_ssc_aerial_1994 },
+				{ label: 'SSC 2001', layer: image_ssc_aerial_2001 },
+				{ label: 'SSC 2001 BF', layer: image_ssc_aerial_2001_bf },
+				{ label: 'SSC 2005', layer: image_ssc_aerial_2005 },
+				{ label: 'SSC 2006', layer: image_ssc_aerial_2006 },
+				{ label: 'SSC 2010', layer: image_ssc_aerial_2010 },
 			);
 
 			// load canyon layer from ropewiki
