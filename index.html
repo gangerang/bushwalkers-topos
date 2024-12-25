@@ -1252,7 +1252,10 @@
 				popupField: 'Class'
 			});
 			
-			
+			// sutherland shire 1930 historic aerial imagery
+			const image_ssc_aerial_1930 = L.esri.imageMapLayer({url: 'https://geoimage.ssc.nsw.gov.au/arcgis/rest/services/AER_1930FEB/ImageServer'
+			});
+
 			///////////////////////////
 			// 2019-20 fire layers
 			// geebam - Google Earth Engine Burnt Area Map
@@ -2470,6 +2473,7 @@
 						collapsed: true,
 						children: [
 							...raster_ss_historic_imagery_list,
+							{ label: 'SSC 1930', layer: image_ssc_aerial_1930 },
 						]
 					},
 					{
