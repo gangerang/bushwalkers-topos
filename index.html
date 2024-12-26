@@ -805,7 +805,13 @@
 				maxZoom: 21,
 				//maxNativeZoom: 16,
 				attribution: attrib_nsw_ss
-			});			
+			});
+
+			// NSW raster imagery layer
+			const basemap_raster_ss_nsw_imagery_spot = L.tileLayer('https://portal.spatial.nsw.gov.au/tileservices/Hosted/Spot2020Q1/MapServer/tile/{z}/{y}/{x}', {
+				maxZoom: 17,
+				attribution: attrib_nsw_ss
+			});
 			
 			// NSW poi topo basemap
 			const basemap_raster_ss_nsw_poi_topo = L.esri.tiledMapLayer({url: 'https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/LPIMap/MapServer',
@@ -2260,6 +2266,7 @@
 						{ label: 'SIX raster topo', layer: basemap_raster_ss_nsw_raster_topo },
 						{ label: 'SIX series 1 topo', layer: basemap_raster_ss_nsw_raster_topo_s1 },
 						{ label: 'SIX imagery', layer: basemap_raster_ss_nsw_imagery },
+						{ label: 'NSW SPOT imagery', layer: basemap_raster_ss_nsw_imagery_spot },
 						{ label: 'Google imagery', layer: basemap_raster_google_imagery },
 						{ label: 'ESRI topo raster', layer: basemap_raster_esri_topo },
 						{ label: 'ESRI OSM', layer: basemap_vectortile_esri_basemap },
