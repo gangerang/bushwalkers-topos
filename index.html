@@ -788,6 +788,7 @@
 			const attrib_fcnsw = '&copy; State Government of NSW and Forestry Corporation of NSW 2024' + licence_cc_by_4_0
 			const attrib_ofm = '<a href="https://openfreemap.org">OpenFreeMap</a> <a href="https://openmaptiles.org">&copy; OpenMapTiles</a> Data from <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 			const attrib_opentilemaps = 'Map data: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM & Map display: &copy; <a href="http://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+			const attrib_rfs = '&copy; State of New South Wales (NSW Rural Fire Service). For current information go to <a href="www.rfs.nsw.gov.au">www.rfs.nsw.gov.au.</a>'
 
 			///////////////////////////
 			//	basemaps
@@ -2008,7 +2009,16 @@
                 console.error("Failed to fetch radar data:", error);
             });
 
+			///////////////////////////
+			// rfs fires near me / major incidents  
+			///////////////////////////
 
+			const vector_rfs_bushfire_boundaries = L.esri.featureLayer({
+				url: 'https://services-ap1.arcgis.com/ypkPEy1AmwPKGNNv/ArcGIS/rest/services/Near_Real_Time_Bushfire_Boundaries_view/FeatureServer/3',
+				fillColor: '#ff0000', // red
+				color: '#ff0000', // red
+				where: "state='NSW'"
+			});	
 
 			///////////////////////////
 			// functions to display canyons from ropewiki
@@ -2249,6 +2259,12 @@
 				</a>
 				`
 			);
+			bindPopupToLayer(vector_rfs_bushfire_boundaries,
+				`{fire_type} at {fire_name}<br>
+				{area_ha} ha in size<br>
+				Managed by {agency}
+				`
+			);
 
 			///////////////////////////
 			// layer control 
@@ -2412,6 +2428,7 @@
 						label: 'Fire',
 						collapsed: true,
 						children: [
+							{ label: 'Current bushfire boundaries', layer: vector_rfs_bushfire_boundaries },
 							...raster_env_fesm_wms_list,
 						]
 					},

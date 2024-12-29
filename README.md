@@ -48,3 +48,4 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - bruces walk 1931 map - tourist map of bruces walk from 1931, served via geoserver
 - add - ssc historic aerial layers - historic aerial layers of sutherland shire council from 1930 to 2010
 - add - nsw spot imagery - basemap from spot satellite of aerial imagery for nsw. from 2020 so shows fire extent
+- add - nsw fires - fire boundaries from 'near real time bushfire boundaries' featureservice
