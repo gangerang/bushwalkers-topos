@@ -2010,7 +2010,7 @@
             });
 
 			///////////////////////////
-			// rfs fires near me / major incidents  
+			// rfs fires near me / major incidents / hotspots
 			///////////////////////////
 
 			const vector_rfs_bushfire_boundaries = L.esri.featureLayer({
@@ -2018,6 +2018,16 @@
 				fillColor: '#ff0000', // red
 				color: '#ff0000', // red
 				where: "state='NSW'"
+			});	
+
+			// dea hotspots
+
+			const raster_ga_hotspots_three_days = L.tileLayer.wms('https://hotspots.dea.ga.gov.au/geoserver/wms?', {
+				layers: 'public:hotspots_three_days',
+				format: 'image/png',
+				transparent: true,
+				version: '1.1.0',
+				attribution: attrib_ga,
 			});	
 
 			///////////////////////////
@@ -2429,7 +2439,14 @@
 						collapsed: true,
 						children: [
 							{ label: 'Current bushfire boundaries', layer: vector_rfs_bushfire_boundaries },
-							...raster_env_fesm_wms_list,
+							{ label: 'DEA Hotspots', layer: raster_ga_hotspots_three_days },
+							{
+								label: 'Fire extent and severity mapping',
+								collapsed: true,
+								children: [
+									...raster_env_fesm_wms_list,
+								]
+							},
 						]
 					},
 					{
@@ -2836,6 +2853,7 @@
 				{ label: 'SSC 2006', layer: image_ssc_aerial_2006 },
 				{ label: 'SSC 2010', layer: image_ssc_aerial_2010 },
 				{ label: 'NSW 5m hillshade', layer: basemap_raster_geonsw_hillshade_5m },
+				{ label: 'DEA Hotspots', layer: raster_ga_hotspots_three_days },
 			);
 
 			// load canyon layer from ropewiki
