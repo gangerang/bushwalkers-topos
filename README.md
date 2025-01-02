@@ -50,3 +50,4 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - nsw spot imagery - basemap from spot satellite of aerial imagery for nsw. from 2020 so shows fire extent
 - add - nsw fires - fire boundaries from 'near real time bushfire boundaries' featureservice
 - add - dea hotspots - fire hotspots from ga dea product. shows fire detection from satellite imagery from last 3 days
+- add - sentinel 2 basemaps - latest sentinel 2 imagery via esri. at worst, 5 days old. both colour and short wave infrared
