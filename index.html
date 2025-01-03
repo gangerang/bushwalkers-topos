@@ -156,6 +156,16 @@
 				background-color: #f1f1f1;
 				cursor: pointer;
 			}
+			.label-icon {
+				font-size: 12px;
+				color: black;
+				background-color: white;
+				padding: 2px 4px;
+				border-radius: 3px;
+				border: 1px solid #ccc;
+				box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+				pointer-events: none; /* Prevent interaction with labels */
+			}
 		</style>
 	</head>	
     <body>
@@ -280,15 +290,13 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
 
 		<!-- leaflet-geoman https://github.com/geoman-io/leaflet-geoman -->
-		<link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.css" />
-		<script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.js"></script>
+		<link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.18.1/dist/leaflet-geoman.css" />
+		<script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.18.1/dist/leaflet-geoman.js"></script>
 
         <script type="text/javascript">
 
 			// Define map with initial view
             const map = L.map('map', {
-				zoomDelta: 0.5,
-				zoomSnap: 0.5,
 				wheelPxPerZoomLevel: 50
 			}).setView([-33.754, 150.270], 10);
 
@@ -2044,15 +2052,133 @@
 				attribution: attrib_ga,
 			});	
 
-			// geoman features layer
-			const drawnItems = new L.FeatureGroup();
-			map.addLayer(drawnItems);
+			///////////////////////////
+			// geoman functionality
+			///////////////////////////
 
-			// Add drawn items to the FeatureGroup
-			map.on('pm:create', (e) => {
-				drawnItems.addLayer(e.layer);
+			// define layer for geojson features
+			const drawnGeojsonLayer = new L.FeatureGroup();
+			map.addLayer(drawnGeojsonLayer);
+			
+			// allow editing of labels if label edit toggled
+			let labelEditingActive = false; // Global flag for label editing mode
+
+			// function for editing of labels
+			function editLabel(layer) {
+				const currentName = layer.feature?.properties?.name || '';
+				const newName = prompt('Enter feature name:', currentName);
+				if (newName !== null) {
+					layer.feature = layer.feature || { type: 'Feature', properties: {}, geometry: null };
+					layer.feature.properties.name = newName;
+					if (newName) {
+						layer.bindTooltip(newName, { permanent: false, direction: 'auto', sticky: true }).openTooltip();
+					} else {
+						layer.unbindTooltip();
+					}
+				}
+			}
+
+			// On mouse over, show label and have it follow the mouse
+			drawnGeojsonLayer.on('mouseover', function (e) {
+				const name = e.layer.feature?.properties?.name;
+				if (name) {
+					e.layer.bindTooltip(name, { permanent: false, direction: 'auto', sticky: true }).openTooltip();
+				}
+			});
+			drawnGeojsonLayer.on('mouseout', function (e) {
+				e.layer.closeTooltip();
 			});
 
+			
+			// define layer to hold geojson labels
+			const labelLayer = L.layerGroup();
+
+			function updateLabels() {
+				labelLayer.clearLayers(); // Clear any existing labels
+
+				drawnGeojsonLayer.eachLayer(layer => {
+					const name = layer.feature?.properties?.name;
+					if (name) {
+						const label = L.marker(layer.getBounds().getCenter(), {
+							icon: L.divIcon({
+							className: 'label-icon', // Custom class for styling
+							html: `<div>${name}</div>`,
+							iconSize: null, // Size adjusts to content
+						})
+					});
+					labelLayer.addLayer(label);
+					}
+				});
+			}
+			
+			// Add drawn items to the FeatureGroup
+			map.on('pm:create', function (e) {
+				const layer = e.layer;
+
+				// Add metadata based on the layer type
+
+				// circle marker
+				if (layer instanceof L.CircleMarker) {
+					layer.feature = {
+						type: 'Feature',
+						properties: {
+							markerType: 'circle'
+						},
+						geometry: null
+					};
+
+				// text marker
+				} else if (layer.options.textMarker) {
+					layer.feature = {
+						type: 'Feature',
+						properties: {
+							markerType: 'text',
+						},
+						geometry: null
+					};
+
+				// everything else
+				} else {
+					layer.feature = {
+						type: 'Feature',
+						properties: {
+							markerType: 'default'
+						},
+						geometry: null
+					};
+				}
+
+				// Add the layer to the drawn features group
+				drawnGeojsonLayer.addLayer(layer);
+			});
+
+			map.on('pm:edit', function (e) {
+				e.layers.eachLayer(function (layer) {
+					if (layer.feature?.properties?.name) {
+						layer.bindTooltip(layer.feature.properties.name, { permanent: false, direction: 'auto', sticky: true });
+					} else {
+						layer.unbindTooltip();
+					}
+					if (layer.options.textMarker) {
+						layer.feature = {
+							type: 'Feature',
+							properties: {
+								markerType: 'text',
+								text: layer.options.text
+							},
+							geometry: null
+						};
+					}
+				});
+				updateLabels();
+			});
+
+			drawnGeojsonLayer.on('click', function (e) {
+				if (labelEditingActive) {
+					editLabel(e.layer);
+					updateLabels();
+				}
+			});
 
 			///////////////////////////
 			// functions to display canyons from ropewiki
@@ -2591,7 +2717,8 @@
 						label: 'Drawn features',
 						collapsed: true,
 						children: [
-							{ label: 'Drawn features', layer: drawnItems },
+							{ label: 'Show features', layer: drawnGeojsonLayer },
+							{ label: 'Show labels', layer: labelLayer },
 						]
 					},			
 					{
@@ -2967,7 +3094,39 @@
 				drawCircle: false,
 				cutPolygon: false,
 				rotateMode: false
-			}); 
+			});
+
+			// Custom button for toggling label editing
+			const editLabelButton = L.Control.extend({
+				onAdd: function () {
+					const button = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+					button.title = 'Edit labels';
+					button.style.width = '30px';
+					button.style.height = '30px';
+					button.style.lineHeight = '30px';
+					button.style.display = 'flex';
+					button.style.alignItems = 'center';
+					button.style.justifyContent = 'center';
+					button.style.textDecoration = 'none';
+					button.style.fontSize = '16px'; // Adjust font size for the "L"
+					button.style.fontWeight = 'bold'; // Make the "L" bold
+					button.style.color = '#000';
+					button.style.backgroundColor = '#fff'; // Set white background
+					button.style.borderBottom = '1px solid #ccc';
+
+					// Button text
+					button.textContent = 'L';
+
+					button.onclick = function () {
+						labelEditingActive = !labelEditingActive;
+						button.style.backgroundColor = labelEditingActive ? 'lightblue' : '#fff'; // Indicate active state
+					};
+					return button;
+				},
+			});
+
+			// Add the custom button to the map
+			map.addControl(new editLabelButton({ position: 'topleft' }));
 
 			// Create import, export, and clear controls
 			L.Control.DataButtons = L.Control.extend({
@@ -3038,13 +3197,22 @@
 					// Remove border from last button
 					buttons[buttons.length - 1].style.borderBottom = 'none';
 
-					// Export click handler
-					L.DomEvent.on(exportButton, 'click', function(e) {
+					// Export / download / save click handler
+					L.DomEvent.on(exportButton, 'click', function (e) {
 						L.DomEvent.preventDefault(e);
-						const geoJSON = drawnItems.toGeoJSON();
-						const dataStr = JSON.stringify(geoJSON);
-						const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-						
+
+						// Update text for all text markers
+						drawnGeojsonLayer.eachLayer(layer => {
+							if (layer.options.textMarker) {
+								layer.feature.properties.text = layer.pm.getText(); // Update text dynamically
+							}
+						});
+
+						// Convert the drawn layer group to GeoJSON
+						const geoJSON = drawnGeojsonLayer.toGeoJSON();
+
+						const dataStr = JSON.stringify(geoJSON, null, 4); // Pretty-print for readability
+						const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
 						const exportFileDefaultName = 'drawn-features.geojson';
 						const linkElement = document.createElement('a');
 						linkElement.setAttribute('href', dataUri);
@@ -3052,7 +3220,7 @@
 						linkElement.click();
 					});
 
-					// Import click handler
+					// Import / upload click handler
 					L.DomEvent.on(importButton, 'click', function(e) {
 						L.DomEvent.preventDefault(e);
 						fileInput.click();
@@ -3062,29 +3230,61 @@
 					L.DomEvent.on(clearButton, 'click', function(e) {
 						L.DomEvent.preventDefault(e);
 						if (confirm('Are you sure you want to clear all features?')) {
-							drawnItems.clearLayers();
+							drawnGeojsonLayer.clearLayers();
 						}
 					});
 
 					// File input change handler
-					L.DomEvent.on(fileInput, 'change', function(e) {
+					L.DomEvent.on(fileInput, 'change', function (e) {
 						const file = e.target.files[0];
 						const reader = new FileReader();
-						
-						reader.onload = function(e) {
+
+						reader.onload = function (e) {
 							try {
 								const geoJSON = JSON.parse(e.target.result);
+
 								L.geoJSON(geoJSON, {
-									onEachFeature: function(feature, layer) {
-										drawnItems.addLayer(layer);
+									pointToLayer: function (feature, latlng) {
+										const markerType = feature.properties.markerType;
+
+										if (markerType === 'circle') {
+											return L.circleMarker(latlng, {
+												// default geoman styling - nearly the same but original has thicker border
+												radius: 10,
+												color: '#3388ff',
+												opacity: 1.0,
+												weight: 3,
+												fillColor: '#3388ff',
+												fillOpacity: 0.2,
+												lineCap: 'round',
+												lineJoin: 'round'
+											});
+										} else if (markerType === 'text') {
+											return L.marker(latlng, {
+												textMarker: true,
+												text: feature.properties.text,
+												icon: L.divIcon({
+													className: 'custom-text-marker',
+													html: feature.properties.text || 'Text',
+													iconSize: null
+												})
+											});
+										} else {
+											return L.marker(latlng); // Default marker
+										}
+									},
+									onEachFeature: function (feature, layer) {
+										drawnGeojsonLayer.addLayer(layer);
 									}
 								});
-								map.fitBounds(drawnItems.getBounds());
+
+								updateLabels(); // Regenerate labels after importing
+								map.fitBounds(drawnGeojsonLayer.getBounds());
 							} catch (error) {
 								alert('Error loading GeoJSON file: ' + error.message);
 							}
 						};
-						
+
 						reader.readAsText(file);
 						fileInput.value = ''; // Reset input
 					});
