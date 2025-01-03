@@ -52,4 +52,4 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - dea hotspots - fire hotspots from ga dea product. shows fire detection from satellite imagery from last 3 days
 - add - sentinel 2 basemaps - latest sentinel 2 imagery via esri. at worst, 5 days old. both colour and short wave infrared
 - add - feature drawing - using geoman, ability to add features to a map such as points, lines and text
-- add - geojson export - ability to export drawn features to a geojson file
+- add - geojson import and export - ability to import or export drawn features to a geojson file
