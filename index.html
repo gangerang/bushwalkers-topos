@@ -2950,6 +2950,52 @@
 				rotateMode: false
 			}); 
 
+			// Add export control button with save icon
+			L.Control.ExportButton = L.Control.extend({
+				onAdd: function(map) {
+					const button = L.DomUtil.create('button', 'export-button leaflet-bar');
+					
+					// Create SVG save icon
+					button.innerHTML = `
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" 
+							stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+							<polyline points="17 21 17 13 7 13 7 21"/>
+							<polyline points="7 3 7 8 15 8"/>
+						</svg>
+					`;
+
+					// Style the button
+					button.style.width = '35px';
+					button.style.height = '35px';
+					button.style.backgroundColor = 'white';
+					button.style.border = '2px solid rgba(0,0,0,0.2)';
+					button.style.cursor = 'pointer';
+					button.style.display = 'flex';
+					button.style.alignItems = 'center';
+					button.style.justifyContent = 'center';
+					button.title = 'Save to geojson';  // Tooltip on hover
+
+					L.DomEvent.on(button, 'click', function() {
+						const geoJSON = drawnItems.toGeoJSON();
+						const dataStr = JSON.stringify(geoJSON);
+						const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+						
+						const exportFileDefaultName = 'features.geojson';
+						const linkElement = document.createElement('a');
+						linkElement.setAttribute('href', dataUri);
+						linkElement.setAttribute('download', exportFileDefaultName);
+						linkElement.click();
+					});
+
+					return button;
+				}
+			});
+
+			// Add the export control to the map
+			new L.Control.ExportButton({ position: 'topleft' }).addTo(map);
+
+
         </script>
     </body>
 </html>
