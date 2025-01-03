@@ -279,6 +279,10 @@
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
 
+		<!-- leaflet-geoman https://github.com/geoman-io/leaflet-geoman -->
+		<link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.css" />
+		<script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.js"></script>
+
         <script type="text/javascript">
 
 			// Define map with initial view
@@ -2924,6 +2928,14 @@
 
 			// search box
 			map.addControl(searchControl);
+
+			// geoman - see https://geoman.io/docs/leaflet/
+			map.pm.addControls({  
+				position: 'topleft',
+				drawCircle: false,
+				cutPolygon: false,
+				rotateMode: false
+			}); 
 
         </script>
     </body>
