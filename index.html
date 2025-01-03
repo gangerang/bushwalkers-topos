@@ -2215,9 +2215,10 @@
 			bindPopupToLayer(vector_fcnsw_estate, "<b>{OperationalSFName}</b><br>Reserve No. {OperationalSFNo}");
 			bindPopupToLayer(vector_env_crownland_reserves, 
 				`{crownlregno}<br>
-				{reserve_name}<br>
+				Name: {reserve_name}<br>
+				Reserve number: {reserve_no}<br>
 				{purpose}<br>
-				{manager}
+				Managed by {manager}
 				`
 			);
 			bindPopupToLayer(vector_env_crownland_enclosure, "{account_class}<br>{purpose}");
