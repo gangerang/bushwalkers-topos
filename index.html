@@ -2044,7 +2044,14 @@
 				attribution: attrib_ga,
 			});	
 
-			// sentinel 2 latest imagery
+			// geoman features layer
+			const drawnItems = new L.FeatureGroup();
+			map.addLayer(drawnItems);
+
+			// Add drawn items to the FeatureGroup
+			map.on('pm:create', (e) => {
+				drawnItems.addLayer(e.layer);
+			});
 
 
 			///////////////////////////
@@ -2580,7 +2587,13 @@
 							{ label: 'GA Himawari', layer: raster_ga_himawari },
 							]
 					},
-					
+					{
+						label: 'Drawn features',
+						collapsed: true,
+						children: [
+							{ label: 'Drawn features', layer: drawnItems },
+						]
+					},			
 					{
 						label: 'Map grids',
 						collapsed: true,
