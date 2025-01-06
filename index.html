@@ -2052,6 +2052,16 @@
 				attribution: attrib_ga,
 			});	
 
+			// load gnb placename proposals
+			const vector_hosted_gnb_proposals_geojson = createGeoJsonLayer({
+				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/gnb_naming_proposals.geojson',
+				// styleOptions: {
+				// 	color: "#3388ff",
+				// 	weight: 2,
+				// 	opacity: 1
+				// }
+			});
+
 			///////////////////////////
 			// geoman functionality
 			///////////////////////////
@@ -2426,6 +2436,13 @@
 				Managed by {agency}
 				`
 			);
+			bindPopupToLayer(vector_hosted_gnb_proposals_geojson,
+				`Proposed name: {geographical_name}<br>
+				Type: {designation}<br>
+				Advertised: {date_start} to {date_end}<br>
+				<a href="{advertisement_url}" target="_blank">View and comment on proposal</a>
+				`
+			);
 
 			///////////////////////////
 			// layer control 
@@ -2627,6 +2644,13 @@
 						children: [
 							{ label: 'Trig stations', layer: vector_ss_trig },
 							{ label: 'Trig progress sketch 1912 ', layer: raster_geoserver_nla_trig_progress_sketch_1912 },
+						]
+					},
+					{
+						label: 'Placenames',
+						collapsed: true,
+						children: [
+							{ label: 'NSW GNB current proposals', layer: vector_hosted_gnb_proposals_geojson },
 						]
 					},
 					{
