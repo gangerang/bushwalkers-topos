@@ -2104,19 +2104,26 @@
 			const labelLayer = L.layerGroup();
 
 			function updateLabels() {
-				labelLayer.clearLayers(); // Clear any existing labels
-
+				labelLayer.clearLayers();
 				drawnGeojsonLayer.eachLayer(layer => {
 					const name = layer.feature?.properties?.name;
 					if (name) {
-						const label = L.marker(layer.getBounds().getCenter(), {
+						// Get the position based on layer type - points don't have get bounds
+						let position;
+						if (layer instanceof L.CircleMarker || layer instanceof L.Marker) {
+							position = layer.getLatLng();
+						} else {
+							position = layer.getBounds().getCenter();
+						}
+							
+						const label = L.marker(position, {
 							icon: L.divIcon({
-							className: 'label-icon', // Custom class for styling
-							html: `<div>${name}</div>`,
-							iconSize: null, // Size adjusts to content
-						})
-					});
-					labelLayer.addLayer(label);
+								className: 'label-icon',
+								html: `<div>${name}</div>`,
+								iconSize: null,
+							})
+						});
+						labelLayer.addLayer(label);
 					}
 				});
 			}
@@ -3225,6 +3232,7 @@
 				}
 				
 				if (drawnGeojsonLayer.getLayers().length > 0) {
+					console.log(drawnGeojsonLayer instanceof L.FeatureGroup)
 					map.fitBounds(drawnGeojsonLayer.getBounds());
 				}
 			}
@@ -3370,6 +3378,7 @@
 								loadGeoJSONToMap(geoJSON);
 							} catch (error) {
 								alert('Error loading GeoJSON file: ' + error.message);
+								console.error('Error loading GeoJSON file: ', error.message);
 							}
 						};
 
