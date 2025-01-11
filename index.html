@@ -3152,6 +3152,83 @@
 			// Add the custom button to the map
 			map.addControl(new editLabelButton({ position: 'topleft' }));
 
+			// Shared utility to save GeoJSON to a shareable link
+			async function saveGeoJSONToLink() {
+				const geoJSON = drawnGeojsonLayer.toGeoJSON();
+				if (!geoJSON.features || geoJSON.features.length === 0) {
+					alert('No features drawn to save!');
+					return;
+				}
+				try {
+					const response = await fetch('https://supabasekong-is8gocowgsckokooskwo8kww.cloud.al3x.au/rest/v1/rpc/insert_geojson', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+							'apikey': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzdXBhYmFzZSIsImlhdCI6MTczNjE2NTUyMCwiZXhwIjo0ODkxODM5MTIwLCJyb2xlIjoiYW5vbiJ9.Hk0QfuKlTOM2tmJFsYS6iDptxp13qlrR-BLaueeHVr0'
+						},
+						body: JSON.stringify({ geojson: geoJSON })
+					});
+					if (!response.ok) {
+						throw new Error('Failed to save GeoJSON');
+					}
+					const uuid = await response.json();
+					const shareableURL = `${window.location.origin}?id=${uuid}`;
+					prompt('Copy this link to share:', shareableURL);
+				} catch (error) {
+					console.error('Error saving GeoJSON:', error);
+					alert('Error saving GeoJSON');
+				}
+			}
+
+			// Utility function to load GeoJSON to map
+			function loadGeoJSONToMap(geoJSON) {
+				if (!geoJSON) return;
+				
+				drawnGeojsonLayer.clearLayers();  // Clear existing layers before adding new ones
+				
+				L.geoJSON(geoJSON, {
+					pointToLayer: function(feature, latlng) {
+						const markerType = feature.properties.markerType;
+
+						if (markerType === 'circle') {
+							return L.circleMarker(latlng, {
+								radius: 10,
+								color: '#3388ff',
+								opacity: 1.0,
+								weight: 3,
+								fillColor: '#3388ff',
+								fillOpacity: 0.2,
+								lineCap: 'round',
+								lineJoin: 'round'
+							});
+						} else if (markerType === 'text') {
+							return L.marker(latlng, {
+								textMarker: true,
+								text: feature.properties.text,
+								icon: L.divIcon({
+									className: 'custom-text-marker',
+									html: feature.properties.text || 'Text',
+									iconSize: null
+								})
+							});
+						} else {
+							return L.marker(latlng);
+						}
+					},
+					onEachFeature: function(feature, layer) {
+						drawnGeojsonLayer.addLayer(layer);
+					}
+				});
+
+				if (typeof updateLabels === 'function') {
+					updateLabels(); // Regenerate labels after importing
+				}
+				
+				if (drawnGeojsonLayer.getLayers().length > 0) {
+					map.fitBounds(drawnGeojsonLayer.getBounds());
+				}
+			}
+
 			// Create import, export, and clear controls
 			L.Control.DataButtons = L.Control.extend({
 				onAdd: function(map) {
@@ -3169,6 +3246,18 @@
 					`;
 					exportButton.href = '#';
 					exportButton.title = 'Export Features';
+
+					// Link Button
+					const linkButton = L.DomUtil.create('a', 'leaflet-control-button', container);
+					linkButton.innerHTML = `
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" 
+							stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+							<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+						</svg>
+					`;
+					linkButton.href = '#';
+					linkButton.title = 'Create Shareable Link';
 					
 					// Import Button
 					const importButton = L.DomUtil.create('a', 'leaflet-control-button', container);
@@ -3204,7 +3293,7 @@
 					fileInput.accept = '.geojson,application/json';
 					fileInput.style.display = 'none';
 
-					// Style all buttons to match Leaflet controls
+					// Style all buttons
 					const buttons = container.getElementsByClassName('leaflet-control-button');
 					for (let button of buttons) {
 						button.style.width = '30px';
@@ -3221,21 +3310,33 @@
 					// Remove border from last button
 					buttons[buttons.length - 1].style.borderBottom = 'none';
 
-					// Export / download / save click handler
-					L.DomEvent.on(exportButton, 'click', function (e) {
+					// Link button click handler
+					L.DomEvent.on(linkButton, 'click', async function(e) {
+						L.DomEvent.preventDefault(e);
+						
+						// Update text for all text markers
+						drawnGeojsonLayer.eachLayer(layer => {
+							if (layer.options.textMarker) {
+								layer.feature.properties.text = layer.pm.getText();
+							}
+						});
+
+						await saveGeoJSONToLink();
+					});
+
+					// Export click handler
+					L.DomEvent.on(exportButton, 'click', function(e) {
 						L.DomEvent.preventDefault(e);
 
 						// Update text for all text markers
 						drawnGeojsonLayer.eachLayer(layer => {
 							if (layer.options.textMarker) {
-								layer.feature.properties.text = layer.pm.getText(); // Update text dynamically
+								layer.feature.properties.text = layer.pm.getText();
 							}
 						});
 
-						// Convert the drawn layer group to GeoJSON
 						const geoJSON = drawnGeojsonLayer.toGeoJSON();
-
-						const dataStr = JSON.stringify(geoJSON); // Compact JSON string (no pretty-printing)
+						const dataStr = JSON.stringify(geoJSON);
 						const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
 						const exportFileDefaultName = 'drawn-features.geojson';
 						const linkElement = document.createElement('a');
@@ -3244,7 +3345,7 @@
 						linkElement.click();
 					});
 
-					// Import / upload click handler
+					// Import click handler
 					L.DomEvent.on(importButton, 'click', function(e) {
 						L.DomEvent.preventDefault(e);
 						fileInput.click();
@@ -3259,51 +3360,14 @@
 					});
 
 					// File input change handler
-					L.DomEvent.on(fileInput, 'change', function (e) {
+					L.DomEvent.on(fileInput, 'change', function(e) {
 						const file = e.target.files[0];
 						const reader = new FileReader();
 
-						reader.onload = function (e) {
+						reader.onload = function(e) {
 							try {
 								const geoJSON = JSON.parse(e.target.result);
-
-								L.geoJSON(geoJSON, {
-									pointToLayer: function (feature, latlng) {
-										const markerType = feature.properties.markerType;
-
-										if (markerType === 'circle') {
-											return L.circleMarker(latlng, {
-												// default geoman styling - nearly the same but original has thicker border
-												radius: 10,
-												color: '#3388ff',
-												opacity: 1.0,
-												weight: 3,
-												fillColor: '#3388ff',
-												fillOpacity: 0.2,
-												lineCap: 'round',
-												lineJoin: 'round'
-											});
-										} else if (markerType === 'text') {
-											return L.marker(latlng, {
-												textMarker: true,
-												text: feature.properties.text,
-												icon: L.divIcon({
-													className: 'custom-text-marker',
-													html: feature.properties.text || 'Text',
-													iconSize: null
-												})
-											});
-										} else {
-											return L.marker(latlng); // Default marker
-										}
-									},
-									onEachFeature: function (feature, layer) {
-										drawnGeojsonLayer.addLayer(layer);
-									}
-								});
-
-								updateLabels(); // Regenerate labels after importing
-								map.fitBounds(drawnGeojsonLayer.getBounds());
+								loadGeoJSONToMap(geoJSON);
 							} catch (error) {
 								alert('Error loading GeoJSON file: ' + error.message);
 							}
@@ -3314,6 +3378,37 @@
 					});
 
 					return container;
+				}
+			});
+
+			// Add this outside the control definition - handles loading from URL
+			document.addEventListener('DOMContentLoaded', async () => {
+				const urlParams = new URLSearchParams(window.location.search);
+				const sharedId = urlParams.get('id');
+				
+				if (sharedId) {
+					try {
+						const response = await fetch('https://supabasekong-is8gocowgsckokooskwo8kww.cloud.al3x.au/rest/v1/rpc/get_geojson_by_id', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json',
+								'apikey': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzdXBhYmFzZSIsImlhdCI6MTczNjE2NTUyMCwiZXhwIjo0ODkxODM5MTIwLCJyb2xlIjoiYW5vbiJ9.Hk0QfuKlTOM2tmJFsYS6iDptxp13qlrR-BLaueeHVr0'
+							},
+							body: JSON.stringify({
+								record_id: sharedId
+							})
+						});
+
+						if (!response.ok) {
+							throw new Error('Failed to load shared GeoJSON');
+						}
+
+						const geoJSON = await response.json();
+						loadGeoJSONToMap(geoJSON);
+					} catch (error) {
+						console.error('Error loading shared GeoJSON:', error);
+						alert('Error loading shared GeoJSON');
+					}
 				}
 			});
 

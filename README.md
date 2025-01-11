@@ -54,3 +54,4 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - feature drawing - using geoman, ability to add features to a map such as points, lines and text
 - add - geojson import and export - ability to import or export drawn features to a geojson file
 - add - gnb proposals - layer with gnb proposed placenames
+- add - share via link - save drawn or loaded geojson to a link which can be shared and accessed again via the link
