@@ -3235,7 +3235,7 @@
 						// Convert the drawn layer group to GeoJSON
 						const geoJSON = drawnGeojsonLayer.toGeoJSON();
 
-						const dataStr = JSON.stringify(geoJSON, null, 4); // Pretty-print for readability
+						const dataStr = JSON.stringify(geoJSON); // Compact JSON string (no pretty-printing)
 						const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
 						const exportFileDefaultName = 'drawn-features.geojson';
 						const linkElement = document.createElement('a');
