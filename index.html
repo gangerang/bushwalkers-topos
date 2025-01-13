@@ -1658,26 +1658,73 @@
 			// zone 49-56s to cover australia
 			///////////////////////////	
 
-			function createUTMGridLayerGroup(zones) {
-				const layerGroup = L.layerGroup();
+			// Create a custom AMG66 grid constructor function
+			function createAMG66Grid(zone, isSouthern, options) {
+				return L.MetricGrid.extend({
+					options: {
+						proj4ProjDef: `+proj=utm +zone=${zone} +south +ellps=aust_SA +towgs84=-117.808,-51.536,137.784,0.303,0.446,0.234,-0.29 +units=m +no_defs`,
+						bounds: [[100000, 600000], [900000, 10000000]],
+						hundredKmSquareFunc: function(e, n) {
+							const UTMEast = [
+								"ABCDEFGH",
+								"JKLMNPQR",
+								"STUVWXYZ"
+							];
+							const UTMNorthGroup1 = [
+								"ABCDEFGHJKLMNPQRSTUV",
+								"FGHJKLMNPQRSTUVABCDE"
+							];
+							
+							const x = Math.floor(e / 100000);
+							let y = Math.floor(n / 100000);
+							const z = zone - 1;
+							
+							y -= 100;
+							
+							let r = "";
+							if ((x >= 1) && (x <= 8)) {                           
+								r = UTMEast[z % 3].charAt(x - 1);
+							} else {
+								r = '-';
+							}
+							r += UTMNorthGroup1[z % 2].charAt(19+((y+1) % 20));
+							return r;
+						},
+						...options
+					}
+				});
+			}
 
+			function createGridLayerGroup(zones, gridSystem = 'MGA2020') {
+				const layerGroup = L.layerGroup();
+				
 				zones.forEach(({ zone, isSouthern, color }) => {
 					const latLonClipBounds = isSouthern
 						? [[-45, -180 + (zone - 1) * 6], [-10, -180 + zone * 6]]
 						: [[0, -180 + (zone - 1) * 6], [80, -180 + zone * 6]];
-
-					const gridLayer = L.utmGrid(zone, isSouthern, {
-						color: color || '#000', // Default color is black if not specified
+						
+					const gridOptions = {
+						color: color || '#000',
 						latLonClipBounds: latLonClipBounds,
 						drawClip: false,
 						showAxisLabels: [100, 1000, 10000, 100000],
-						showSquareLabels: [100000], // Label 100km grid squares
+						showSquareLabels: [100000],
 						showAxis100km: true
-					});
+					};
 
+					let gridLayer;
+					if (gridSystem === 'AMG66') {
+						// Create AMG66 grid
+						const AMG66Grid = createAMG66Grid(zone, isSouthern, gridOptions);
+						gridLayer = new AMG66Grid();
+					} else {
+						// Create UTM/MGA2020 grid
+						gridLayer = L.utmGrid(zone, isSouthern, gridOptions);
+					}
+					
 					layerGroup.addLayer(gridLayer);
 				});
-
+				
 				return layerGroup;
 			}
 
@@ -1693,7 +1740,9 @@
 				{ zone: 56, isSouthern: true, color: '#008' }
 			];
 
-			const utmGridLayerGroup = createUTMGridLayerGroup(utmZones);
+			// Create layer groups for both coordinate systems
+			const gridLayerGroupMGA2020 = createGridLayerGroup(utmZones, 'MGA2020');
+			const gridLayerGroupAMG66 = createGridLayerGroup(utmZones, 'AMG66');
 
 			///////////////////////////
 			// nsw historic imagery
@@ -2756,7 +2805,8 @@
 						label: 'Map grids',
 						collapsed: true,
 						children: [
-							{ label: 'UTM z49-56s', layer: utmGridLayerGroup },
+							{ label: 'MGA2020 z49-56s', layer: gridLayerGroupMGA2020 },
+							{ label: 'AMG66 z49-56s', layer: gridLayerGroupAMG66 },
 						]
 					},
 				]
