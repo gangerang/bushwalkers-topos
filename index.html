@@ -1744,6 +1744,94 @@
 			const gridLayerGroupMGA2020 = createGridLayerGroup(utmZones, 'MGA2020');
 			const gridLayerGroupAMG66 = createGridLayerGroup(utmZones, 'AMG66');
 
+			// ANG Zone definitions
+			const angZones = {
+				1: { west: 113.5, east: 118.5, cm: 116 },
+				2: { west: 118.5, east: 123.5, cm: 121 },
+				3: { west: 123.5, east: 128.5, cm: 126 },
+				4: { west: 128.5, east: 133.5, cm: 131 },
+				5: { west: 133.5, east: 138.5, cm: 136 },
+				6: { west: 138.5, east: 143.5, cm: 141 },
+				7: { west: 143.5, east: 148.5, cm: 146 },
+				8: { west: 148.5, east: 153.5, cm: 151 }
+			};
+
+			// Create ANG grid constructor
+			function createANGGrid(zone, options) {
+				return L.MetricGrid.extend({
+					options: {
+						// Clarke 1858 ellipsoid with ANG parameters
+						// see https://maps.ozultimate.com/wiki/georef
+						// proj4ProjDef: `+proj=tmerc +lat_0=-34 +lon_0=${angZones[zone].cm} +k_0=1 +a=6378339.78 +rf=294.26 ` + 
+									// `+x_0=365759.36 +y_0=731518.73 +to_meter=0.91439841 +no_defs`,
+						proj4ProjDef: `+proj=pipeline +step +proj=longlat +a=6378339.78 +rf=294.26 +towgs84=195.056526,-112.959677,-172.456394,3.59354054,5.39693644,-1.34857381,-3.2756552 +no_defs +step +proj=tmerc +lat_0=-34 +lon_0=${angZones[zone].cm} +k=1 +a=6378339.78 +rf=294.26 +to_meter=0.91439841 +x_0=365759.36 +y_0=731518.73`,
+						bounds: [[0, 0], [5000000, 5000000]], // Appropriate bounds in yards
+						color: options.color || '#000',
+						latLonClipBounds: [
+							[-45, angZones[zone].west],
+							[-10, angZones[zone].east]
+						],
+						// Format easting/northing in yards
+						_format_eastings: function(eastings, spacing) {
+							// Convert to yards (1 meter = 1.093613298337214 yards)
+							const yardsEasting = eastings * 1.093613298337214;
+							return Math.floor(yardsEasting).toString();
+						},
+						_format_northings: function(northings, spacing) {
+							// Convert to yards
+							const yardsNorthing = northings * 1.093613298337214;
+							return Math.floor(yardsNorthing).toString();
+						},
+						// Grid square labeling for ANG (if needed)
+						hundredKmSquareFunc: function(e, n) {
+							// Convert to yards for 100km squares
+							const eYards = e * 1.093613298337214;
+							const nYards = n * 1.093613298337214;
+							// Return empty string if you don't want square labels
+							return "";
+						},
+						showAxisLabels: [100, 1000, 10000, 100000],
+						showSquareLabels: [], // Empty as ANG typically didn't use square labels
+						showAxis100km: true,
+						...options
+					}
+				});
+			}
+
+			// Create layer group function for ANG
+			function createANGLayerGroup(zones) {
+				const layerGroup = L.layerGroup();
+				
+				zones.forEach(({ zone, color }) => {
+					const gridOptions = {
+						color: color || '#000',
+						drawClip: false,
+						weight: 1,
+						opacity: 0.7
+					};
+
+					const ANGGrid = createANGGrid(zone, gridOptions);
+					const gridLayer = new ANGGrid();
+					layerGroup.addLayer(gridLayer);
+				});
+				
+				return layerGroup;
+			}
+
+			// Example usage:
+			const angZonesConfig = [
+				{ zone: 1, color: '#008' },
+				{ zone: 2, color: '#800' },
+				{ zone: 3, color: '#008' },
+				{ zone: 4, color: '#800' },
+				{ zone: 5, color: '#008' },
+				{ zone: 6, color: '#800' },
+				{ zone: 7, color: '#008' },
+				{ zone: 8, color: '#800' },
+			];
+
+			const angGridLayerGroup = createANGLayerGroup(angZonesConfig);
+
 			///////////////////////////
 			// nsw historic imagery
 			///////////////////////////
@@ -2807,6 +2895,7 @@
 						children: [
 							{ label: 'MGA2020 z49-56s', layer: gridLayerGroupMGA2020 },
 							{ label: 'AMG66 z49-56s', layer: gridLayerGroupAMG66 },
+							{ label: 'ANG z1-8', layer: angGridLayerGroup },
 						]
 					},
 				]
