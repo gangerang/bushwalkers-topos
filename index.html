@@ -2237,6 +2237,13 @@
 				attribution: attrib_glm
 			});
 
+			// elvis - Elevation and Depth - dem availablity 
+			const raster_fsdf_elvis = L.tileLayer('https://s3-ap-southeast-2.amazonaws.com/fsdf-elevation-tile-cache/DEM/{z}/{x}/{y}.png', {
+				maxZoom: 21,
+				maxNativeZoom: 11,
+				// attribution: attrib_nsw_ss
+			});
+
 			///////////////////////////
 			// geoman functionality
 			///////////////////////////
@@ -2776,6 +2783,7 @@
 							{ label: 'ESRI hillshade', layer: basemap_raster_esri_hillshade_opacity },
 							{ label: 'NSW 5m hillshade', layer: basemap_raster_geonsw_hillshade_5m },
 							{ label: 'ESRI contours', layer: basemap_vectortile_esri_contours },
+							{ label: 'ELVIS DEM availablity', layer: raster_fsdf_elvis },
 							// { label: 'SIX vector topo', layer: basemap_vectortile_ss_basemap },					
 						]
 					},
@@ -3228,6 +3236,7 @@
 				{ label: 'SSC 2010', layer: image_ssc_aerial_2010 },
 				{ label: 'NSW 5m hillshade', layer: basemap_raster_geonsw_hillshade_5m },
 				{ label: 'DEA Hotspots', layer: raster_ga_hotspots_three_days },
+				{ label: 'ELVIS DEM availablity', layer: raster_fsdf_elvis },
 			);
 
 			// load canyon layer from ropewiki

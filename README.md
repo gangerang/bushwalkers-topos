@@ -58,3 +58,4 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - amg66 and ang grids - utm grid for amg66 datum and approximate 'australian national grid' (ang), pre amg66. 
 - add - lalc boundaries - boundary layer for local aboriginal land councils
 - add - getlost maps features - sourced from getlost maps, points features for huts, ruins and repeaters acorss australia
+- add - elvis elevation index - index layer for elvis dem and elevation product availability
