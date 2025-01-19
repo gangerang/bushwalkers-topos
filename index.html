@@ -801,6 +801,7 @@
 			const attrib_ofm = '<a href="https://openfreemap.org">OpenFreeMap</a> <a href="https://openmaptiles.org">&copy; OpenMapTiles</a> Data from <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 			const attrib_opentilemaps = 'Map data: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM & Map display: &copy; <a href="http://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
 			const attrib_rfs = '&copy; State of New South Wales (NSW Rural Fire Service). For current information go to <a href="www.rfs.nsw.gov.au">www.rfs.nsw.gov.au.</a>'
+			const attrib_glm = '&copy; <a href="https://www.getlost.com.au/current-map-information/">GetLost Maps</a>'
 
 			///////////////////////////
 			//	basemaps
@@ -953,6 +954,13 @@
 				maxNativeZoom: 17,
 				subdomains: ['a', 'b', 'c'],
 				attribution: attrib_opentilemaps
+			});
+
+			// raster getlost maps - https://www.getlost.com.au/
+			const basemap_raster_getlost_maps = L.tileLayer('https://live.getlost.com.au/{z}/{x}/{y}.jpg', {
+				maxZoom: 21,
+				maxNativeZoom: 18,
+				attribution: attrib_glm
 			});
 
 			// combine nsw vector tile topo and hillshade into one group
@@ -2621,6 +2629,7 @@
 						{ label: 'ESRI OSM', layer: basemap_vectortile_esri_basemap },
 						{ label: 'OpenFreeMap', layer: basemap_vectortile_ofm_liberty },
 						{ label: 'OpenTopoMap', layer: basemap_raster_open_topo_maps },
+						// { label: 'Getlost Maps', layer: basemap_raster_getlost_maps },
 					]
 				},
 				{
