@@ -2217,6 +2217,26 @@
 				// }
 			});
 
+			// getlost maps files - https://www.getlost.com.au/downloads/
+
+			// getlost maps - huts
+			const vector_hosted_glm_huts = createGeoJsonLayer({
+				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/getlostmaps_huts.geojson',
+				attribution: attrib_glm
+			});
+
+			// getlost maps - ruins
+			const vector_hosted_glm_ruins = createGeoJsonLayer({
+				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/getlostmaps_ruins.geojson',
+				attribution: attrib_glm
+			});
+
+			// getlost maps - repeaters
+			const vector_hosted_glm_repeaters = createGeoJsonLayer({
+				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/getlostmaps_repeaters.geojson',
+				attribution: attrib_glm
+			});
+
 			///////////////////////////
 			// geoman functionality
 			///////////////////////////
@@ -2799,7 +2819,10 @@
 							{ label: 'Named rivers', layer: vector_ss_waterTheme_namedRivers },
 							{ label: 'Canyons', layer: canyonLayerGroup },
 							{ label: 'Stream gauges ESRI', layer: vector_esri_stream_gauge },			
-							{ label: 'NSW Stream gauges geojson', layer: vector_hosted_stream_heights_nsw_geojson },			
+							{ label: 'NSW Stream gauges geojson', layer: vector_hosted_stream_heights_nsw_geojson },
+							{ label: 'Getlost Maps huts', layer: vector_hosted_glm_huts },
+							{ label: 'Getlost Maps ruins', layer: vector_hosted_glm_ruins },
+							{ label: 'Getlost Maps repeaters', layer: vector_hosted_glm_repeaters },
 						]
 					},
 					{
