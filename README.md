@@ -59,3 +59,4 @@ A number of historic topographic and cadastral maps sourced from the NLA Map Sea
 - add - lalc boundaries - boundary layer for local aboriginal land councils
 - add - getlost maps features - sourced from getlost maps, points features for huts, ruins and repeaters acorss australia
 - add - elvis elevation index - index layer for elvis dem and elevation product availability
+- add - government lands - based on features controlling authority in cadastre layers

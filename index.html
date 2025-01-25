@@ -2245,6 +2245,53 @@
 			});
 
 			///////////////////////////
+			// cadastre
+			///////////////////////////
+			// public controlling authority 
+			// ControllingAuthorityOID
+			// AUTHORITYID AUTHORITYNAME
+			// 1 UNKNOWN
+			// 2 FREEHOLD
+			// 3 CROWN
+			// 4 LOCAL GOVERNMENT AUTHORITY
+			// 7 SHARED CROWN / COUNCIL
+			// 12 NSW GOVERNMENT
+			// 13 AUSTRALIAN GOVERNMENT
+			///////////////////////////
+
+			const vector_ss_public_cadastre_lot = L.esri.featureLayer({
+				url: "https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/Cadastre/MapServer/0",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_ss,
+				where: "controllingauthorityoid>2",
+			});
+
+			const vector_ss_public_cadastre_road = L.esri.featureLayer({
+				url: "https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/Cadastre/MapServer/1",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_ss,
+				where: "controllingauthorityoid>2",
+			});
+
+			const vector_ss_public_cadastre_water = L.esri.featureLayer({
+				url: "https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/Cadastre/MapServer/2",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_ss,
+				where: "controllingauthorityoid>2",
+			});
+
+			const vector_ss_public_cadastre_unidentifed = L.esri.featureLayer({
+				url: "https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/Cadastre/MapServer/3",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_ss,
+				where: "controllingauthorityoid>2",
+			});
+
+			///////////////////////////
 			// geoman functionality
 			///////////////////////////
 
@@ -2869,6 +2916,16 @@
 							{ label: 'Declared wilderness', layer: vector_env_wilderness },
 							{ label: 'NPWS all managed', layer: vector_env_npws_all },
 							{ label: 'FCNSW estate', layer: vector_fcnsw_estate}
+						]
+					},					
+					{
+						label: 'Government lands',
+						collapsed: true,
+						children: [
+							{ label: 'Lot', layer: vector_ss_public_cadastre_lot },
+							{ label: 'Road', layer: vector_ss_public_cadastre_road },
+							{ label: 'Water feature', layer: vector_ss_public_cadastre_water },
+							{ label: 'Unidentifed', layer: vector_ss_public_cadastre_unidentifed },
 						]
 					},
 					{
