@@ -1475,12 +1475,28 @@
 			// all npws tenure, including not yet decleared and flora reserves
 			const vector_env_npws_all = L.esri.featureLayer({
 				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Tenure/NPWS_AllManagedLand/MapServer/0",
-				simplifyFactor: 0.5,
-				precision: 4,
+				// simplifyFactor: 0.5,
+				// precision: 4,
 				attribution: attrib_nsw_planning,
-				style: () => {
+				style: function(feature) {
+					// Create a mapping from SOURCE values to colors
+					const sourceColors = {
+					"NPWS_Estate": "#82FA58", // green
+					"NPWS_AcquiredNotGazetted": "#FF0000", // red
+					"NPWS_ManagedLandOther": "#0000FF", // blue
+					"NPWS_Vested": "#0000FF", // blue
+					};
+
+					// Get the source value from the feature properties
+					const sourceValue = feature.properties.SOURCE;
+					
+					// Determine the color, or use a default if the source value isn’t in our map
+					const color = sourceColors[sourceValue] || "#808080"; // default grey
+
 					return {
-						color: "#82FA58" // green
+					color: color,
+					weight: 2,
+					fillOpacity: 0.6
 					};
 				}
 			});
