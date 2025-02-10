@@ -1,16 +1,14 @@
 # Bushwalkers Topos
-An interactive map designed for bushwalkers in NSW
+An interactive map designed for bushwalkers in NSW, combining 100+ layers into the one place!
 
-[Try it out](https://bushwalkingmaps.com)
+[Try it out here](https://bushwalkingmaps.com)
 
-Based on leaflet
+Powered by [Leaflet](leafletjs.com)
 
-Includes various useful data sources
+Got feedback or want to see something new? Raise an [issue](https://github.com/gangerang/bushwalkers-topos/issues/new/choose) or send me an email via ajallchin at gmail
 
-A number of historic topographic and cadastral maps sourced from the NLA Map Search website are also overlayed
-
-## Layer demos
-Below are short gif recordings showing the various layers which are available
+## Layer and feature demos
+Below are short gif recordings showing the various layer and features which are available
 (They might take a while to load)
 
 ### Basemaps
