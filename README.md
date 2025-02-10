@@ -1,16 +1,14 @@
 # Bushwalkers Topos
-An interactive map designed for bushwalkers in NSW
+An interactive map designed for bushwalkers in NSW, combining 100+ layers into the one place!
 
-[Try it out](https://bushwalkingmaps.com)
+[Try it out here](https://bushwalkingmaps.com)
 
-Based on leaflet
+Powered by [Leaflet](leafletjs.com)
 
-Includes various useful data sources
+Got feedback or want to see something new? Raise an [issue](https://github.com/gangerang/bushwalkers-topos/issues/new/choose) or send me an email at <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHwAAAAQCAIAAABbSozIAAABEUlEQVR4nO1Yyw4DIQiUpv//y/ZgYuzwEJXVJnWOisCMqOxSzjld7MXrdAL/iCv6AVzRD+DttCOilJL2AJTZgmLDR7QlfNaOZa8dRRurm3MUKNA7F8uzVaMJgEzh6sxlNQSh0qGOxP2fqzVxlVFrdQqE4MZg2ULLebquOYt2BBIQPeOdziXIOcNKTSZPrhphMRaUM6gMnPnetLMeXnMs7JMn6oOie6QclZsv3/BxUEIYh2Pdv8ECogOsSteweOsR0Tr5WtdOV+E39QoLuXup7oyXqrURx2GkyOTvguzQUGhOCeZyTt8nBlh4eKFzr93zb7of2jP+U0ka6Ise2BQ/hG39dRTi+9yLLu5vgAO4oh/AByu2AjrQ+bMjAAAAAElFTkSuQmCC" alt="Contact Email">
 
-A number of historic topographic and cadastral maps sourced from the NLA Map Search website are also overlayed
-
-## Layer demos
-Below are short gif recordings showing the various layers which are available
+## Layer and feature demos
+Below are short gif recordings showing the various layer and features which are available
 (They might take a while to load)
 
 ### Basemaps
