@@ -9,6 +9,78 @@ Includes various useful data sources
 
 A number of historic topographic and cadastral maps sourced from the NLA Map Search website are also overlayed
 
+## Layer demos
+Below are short gif recordings showing the various layers which are available
+(They might take a while to load)
+
+### Basemaps
+![basemaps](demos/01_basemaps.gif)
+
+### Other basemaps
+![other basemaps](demos/02_other_basemaps.gif)
+
+### Historic topos
+![historic topos](demos/03_historic_topos.gif)
+
+### Parish
+![parish](demos/04_parish.gif)
+
+### Other historic
+![other historic](demos/05_other_historic.gif)
+
+### Topo downloads
+![topo downloads](demos/06_topo_downloads.gif)
+
+### Topography
+![topography](demos/07_topography.gif)
+
+### Vegetation
+![vegetation](demos/08_vegetation.gif)
+
+### Fire
+![fire](demos/09_fire.gif)
+
+### Geology
+![geology](demos/10_geology.gif)
+
+### Features
+![features](demos/11_features.gif)
+
+### Trigs
+![trigs](demos/12_trigs.gif)
+
+### Boundaries
+![boundaries](demos/13_boundaries.gif)
+
+### Government
+![government](demos/14_government.gif)
+
+### Crown lands
+![crown lands](demos/15_crownlands.gif)
+
+### Historic imagery photos
+![historic imagery photos](demos/16_historic_imagery_photos.gif)
+
+### Historic imagery
+![historic imagery](demos/17_historic_imagery.gif)
+
+### Strava
+![strava](demos/18_strava.gif)
+
+### Weather
+![weather](demos/19_weather.gif)
+
+### Drawn features
+![drawn features](demos/20_drawn_features.gif)
+
+### Grids
+![grids](demos/21_grids.gif)
+
+### Search
+![search](demos/22_search.gif)
+
+### Canyons
+![canyons](demos/23_canyons.gif)
 
 ## change log
 ### v0.1
