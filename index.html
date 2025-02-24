@@ -2308,6 +2308,28 @@
 			});
 
 			///////////////////////////
+			// planning
+			///////////////////////////
+
+			const raster_env_planning_zoning = L.esri.dynamicMapLayer({
+				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer",
+				layers: [2],
+				attribution: attrib_nsw_planning
+			});
+
+			const raster_env_planning_acquisition = L.esri.dynamicMapLayer({
+				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer",
+				layers: [3],
+				attribution: attrib_nsw_planning
+			});
+
+			const raster_env_planning_lot_size = L.esri.dynamicMapLayer({
+				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer",
+				layers: [4],
+				attribution: attrib_nsw_planning
+			});
+
+			///////////////////////////
 			// geoman functionality
 			///////////////////////////
 
@@ -3003,7 +3025,16 @@
 						children: [
 							{ label: 'Rain Viewer radar', layer: raster_rv_weather_radar },
 							{ label: 'GA Himawari', layer: raster_ga_himawari },
-							]
+						]
+					},
+					{
+						label: 'Planning',
+						collapsed: true,
+						children: [
+							{ label: 'Zoning', layer: raster_env_planning_zoning },
+							{ label: 'Lot size', layer: raster_env_planning_lot_size },
+							{ label: 'Acquisitions', layer: raster_env_planning_acquisition },
+						]
 					},
 					{
 						label: 'Drawn features',
@@ -3309,6 +3340,9 @@
 				{ label: 'NSW 5m hillshade', layer: basemap_raster_geonsw_hillshade_5m },
 				{ label: 'DEA Hotspots', layer: raster_ga_hotspots_three_days },
 				{ label: 'ELVIS DEM availablity', layer: raster_fsdf_elvis },
+				{ label: 'Zoning', layer: raster_env_planning_zoning },
+				{ label: 'Lot size', layer: raster_env_planning_lot_size },
+				{ label: 'Acquisitions', layer: raster_env_planning_acquisition },
 			);
 
 			// load canyon layer from ropewiki

@@ -68,6 +68,9 @@ Below are short gif recordings showing the various layer and features which are 
 ### Weather
 ![weather](demos/19_weather.gif)
 
+### Planning
+(to document)
+
 ### Drawn features
 ![drawn features](demos/20_drawn_features.gif)
 
@@ -130,3 +133,4 @@ Below are short gif recordings showing the various layer and features which are 
 - add - getlost maps features - sourced from getlost maps, points features for huts, ruins and repeaters acorss australia
 - add - elvis elevation index - index layer for elvis dem and elevation product availability
 - add - government lands - based on features controlling authority in cadastre layers
+- add - planning - layers for zoning, minimum lot size and land accuisitions in nsw
