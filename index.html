@@ -1319,7 +1319,7 @@
 			// 2019-20 fire layers
 			// geebam - Google Earth Engine Burnt Area Map
 			// https://datasets.seed.nsw.gov.au/dataset/google-earth-engine-burnt-area-map-geebam
-			// for some reason, map server layers are not working but imageserver versions are
+			// imageserver appears faster than mapserver for some layers
 			///////////////////////////
 
 			// image/raster env veg image
@@ -1329,22 +1329,14 @@
 			const image_env_geebam_sentinel = L.esri.imageMapLayer({url: 'https://mapprod2.environment.nsw.gov.au/arcgis/rest/services/Fire/GEEBAM_Sentinel2_PostFire_Satellite_Image/ImageServer'
 			});
 
-			// raster env geebam burn area class - not working
-			const raster_env_geebam_burnt_area = L.esri.tiledMapLayer({url: 'https://mapprod2.environment.nsw.gov.au/arcgis/rest/services/Fire/GEEBAM/MapServer/0',
+			// raster env geebam burn area class
+			const raster_env_geebam_burnt_area = L.esri.dynamicMapLayer({
+				url: "https://mapprod2.environment.nsw.gov.au/arcgis/rest/services/Fire/GEEBAM/MapServer",
+				layers: [1],
+				attribution: attrib_nsw_planning,
 				maxZoom: 21,
 				maxNativeZoom: 16
 			});
-			// raster env geebam veg index - not working
-			const raster_env_geebam_veg_index = L.esri.tiledMapLayer({url: 'https://mapprod2.environment.nsw.gov.au/arcgis/rest/services/Fire/GEEBAM/MapServer/3',
-				maxZoom: 21,
-				maxNativeZoom: 16
-			});
-			// raster esri world imagery - not working
-			const raster_env_geebam_sentinel = L.esri.tiledMapLayer({url: 'https://mapprod2.environment.nsw.gov.au/arcgis/rest/services/Fire/GEEBAM/MapServer/4',
-				maxZoom: 21,
-				maxNativeZoom: 16
-			});
-
 			
 			///////////////////////////
 			// NSW FESM - fire extent and severity mapping
@@ -1365,13 +1357,6 @@
 				'https://mapprod3.environment.nsw.gov.au/arcgis/services/Fire/FESM/MapServer/WMSServer',
 				nswWmsFESMConfig
 			);
-
-
-			//	// rasater env veg pct 50m - not working
-			//	const raster_env_veg_pct_50m = L.esri.tiledMapLayer({url: 'https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/VIS/SVTM_NSW_PCT_TNM_50M/MapServer/6',
-			//		maxZoom: 21,
-			//		maxNativeZoom: 16
-			//	});
 
 			///////////////////////////
 			// nsw geology
@@ -2876,8 +2861,6 @@
 						collapsed: true,
 						children: [
 							{ label: 'NSW SVTM vegetation', layer: basemap_raster_env_svtm_veg_group },
-							{ label: '19/20 Fires veg index', layer: image_env_geebam_veg_index },
-							{ label: '19/20 Fires imagery', layer: image_env_geebam_sentinel },
 						]
 					},
 					{
@@ -2886,6 +2869,9 @@
 						children: [
 							{ label: 'Current bushfire boundaries', layer: vector_rfs_bushfire_boundaries },
 							{ label: 'DEA Hotspots', layer: raster_ga_hotspots_three_days },
+							{ label: '19/20 Fires imagery', layer: image_env_geebam_sentinel },
+							{ label: '19/20 Fires veg index', layer: image_env_geebam_veg_index },
+							{ label: '19/20 Fires class', layer: raster_env_geebam_burnt_area },
 							{
 								label: 'Fire extent and severity mapping',
 								collapsed: true,
