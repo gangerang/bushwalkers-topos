@@ -2539,8 +2539,9 @@
 				<a href="https://maps.six.nsw.gov.au/SketchPlansWS/rest/getSketchPlans?surveyMark={marktype}{marknumber}" target="_blank">Download sketch</a>
 			`);
 			bindPopupToLayer(vector_ss_lots, "{lotnumber}/{plannumber}");
-			bindPopupToLayer(vector_ss_parish, "{parishname}<br>{countyname}<br>DP{parishdpno}");
-			bindPopupToLayer(vector_ss_county, "{countyname}");
+			bindPopupToLayer(vector_ss_roads, "Lot {lotnumber}<br>Plan {planlabel}");
+			bindPopupToLayer(vector_ss_parish, "Parish of {parishname}<br>County of {countyname}<br>DP{parishdpno}");
+			bindPopupToLayer(vector_ss_county, "County of {countyname}");
 			bindPopupToLayer(vector_geoserver_nsw_historic_aerial_photos,
 				`DCS Spatial Services<br>
 				Date: {date}<br>
