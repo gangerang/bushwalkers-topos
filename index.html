@@ -2191,6 +2191,11 @@
 			// rfs fires near me / major incidents / hotspots
 			///////////////////////////
 
+			const vector_hosted_rfs_hr_burns_geojson = createGeoJsonLayer({
+				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/rfs_hr_burns.geojson',
+				attribution: attrib_rfs
+			});
+
 			const vector_rfs_bushfire_boundaries = L.esri.featureLayer({
 				url: 'https://services-ap1.arcgis.com/ypkPEy1AmwPKGNNv/ArcGIS/rest/services/Near_Real_Time_Bushfire_Boundaries_view/FeatureServer/3',
 				fillColor: '#ff0000', // red
@@ -2691,6 +2696,14 @@
 				</a>
 				`
 			);
+			bindPopupToLayer(vector_hosted_rfs_hr_burns_geojson,
+				`Location: {location}<br>
+				LGA: {lga}<br>
+				Size: {size}<br>
+				Planned: {startDate} to {endDate}<br>
+				Managed by {leadAgency}<br>
+				`
+			);
 			bindPopupToLayer(vector_rfs_bushfire_boundaries,
 				`{fire_type} at {fire_name}<br>
 				{area_ha} ha in size<br>
@@ -2868,6 +2881,7 @@
 						label: 'Fire',
 						collapsed: true,
 						children: [
+							{ label: 'RFS planned HR burns', layer: vector_hosted_rfs_hr_burns_geojson },
 							{ label: 'Current bushfire boundaries', layer: vector_rfs_bushfire_boundaries },
 							{ label: 'DEA Hotspots', layer: raster_ga_hotspots_three_days },
 							{ label: '19/20 Fires imagery', layer: image_env_geebam_sentinel },
