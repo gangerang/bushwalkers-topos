@@ -3132,10 +3132,19 @@
 							case 'esri-feature':
 								layer = L.esri.featureLayer({
 									url: layerConfig.url,
-									simplifyFactor: layerConfig.simplifyFactor,
-									precision: layerConfig.precision,
-									where: layerConfig.where,
+									// simplifyFactor: layerConfig.simplifyFactor,
+									// precision: layerConfig.precision,
+									where: layerConfig.where || '1=1',
 									attribution: layerConfig.attribution || '',
+									onEachFeature: function(feature, layer) {
+										if (layerConfig.popup && feature.properties) {
+											const popupContent = L.Util.template(
+												layerConfig.popup, 
+												feature.properties
+											);
+											layer.bindPopup(popupContent);
+										}
+									},
 									minZoom: layerConfig.minZoom,
 									maxZoom: layerConfig.maxZoom,
 									maxNativeZoom: layerConfig.maxNativeZoom
