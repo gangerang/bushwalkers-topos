@@ -2718,6 +2718,7 @@
 				`
 			);
 
+
 			///////////////////////////
 			// layer control 
 			// opacity slider
@@ -3057,6 +3058,111 @@
 				]
 			};
 
+			///////////////////////////
+			// byo layers
+			///////////////////////////			
+
+			// Global variable to store BYO layers tree
+			let byoLayersTree = {
+				label: 'BYO Layers',
+				selectAllCheckbox: false, 
+				collapsed: true,
+				children: [],
+				noCheckbox: true
+			};
+
+			function loadBYOLayers(config) {
+				if (!config.layers || !Array.isArray(config.layers)) {
+					alert('Invalid configuration format');
+					return;
+				}
+
+				config.layers.forEach(layerConfig => {
+					try {
+						let layer;
+						
+						switch (layerConfig.type) {
+							case 'wms':
+								layer = L.tileLayer.wms(layerConfig.url, {
+									layers: layerConfig.layers,
+									format: layerConfig.format || 'image/png',
+									transparent: true,
+									version: layerConfig.version || '1.3.0',
+									opacity: layerConfig.opacity || 1.0,
+									attribution: layerConfig.attribution || ''
+								});
+								break;
+
+							case 'xyz':
+								layer = L.tileLayer(layerConfig.url, {
+									maxZoom: layerConfig.maxZoom || 18,
+									opacity: layerConfig.opacity || 1.0,
+									attribution: layerConfig.attribution || ''
+								});
+								break;
+
+							case 'geojson':
+								layer = L.geoJSON(null, {
+									style: layerConfig.style || {},
+									opacity: layerConfig.opacity || 1.0,
+									onEachFeature: function(feature, layer) {
+										if (layerConfig.popup && feature.properties) {
+											const popupContent = L.Util.template(
+												layerConfig.popup, 
+												feature.properties
+											);
+											layer.bindPopup(popupContent);
+										}
+									}
+								});
+
+								// Fetch and load GeoJSON data
+								fetch(layerConfig.url)
+									.then(response => response.json())
+									.then(data => layer.addData(data))
+									.catch(error => console.error('Error loading GeoJSON:', error));
+								break;
+
+							default:
+								console.warn(`Unsupported layer type: ${layerConfig.type}`);
+								return;
+						}
+
+						// Add to BYO layers tree
+						byoLayersTree.children.push({
+							label: layerConfig.name,
+							layer: layer
+						});
+
+						// Check if BYO layers section already exists in overlaysTree
+						const byoIndex = overlaysTree.children.findIndex(child => child.label === 'BYO Layers');
+						if (byoIndex === -1) {
+							overlaysTree.children.push(byoLayersTree);
+						}
+
+						// Remove old control and add updated one
+						if (map.hasLayer(layer)) {
+							map.removeLayer(layer);
+						}
+						if (layerControlTree) {
+							map.removeControl(layerControlTree);
+						}
+
+						// Create new control with updated layers
+						layerControlTree = L.control.layers.tree(baseTree, overlaysTree, {
+							collapsed: false
+						}).addTo(map);
+
+						// Re-add opacity slider to the new layer control
+						const layerControlContainer = document.querySelector('.leaflet-control-layers');
+						addOpacitySliderToControl(layerControlContainer);
+
+					} catch (error) {
+						console.error(`Error creating layer ${layerConfig.name}:`, error);
+					}
+				});
+			}
+
 			// Create maps to store layer information
 			const layerNameMap = new Map();
 			const layerPathMap = new Map();
@@ -3117,6 +3223,24 @@
 				overlays: {}
 			};
 
+			function addOpacitySliderToControl(controlContainer) {
+				if (controlContainer) {
+					const opacitySlider = document.createElement('input');
+					opacitySlider.type = 'range';
+					opacitySlider.min = 0;
+					opacitySlider.max = 1;
+					opacitySlider.step = 0.01;
+					opacitySlider.value = 1;
+
+					opacitySlider.addEventListener('input', function (e) {
+						const newOpacity = parseFloat(e.target.value);
+						updateLayerOpacity(opacityLayers, newOpacity);
+					});
+
+					controlContainer.appendChild(opacitySlider);
+				}
+			}
+
 			document.addEventListener('DOMContentLoaded', function () {
 				const basemapsButton = document.getElementById('basemapsButton');
 				const layersButton = document.getElementById('layersButton');
@@ -3124,7 +3248,6 @@
 				const layersModal = document.getElementById('layersModal');
 				const basemapsContainer = document.getElementById('basemapsControlContainer');
 				const layersContainer = document.getElementById('layersControlContainer');
-				let layerControlTree; // Reference to the desktop layer control tree
 
 				const closeModal = (modal) => {
 					modal.style.display = 'none';
@@ -3235,26 +3358,12 @@
 
 					// Add desktop layer control tree
 					layerControlTree = L.control.layers.tree(baseTree, overlaysTree, {
-						collapsed: false // Tree should be expanded by default
+						collapsed: false // Tree should be collapsed by default
 					}).addTo(map);
 
 					// Add opacity slider to the desktop layer control
 					const layerControlContainer = document.querySelector('.leaflet-control-layers');
-					if (layerControlContainer) {
-						const opacitySlider = document.createElement('input');
-						opacitySlider.type = 'range';
-						opacitySlider.min = 0;
-						opacitySlider.max = 1;
-						opacitySlider.step = 0.01;
-						opacitySlider.value = 1;
-
-						opacitySlider.addEventListener('input', function (e) {
-							const newOpacity = parseFloat(e.target.value);
-							updateLayerOpacity(opacityLayers, newOpacity);
-						});
-
-						layerControlContainer.appendChild(opacitySlider);
-					}
+					addOpacitySliderToControl(layerControlContainer);
 				} else {
 					console.log('Showing mobile buttons');
 					basemapsButton.style.display = 'block';
@@ -3725,6 +3834,71 @@
 
 			// Add the controls to the map
 			new L.Control.DataButtons({ position: 'topleft' }).addTo(map);
+
+			// Custom control for loading BYO layers
+			L.Control.LoadBYOLayers = L.Control.extend({
+				onAdd: function(map) {
+					const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+					
+					// Add Layer Button
+					const addButton = L.DomUtil.create('a', 'leaflet-control-button', container);
+					addButton.innerHTML = `
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" 
+							stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<line x1="12" y1="5" x2="12" y2="19"></line>
+							<line x1="5" y1="12" x2="19" y2="12"></line>
+							<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+						</svg>
+					`;
+					addButton.href = '#';
+					addButton.title = 'Add BYO Layers';
+					
+					// Hidden file input
+					const fileInput = L.DomUtil.create('input', 'hidden', container);
+					fileInput.type = 'file';
+					fileInput.accept = '.json,application/json';
+					fileInput.style.display = 'none';
+
+					// Style button
+					addButton.style.width = '30px';
+					addButton.style.height = '30px';
+					addButton.style.lineHeight = '30px';
+					addButton.style.display = 'flex';
+					addButton.style.alignItems = 'center';
+					addButton.style.justifyContent = 'center';
+					addButton.style.textDecoration = 'none';
+					addButton.style.color = '#000';
+
+					// Click handlers
+					L.DomEvent.on(addButton, 'click', function(e) {
+						L.DomEvent.preventDefault(e);
+						fileInput.click();
+					});
+
+					L.DomEvent.on(fileInput, 'change', function(e) {
+						const file = e.target.files[0];
+						const reader = new FileReader();
+
+						reader.onload = function(e) {
+							try {
+								const layerConfig = JSON.parse(e.target.result);
+								loadBYOLayers(layerConfig);
+							} catch (error) {
+								alert('Error loading layer configuration: ' + error.message);
+								console.error('Error loading layer configuration: ', error);
+							}
+						};
+
+						reader.readAsText(file);
+						fileInput.value = ''; // Reset input
+					});
+
+					return container;
+				}
+			});
+
+			// Add the BYO layers control to the map
+			new L.Control.LoadBYOLayers({ position: 'topleft' }).addTo(map);
 
         </script>
     </body>

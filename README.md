@@ -135,3 +135,4 @@ Below are short gif recordings showing the various layer and features which are 
 - add - government lands - based on features controlling authority in cadastre layers
 - add - planning - layers for zoning, minimum lot size and land accuisitions in nsw
 - add - planned hr burns - layer for planned hazard reduction burns in nsw
+- add - byo layers - ability to bring your own layers defined via a json file
