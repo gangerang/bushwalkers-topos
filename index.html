@@ -3187,6 +3187,14 @@
 							layer: layer
 						});
 
+						// Add to opacity layers array if specified
+						if (layerConfig.useOpacitySlider) {
+							opacityLayers.push({
+								label: layerConfig.name,
+								layer: layer
+							});
+						}
+
 						// Check if BYO layers section already exists in overlaysTree
 						const byoIndex = overlaysTree.children.findIndex(child => child.label === 'BYO Layers');
 						if (byoIndex === -1) {
