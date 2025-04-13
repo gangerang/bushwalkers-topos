@@ -3089,26 +3089,31 @@
 									transparent: true,
 									version: layerConfig.version || '1.3.0',
 									opacity: layerConfig.opacity || 1.0,
-									attribution: layerConfig.attribution || ''
+									attribution: layerConfig.attribution || '',
+									minZoom: layerConfig.minZoom,
+									maxZoom: layerConfig.maxZoom,
+									maxNativeZoom: layerConfig.maxNativeZoom
 								});
 								break;
 
 							case 'xyz':
 								layer = L.tileLayer(layerConfig.url, {
-									maxZoom: layerConfig.maxZoom || 18,
-									maxNativeZoom: layerConfig.maxNativeZoom,
 									opacity: layerConfig.opacity || 1.0,
-									attribution: layerConfig.attribution || ''
+									attribution: layerConfig.attribution || '',
+									minZoom: layerConfig.minZoom,
+									maxZoom: layerConfig.maxZoom,
+									maxNativeZoom: layerConfig.maxNativeZoom
 								});
 								break;
 
 							case 'esri-tiled':
 								layer = L.esri.tiledMapLayer({
 									url: layerConfig.url,
-									maxZoom: layerConfig.maxZoom || 21,
-									maxNativeZoom: layerConfig.maxNativeZoom || 18,
 									opacity: layerConfig.opacity || 1.0,
-									attribution: layerConfig.attribution || ''
+									attribution: layerConfig.attribution || '',
+									minZoom: layerConfig.minZoom,
+									maxZoom: layerConfig.maxZoom,
+									maxNativeZoom: layerConfig.maxNativeZoom
 								});
 								break;
 
@@ -3117,19 +3122,23 @@
 									url: layerConfig.url,
 									renderingRule: layerConfig.renderingRule,
 									opacity: layerConfig.opacity || 1.0,
-									attribution: layerConfig.attribution || ''
+									attribution: layerConfig.attribution || '',
+									minZoom: layerConfig.minZoom,
+									maxZoom: layerConfig.maxZoom,
+									maxNativeZoom: layerConfig.maxNativeZoom
 								});
 								break;
 
 							case 'esri-feature':
 								layer = L.esri.featureLayer({
 									url: layerConfig.url,
-									simplifyFactor: layerConfig.simplifyFactor || 0.5,
-									precision: layerConfig.precision || 4,
+									simplifyFactor: layerConfig.simplifyFactor,
+									precision: layerConfig.precision,
 									where: layerConfig.where,
+									attribution: layerConfig.attribution || '',
 									minZoom: layerConfig.minZoom,
 									maxZoom: layerConfig.maxZoom,
-									attribution: layerConfig.attribution || ''
+									maxNativeZoom: layerConfig.maxNativeZoom
 								});
 								break;
 
@@ -3137,10 +3146,11 @@
 								layer = L.esri.dynamicMapLayer({
 									url: layerConfig.url,
 									layers: layerConfig.layers,
-									maxZoom: layerConfig.maxZoom,
-									maxNativeZoom: layerConfig.maxNativeZoom,
 									opacity: layerConfig.opacity || 1.0,
-									attribution: layerConfig.attribution || ''
+									attribution: layerConfig.attribution || '',
+									minZoom: layerConfig.minZoom,
+									maxZoom: layerConfig.maxZoom,
+									maxNativeZoom: layerConfig.maxNativeZoom
 								});
 								break;
 
@@ -3148,10 +3158,13 @@
 								layer = new L.TileLayer.WMTS(layerConfig.url, {
 									layer: layerConfig.layer,
 									format: layerConfig.format || 'image/png',
-									tilematrixSet: layerConfig.tilematrixSet || 'EPSG:900913',
+									tilematrixSet: layerConfig.tilematrixSet,
 									version: layerConfig.version || '1.0.0',
 									opacity: layerConfig.opacity || 1.0,
-									attribution: layerConfig.attribution || ''
+									attribution: layerConfig.attribution || '',
+									minZoom: layerConfig.minZoom,
+									maxZoom: layerConfig.maxZoom,
+									maxNativeZoom: layerConfig.maxNativeZoom
 								});
 								break;
 
