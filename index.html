@@ -2223,6 +2223,15 @@
 				// }
 			});
 
+			// placenames from ga gazatteer https://placenames.fsdf.org.au/ - all via geoserver from downloaded geopackage
+			const vector_geoserver_ga_placenames = addDynamicWfsLayer(map, {
+				baseLayerUrl: 'https://geoserver.cloud.al3x.au/geoserver/geodata/ows',
+				layers: 'geodata:ga_placenames',
+				layerName: 'PLACENAMES',
+				limit: 5000,
+				attribution: attrib_ga,
+			});
+
 			// getlost maps files - https://www.getlost.com.au/downloads/
 
 			// getlost maps - huts
@@ -2932,6 +2941,7 @@
 						collapsed: true,
 						children: [
 							{ label: 'NSW GNB current proposals', layer: vector_hosted_gnb_proposals_geojson },
+							{ label: 'GA Placenames', layer: vector_geoserver_ga_placenames },
 						]
 					},
 					{

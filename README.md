@@ -136,3 +136,4 @@ Below are short gif recordings showing the various layer and features which are 
 - add - planning - layers for zoning, minimum lot size and land accuisitions in nsw
 - add - planned hr burns - layer for planned hazard reduction burns in nsw
 - add - byo layers - ability to bring your own layers defined via a json file
+- add - ga placenames - layer for ga placenames, sourced from ga gazetteer
