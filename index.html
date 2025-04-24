@@ -99,6 +99,7 @@
 				border-radius: 5px;
 				cursor: pointer;
 				font-size: 16px;
+				display: none;
 			}
 			.layer-button:hover {
 				background-color: #005bb5;
@@ -168,8 +169,8 @@
 			}
 		</style>
 	</head>	
-    <body>
-        <div id="map"></div>
+	<body>
+		<div id="map"></div>
 
 		<div id="buttonContainer" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; gap: 2px;">
 			<button onclick="window.open('https://github.com/gangerang/bushwalkers-topos', '_blank')">About</button>
@@ -254,8 +255,8 @@
 			</div>
 		</div>
 
-        <script src="https://unpkg.com/leaflet@1.9.0/dist/leaflet.js"></script>
-        <script src="https://unpkg.com/pmtiles@2.7.2/dist/index.js"></script>
+		<script src="https://unpkg.com/leaflet@1.9.0/dist/leaflet.js"></script>
+		<script src="https://unpkg.com/pmtiles@2.7.2/dist/index.js"></script>
 
 		<!-- Load Esri Leaflet from CDN -->
 		<script src="https://unpkg.com/esri-leaflet@3.0.12/dist/esri-leaflet.js"></script>
@@ -293,10 +294,10 @@
 		<link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.18.1/dist/leaflet-geoman.css" />
 		<script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.18.1/dist/leaflet-geoman.js"></script>
 
-        <script type="text/javascript">
+		<script type="text/javascript">
 
 			// Define map with initial view
-            const map = L.map('map', {
+			const map = L.map('map', {
 				wheelPxPerZoomLevel: 50
 			}).setView([-33.754, 150.270], 10);
 
@@ -504,7 +505,7 @@
 				if (year < 1960) return "#990000"; // 1940-1959
 				if (year < 1980) return "#ff0000"; // 1960-1979
 				if (year < 2000) return "#ff8080"; // 1980-1999
-				return "#ffcccc";                  // 2000 and later
+				return "#ffcccc";				  // 2000 and later
 			}
 
 			///////////////////////////
@@ -1035,7 +1036,7 @@
 						color: "#ff0000" // red
 					};
 				}
-            });
+			});
 			// vector lga boundaries
 			const vector_ss_lga = L.esri.featureLayer({
 				url: "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Administrative_Boundaries_Theme/FeatureServer/8",
@@ -1047,7 +1048,7 @@
 						color: "#ff0000" // red
 					};
 				}
-            });
+			});
 			// vector state electoral boundaries
 			const vector_ss_state_electoral = L.esri.featureLayer({
 				url: "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Administrative_Boundaries_Theme/FeatureServer/4",
@@ -1059,7 +1060,7 @@
 						color: "#8000FF" // purple
 					};
 				}
-            });
+			});
 			// vector federal electoral boundaries
 			const vector_ss_federal_electoral = L.esri.featureLayer({
 				url: "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Administrative_Boundaries_Theme/FeatureServer/9",
@@ -1071,7 +1072,7 @@
 						color: "#31B404" // dark green
 					};
 				}
-            });
+			});
 			// vector suburb boundaries
 			const vector_ss_suburb = L.esri.featureLayer({
 				url: "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Administrative_Boundaries_Theme/FeatureServer/2",
@@ -1083,7 +1084,7 @@
 						color: "#ff0000" // red
 					};
 				}
-            });
+			});
 			// vector local aboriginal land council boundaries
 			const vector_ss_lalc = L.esri.featureLayer({
 				url: "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Administrative_Boundaries_Theme/FeatureServer/1",
@@ -1093,7 +1094,7 @@
 						color: "#ff0000" // red
 					};
 				}
-            });
+			});
 			// vector government property index gpi
 			const vector_env_gpi = L.esri.featureLayer({
 				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/Planning_Portal_GPI/MapServer/302",
@@ -1273,7 +1274,7 @@
 				layerOptions: {
 					minZoom: 15,
 					attribution: attrib_nsw_ss,
-    			}
+				}
 			});
 
 			const vector_ss_nsw_historic_aerial_photos_static_sydney_gpkg = L.geoPackageFeatureLayer([], {
@@ -1701,7 +1702,7 @@
 							y -= 100;
 							
 							let r = "";
-							if ((x >= 1) && (x <= 8)) {                           
+							if ((x >= 1) && (x <= 8)) {						   
 								r = UTMEast[z % 3].charAt(x - 1);
 							} else {
 								r = '-';
@@ -2167,25 +2168,25 @@
 
 
 			fetch('https://tilecache.rainviewer.com/api/maps.json')
-            .then(response => response.json())
-            .then(times => {
-                if (times.length === 0) {
-                    console.error("No times available for the radar layer.");
-                    return;
-                }
+			.then(response => response.json())
+			.then(times => {
+				if (times.length === 0) {
+					console.error("No times available for the radar layer.");
+					return;
+				}
 
-                // Get the most recent timestamp
-                const ts = times[times.length - 1];
+				// Get the most recent timestamp
+				const ts = times[times.length - 1];
 
-                // Construct the radar tile URL
-                const radarTileUrl = `https://tilecache.rainviewer.com/v2/radar/${ts}/512/{z}/{x}/{y}/2/1_1.png`;
+				// Construct the radar tile URL
+				const radarTileUrl = `https://tilecache.rainviewer.com/v2/radar/${ts}/512/{z}/{x}/{y}/2/1_1.png`;
 
-                // Update the radar layer with the correct URL
-                raster_rv_weather_radar.setUrl(radarTileUrl);
-            })
-            .catch(error => {
-                console.error("Failed to fetch radar data:", error);
-            });
+				// Update the radar layer with the correct URL
+				raster_rv_weather_radar.setUrl(radarTileUrl);
+			})
+			.catch(error => {
+				console.error("Failed to fetch radar data:", error);
+			});
 
 			///////////////////////////
 			// rfs fires near me / major incidents / hotspots
@@ -3349,6 +3350,18 @@
 				const renderControl = (container, tree, stateKey, singleSelect = false) => {
 					container.innerHTML = ''; // Clear previous content
 
+					// Helper to get all basemap layers from baseTree
+					function getAllBasemapLayers(tree) {
+						let layers = [];
+						const traverse = (node) => {
+							if (node.layer) layers.push(node.layer);
+							if (node.children) node.children.forEach(traverse);
+						};
+						if (Array.isArray(tree)) tree.forEach(traverse);
+						else if (tree && typeof tree === 'object') traverse(tree);
+						return layers;
+					}
+
 					// Recursive function to create tree nodes
 					function createTreeNode(node, stateKey) {
 						const treeContainer = document.createElement('div');
@@ -3359,6 +3372,7 @@
 							groupHeader.textContent = node.label;
 							groupHeader.classList.add('tree-group-header');
 
+							// PATCH: Allow clicking on label to expand/collapse if node has children
 							if (node.children && node.children.length > 0) {
 								const toggleButton = document.createElement('span');
 								const groupState = modalState[stateKey][node.label] || { collapsed: node.collapsed };
@@ -3370,13 +3384,22 @@
 								const childContainer = document.createElement('div');
 								childContainer.style.display = groupState.collapsed ? 'none' : 'block';
 
-								toggleButton.onclick = () => {
+								// PATCH: Toggle collapse on label or icon click
+								const toggleCollapse = () => {
 									const expanded = toggleButton.textContent === '[+]';
 									toggleButton.textContent = expanded ? '[-]' : '[+]';
 									childContainer.style.display = expanded ? 'block' : 'none';
-
-									// Update state
 									modalState[stateKey][node.label] = { collapsed: !expanded };
+								};
+								toggleButton.onclick = (e) => {
+									e.stopPropagation();
+									toggleCollapse();
+								};
+								groupHeader.onclick = (e) => {
+									// Only toggle if not a leaf node (no .layer)
+									if (node.children && node.children.length > 0) {
+										toggleCollapse();
+									}
 								};
 
 								groupHeader.appendChild(toggleButton);
@@ -3398,8 +3421,11 @@
 
 								groupHeader.onclick = () => {
 									if (singleSelect) {
-										// Single-select: deactivate other basemaps
-										map.eachLayer((layer) => map.removeLayer(layer));
+										// PATCH: Only remove basemap layers, not overlays
+										const allBasemapLayers = getAllBasemapLayers(baseTree);
+										allBasemapLayers.forEach((layer) => {
+											if (map.hasLayer(layer)) map.removeLayer(layer);
+										});
 										map.addLayer(node.layer);
 
 										// Highlight the active layer
@@ -3407,6 +3433,20 @@
 											el.classList.remove('active')
 										);
 										groupHeader.classList.add('active');
+
+										// PATCH: Update modalState for all basemaps
+										const allBasemapLabels = [];
+										const collectLabels = (tree) => {
+											if (Array.isArray(tree)) tree.forEach(collectLabels);
+											else if (tree && typeof tree === 'object') {
+												if (tree.layer) allBasemapLabels.push(tree.label);
+												if (tree.children) tree.children.forEach(collectLabels);
+											}
+										};
+										collectLabels(baseTree);
+										allBasemapLabels.forEach(label => {
+											modalState[stateKey][label] = { active: false };
+										});
 										modalState[stateKey][node.label] = { active: true };
 									} else {
 										// Multi-select: toggle layer
@@ -3992,6 +4032,6 @@
 			// Add the BYO layers control to the map
 			new L.Control.LoadBYOLayers({ position: 'topleft' }).addTo(map);
 
-        </script>
-    </body>
+		</script>
+	</body>
 </html>
