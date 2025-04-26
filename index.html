@@ -1673,6 +1673,14 @@
 				tilematrixSet: 'EPSG:900913',
 			});
 
+			// misc - dunphy gangerang 6th jpeg
+			const raster_geoserver_dunphy_gangerang_6th = L.tileLayer.wmts('https://geoserver.cloud.al3x.au/geoserver/geodata/gwc/service/wmts?', {
+				layer: 'geodata:dunphy_gangerang_6th_SLNSW_FL9039937_jpeg',
+				format: 'image/jpeg',
+				version: '1.1.0',
+				tilematrixSet: 'EPSG:900913',
+			});
+
 			///////////////////////////
 			// utm grid
 			// zone 49-56s to cover australia
@@ -2856,6 +2864,7 @@
 						children: [
 							{ label: 'Bruces Walk 1931', layer: raster_geoserver_nla_bruces_walk_1931 },
 							{ label: 'Port Hacking Tourist 1966', layer: raster_geoserver_nla_port_hacking_tourist_1966 },
+							{ label: 'Dunphy Gangerang 6th ed.', layer: raster_geoserver_dunphy_gangerang_6th },
 						]
 					},
 					{
@@ -3565,6 +3574,7 @@
 				{ label: 'Trig progress sketch 1912 ', layer: raster_geoserver_nla_trig_progress_sketch_1912 },
 				{ label: 'Port Hacking Tourist 1966', layer: raster_geoserver_nla_port_hacking_tourist_1966 },
 				{ label: 'Bruces Walk 1931', layer: raster_geoserver_nla_bruces_walk_1931 },
+				{ label: 'Dunphy Gangerang 6th ed.', layer: raster_geoserver_dunphy_gangerang_6th },
 				raster_ss_historic_imagery_list,
 				raster_env_fesm_wms_list,
 				raster_geoserver_topo_100k,
