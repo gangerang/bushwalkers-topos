@@ -990,6 +990,13 @@
 				where: "marktype='TS'",
 				minZoom: 10
 			});
+			// raster scims survey marks
+			const raster_ss_scims = L.esri.dynamicMapLayer({
+				url: "https://portal.spatial.nsw.gov.au/server/rest/services/SurveyMarkGDA2020/MapServer",
+				layers: [0],
+				attribution: attrib_nsw_ss,
+				minZoom: 13
+			});
 			// vector lots
 			const vector_ss_lots = L.esri.featureLayer({
 				url: "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Land_Parcel_Property_Theme/FeatureServer/8",
@@ -2952,6 +2959,7 @@
 						collapsed: true,
 						children: [
 							{ label: 'Trig stations', layer: vector_ss_trig },
+							{ label: 'All survey marks', layer: raster_ss_scims },
 							{ label: 'Trig progress sketch 1912 ', layer: raster_geoserver_nla_trig_progress_sketch_1912 },
 						]
 					},
@@ -3609,6 +3617,7 @@
 				{ label: 'Zoning', layer: raster_env_planning_zoning },
 				{ label: 'Lot size', layer: raster_env_planning_lot_size },
 				{ label: 'Acquisitions', layer: raster_env_planning_acquisition },
+				{ label: 'All survey marks', layer: raster_ss_scims },
 			);
 
 			// load canyon layer from ropewiki

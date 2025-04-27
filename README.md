@@ -138,3 +138,4 @@ Below are short gif recordings showing the various layer and features which are 
 - add - byo layers - ability to bring your own layers defined via a json file
 - add - ga placenames - layer for ga placenames, sourced from ga gazetteer
 - add - dunphy gangerang - historic gangerang dunphy sketch map served via geoserver
+- add - scims marks - all scims survey marks as a mapserver layer
