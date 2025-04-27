@@ -1681,6 +1681,14 @@
 				tilematrixSet: 'EPSG:900913',
 			});
 
+			// misc - dunphy kowmung 1th jpeg
+			const raster_geoserver_dunphy_kowmung_1st = L.tileLayer.wmts('https://geoserver.cloud.al3x.au/geoserver/geodata/gwc/service/wmts?', {
+				layer: 'geodata:dunphy_kowmung_1st_SLNSW_FL3514124_jpeg',
+				format: 'image/jpeg',
+				version: '1.1.0',
+				tilematrixSet: 'EPSG:900913',
+			});
+
 			///////////////////////////
 			// utm grid
 			// zone 49-56s to cover australia
@@ -2756,7 +2764,7 @@
 						{ label: 'NSW SPOT imagery', layer: basemap_raster_ss_nsw_imagery_spot },
 						{ label: 'Google imagery', layer: basemap_raster_google_imagery },
 						{ label: 'ESRI topo raster', layer: basemap_raster_esri_topo },
-						{ label: 'ESRI OSM', layer: basemap_vectortile_esri_basemap },
+						// { label: 'ESRI OSM', layer: basemap_vectortile_esri_basemap },
 						{ label: 'OpenFreeMap', layer: basemap_vectortile_ofm_liberty },
 						{ label: 'OpenTopoMap', layer: basemap_raster_open_topo_maps },
 						// { label: 'Getlost Maps', layer: basemap_raster_getlost_maps },
@@ -2865,6 +2873,7 @@
 							{ label: 'Bruces Walk 1931', layer: raster_geoserver_nla_bruces_walk_1931 },
 							{ label: 'Port Hacking Tourist 1966', layer: raster_geoserver_nla_port_hacking_tourist_1966 },
 							{ label: 'Dunphy Gangerang 6th ed.', layer: raster_geoserver_dunphy_gangerang_6th },
+							{ label: 'Dunphy Kowmung 1st ed.', layer: raster_geoserver_dunphy_kowmung_1st },
 						]
 					},
 					{
@@ -3575,6 +3584,7 @@
 				{ label: 'Port Hacking Tourist 1966', layer: raster_geoserver_nla_port_hacking_tourist_1966 },
 				{ label: 'Bruces Walk 1931', layer: raster_geoserver_nla_bruces_walk_1931 },
 				{ label: 'Dunphy Gangerang 6th ed.', layer: raster_geoserver_dunphy_gangerang_6th },
+				{ label: 'Dunphy Kowmung 1st ed.', layer: raster_geoserver_dunphy_kowmung_1st },
 				raster_ss_historic_imagery_list,
 				raster_env_fesm_wms_list,
 				raster_geoserver_topo_100k,
