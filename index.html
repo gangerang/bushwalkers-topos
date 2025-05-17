@@ -803,6 +803,7 @@
 			const attrib_opentilemaps = 'Map data: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM & Map display: &copy; <a href="http://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
 			const attrib_rfs = '&copy; State of New South Wales (NSW Rural Fire Service). For current information go to <a href="www.rfs.nsw.gov.au">www.rfs.nsw.gov.au.</a>'
 			const attrib_glm = '&copy; <a href="https://www.getlost.com.au/current-map-information/">GetLost Maps</a>'
+			const attrib_qld = '&copy; <a href="https://www.qld.gov.au/">Queensland Government</a>'
 
 			///////////////////////////
 			//	basemaps
@@ -2361,6 +2362,15 @@
 			});
 
 			///////////////////////////
+			// queensland topo maps
+			///////////////////////////			
+			
+			const basemap_raster_qld_qtopo = L.esri.tiledMapLayer({url: 'https://spatial-gis.information.qld.gov.au/arcgis/rest/services/QTopo/QTopoBase_96dpi/MapServer', 
+				maxNativeZoom: 16,
+				attribution: attrib_qld,
+			});
+
+			///////////////////////////
 			// geoman functionality
 			///////////////////////////
 
@@ -2808,6 +2818,7 @@
 						// { label: 'ESRI MODIS IR', layer: basemap_raster_esri_modis_ir },
 						// { label: 'ESRI VIIRS', layer: basemap_raster_esri_viirs },
 						// { label: 'ESRI VIIRS night time', layer: basemap_raster_esri_viirs_nighttime },
+						{ label: 'QLD QTopo', layer: basemap_raster_qld_qtopo },
 					]
 				},
 			];

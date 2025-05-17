@@ -139,3 +139,4 @@ Below are short gif recordings showing the various layer and features which are 
 - add - ga placenames - layer for ga placenames, sourced from ga gazetteer
 - add - dunphy gangerang - historic gangerang dunphy sketch map served via geoserver
 - add - scims marks - all scims survey marks as a mapserver layer
+- add - qld qtopo basemap - new qtopo basemap for queensland topo maps, sourced from qld government
