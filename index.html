@@ -2299,6 +2299,14 @@
 				attribution: 'Elevation tile data from various sources, <a href="https://github.com/tilezen/joerd/blob/master/docs/attribution.md">see attribution</a>'
 			});
 
+			const raster_ga_multiscale_tpi = L.tileLayer.wms('https://ows.dea.ga.gov.au/wms?', {
+				layers: 'multi_scale_topographic_position',
+				format: 'image/png',
+				transparent: true,
+				version: '1.1.1',
+				attribution: attrib_ga,
+			});	
+
 			///////////////////////////
 			// cadastre
 			///////////////////////////
@@ -2935,6 +2943,7 @@
 							{ label: 'ESRI contours', layer: basemap_vectortile_esri_contours },
 							{ label: 'ELVIS DEM availablity', layer: raster_fsdf_elvis },
 							{ label: 'Terrarium elevation', layer: raster_aws_elevation_terrarium },
+							{ label: 'Multiscale TPI', layer: raster_ga_multiscale_tpi },
 							// { label: 'SIX vector topo', layer: basemap_vectortile_ss_basemap },					
 						]
 					},
