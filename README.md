@@ -140,3 +140,4 @@ Below are short gif recordings showing the various layer and features which are 
 - add - dunphy gangerang - historic gangerang dunphy sketch map served via geoserver
 - add - scims marks - all scims survey marks as a mapserver layer
 - add - qld qtopo basemap - new qtopo basemap for queensland topo maps, sourced from qld government
+- add - terrarium elevation - global mapzen elevation tiles via aws s3. 90m resolution via SRTM for majority of australia 

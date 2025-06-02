@@ -2292,6 +2292,13 @@
 				// attribution: attrib_nsw_ss
 			});
 
+			// aws terrarium
+			const raster_aws_elevation_terrarium = L.tileLayer('https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png', {
+				maxZoom: 13,
+				minZoom: 0,
+				attribution: 'Elevation tile data from various sources, <a href="https://github.com/tilezen/joerd/blob/master/docs/attribution.md">see attribution</a>'
+			});
+
 			///////////////////////////
 			// cadastre
 			///////////////////////////
@@ -2927,6 +2934,7 @@
 							{ label: 'NSW 5m hillshade', layer: basemap_raster_geonsw_hillshade_5m },
 							{ label: 'ESRI contours', layer: basemap_vectortile_esri_contours },
 							{ label: 'ELVIS DEM availablity', layer: raster_fsdf_elvis },
+							{ label: 'Terrarium elevation', layer: raster_aws_elevation_terrarium },
 							// { label: 'SIX vector topo', layer: basemap_vectortile_ss_basemap },					
 						]
 					},
