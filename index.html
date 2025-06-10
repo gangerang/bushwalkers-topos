@@ -1558,8 +1558,8 @@
 			// auth layers - served via cloudflare proxy - see https://github.com/gangerang/strava-heatmap-proxy
 			// see https://strava-heatmap-proxy.ajallchin.workers.dev/ for options
 			// @2x returns larger tiles
-			const strava_auth_hot_all_url = 'https://strava-heatmap-proxy.ajallchin.workers.dev/global/hot/all/{z}/{x}/{y}@2x.png'
-			const strava_auth_hot_run_url = 'https://strava-heatmap-proxy.ajallchin.workers.dev/global/hot/run/{z}/{x}/{y}@2x.png'
+			const strava_auth_hot_all_url = 'https://strava-heatmap-proxy.ajallchin.workers.dev/globalheat/all/all/{z}/{x}/{y}@2x.png'
+			const strava_auth_hot_run_url = 'https://strava-heatmap-proxy.ajallchin.workers.dev/globalheat/all/red/{z}/{x}/{y}@2x.png'
 
 			const basemap_raster_strava_public_hot_all = L.tileLayer(strava_public_hot_all_url, {
 				maxZoom: 21,
