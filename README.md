@@ -142,3 +142,4 @@ Below are short gif recordings showing the various layer and features which are 
 - add - qld qtopo basemap - new qtopo basemap for queensland topo maps, sourced from qld government
 - add - terrarium elevation - global mapzen elevation tiles via aws s3. 90m resolution via SRTM for majority of australia 
 - add - multiscale tpi - ga multiscale topographic position index layer, showing various landforms as different colours across australia
+- remove - strava auth layers - removed as strava authenticated service is not currently working
