@@ -144,3 +144,4 @@ Below are short gif recordings showing the various layer and features which are 
 - add - multiscale tpi - ga multiscale topographic position index layer, showing various landforms as different colours across australia
 - remove - strava auth layers - removed as strava authenticated service is not currently working
 - add - 1905 sydney tramways - new nla map search layer for 1905 sydney tramways
+- add - 1912 proposed railways - new nla map search layer for proposed railways in sydney in 1912

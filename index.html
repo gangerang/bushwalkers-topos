@@ -1714,7 +1714,16 @@
 				uppercase: true,
 				attribution: attrib_nla_ms
 			});
-			// nlaSydTramways = createNlaWmsReferences({ name: "raster_nla_misc_tramway_1905", label: "1905 Sydney Tramways", layerid: "7294656-nla-obj-369524451" });
+
+						// misc - 1905 Sydney Tramways
+			const raster_nla_misc_railways_proposed_1912 = L.tileLayer.wms('https://mapsearch.nla.gov.au/geoserver/NLAMaps/wms?', {
+				layers: 'NLAMaps:7506857-nla-obj-574721928',
+				format: 'image/png',
+				transparent: true,
+				version: '1.3.0',
+				uppercase: true,
+				attribution: attrib_nla_ms
+			});
 			
 
 			///////////////////////////
@@ -2932,7 +2941,8 @@
 							{ label: 'Port Hacking Tourist 1966', layer: raster_geoserver_nla_port_hacking_tourist_1966 },
 							{ label: 'Dunphy Gangerang 6th ed.', layer: raster_geoserver_dunphy_gangerang_6th },
 							{ label: 'Dunphy Kowmung 1st ed.', layer: raster_geoserver_dunphy_kowmung_1st },
-							{ label: 'Sydney Tramways 1905', layer: raster_nla_misc_tramway_1905 }
+							{ label: 'Sydney Tramways 1905', layer: raster_nla_misc_tramway_1905 },
+							{ label: 'Sydney Proposed Railways 1912', layer: raster_nla_misc_railways_proposed_1912 },
 						]
 					},
 					{
@@ -3649,6 +3659,7 @@
 				{ label: 'Dunphy Gangerang 6th ed.', layer: raster_geoserver_dunphy_gangerang_6th },
 				{ label: 'Dunphy Kowmung 1st ed.', layer: raster_geoserver_dunphy_kowmung_1st },
 				{ label: 'Sydney Tramways 1905', layer: raster_nla_misc_tramway_1905 },
+				{ label: 'Sydney Proposed Railways 1912', layer: raster_nla_misc_railways_proposed_1912 },
 				raster_ss_historic_imagery_list,
 				raster_env_fesm_wms_list,
 				raster_geoserver_topo_100k,
