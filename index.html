@@ -2630,7 +2630,7 @@
 				Elevation: {ahdheight_label}m<br>
 				<a href="https://maps.six.nsw.gov.au/SketchPlansWS/rest/getSketchPlans?surveyMark={marktype}{marknumber}" target="_blank">Download sketch</a>
 			`);
-			bindPopupToLayer(vector_ss_lots, "{lotnumber}/{plannumber}");
+			bindPopupToLayer(vector_ss_lots, "{lotidstring}");
 			bindPopupToLayer(vector_ss_crown_plans, 
 				`<b>{plannumber}-{smallnumber}</b><br>
 				<a href="https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/Boundaries/MapServer/2/{rid}/htmlPopup?f=html" target="_blank">Table</a>
