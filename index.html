@@ -1136,9 +1136,16 @@
 					};
 				}
 			});
-			// vector nsw declared wilderness
-			const vector_env_wilderness = L.esri.featureLayer({
+			// vector nsw identified wilderness
+			const vector_env_wilderness_identified = L.esri.featureLayer({
 				url: "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/EDP/Identified_Wilderness/MapServer/0",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: attrib_nsw_dcceew
+			});	
+			// vector nsw declared wilderness
+			const vector_env_wilderness_declared = L.esri.featureLayer({
+				url: "https://mapprod1.environment.nsw.gov.au/arcgis/rest/services/Landuse/decwild_D/MapServer/2",
 				simplifyFactor: 0.5,
 				precision: 4,
 				attribution: attrib_nsw_dcceew
@@ -2755,7 +2762,8 @@
 			bindPopupToLayer(vector_ss_lga, 'LGA: {lganame}');
 			bindPopupToLayer(vector_ss_state_electoral, 'State seat: {districtname}');
 			bindPopupToLayer(vector_ss_federal_electoral, 'Federal seat: {divisionname}');
-			bindPopupToLayer(vector_env_wilderness, '{NAME} Wilderness');
+			bindPopupToLayer(vector_env_wilderness_identified, '{NAME} Wilderness');
+			bindPopupToLayer(vector_env_wilderness_declared, '{DECNAME} Wilderness');
 			bindPopupToLayer(vector_crown_road_sales_active,
 				`Proposed crown road sale - current<br>
 				{lga}<br>
@@ -3054,7 +3062,8 @@
 							{ label: 'Government prop. ex. crown', layer: vector_env_gpi_ex_crown },
 							{ label: 'Schedule 1 catchment', layer: vector_wnsw_catchment_schedule_1 },
 							{ label: 'Schedule 2 catchment', layer: vector_wnsw_catchment_schedule_2 },
-							{ label: 'Declared wilderness', layer: vector_env_wilderness },
+							{ label: 'Identifed wilderness', layer: vector_env_wilderness_identified },
+							{ label: 'Declared wilderness', layer: vector_env_wilderness_declared },
 							{ label: 'NPWS all managed', layer: vector_env_npws_all },
 							{ label: 'FCNSW estate', layer: vector_fcnsw_estate}
 						]
