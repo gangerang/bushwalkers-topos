@@ -2249,6 +2249,15 @@
 			});
 
 			///////////////////////////
+			// light pollution
+			///////////////////////////
+
+			const raster_light_pollution = L.tileLayer('https://djlorenz.github.io/astronomy/image_tiles/tiles2024/tile_{z}_{x}_{y}.png', {
+				maxNativeZoom: 6,
+				attribution: 'Light pollution data by <a href="https://djlorenz.github.io/astronomy/">DJ Lorenz</a>'
+			});
+
+			///////////////////////////
 			// rfs fires near me / major incidents / hotspots
 			///////////////////////////
 
@@ -3131,6 +3140,7 @@
 						children: [
 							{ label: 'Rain Viewer radar', layer: raster_rv_weather_radar },
 							{ label: 'GA Himawari', layer: raster_ga_himawari },
+							{ label: 'Light pollution', layer: raster_light_pollution }
 						]
 					},
 					{
@@ -3687,6 +3697,7 @@
 				{ label: 'Lot size', layer: raster_env_planning_lot_size },
 				{ label: 'Acquisitions', layer: raster_env_planning_acquisition },
 				{ label: 'All survey marks', layer: raster_ss_scims },
+				{ label: 'Light pollution', layer: raster_light_pollution }
 			);
 
 			// load canyon layer from ropewiki
