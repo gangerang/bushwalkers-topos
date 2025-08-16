@@ -1153,10 +1153,14 @@
 
 			const raster_env_tenure = L.esri.dynamicMapLayer({url: 'https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Tenure/Land_Tenure_NSW/MapServer',
 				layers: [3], // 3 = NSW Tenure
-				// maxZoom: 21,
-				// maxNativeZoom: 16,
-				attribution: attrib_nsw_planning
+				attribution: attrib_nsw_dcceew
 			});
+
+			const raster_env_ams_trails = L.esri.dynamicMapLayer({url: 'https://mapprod2.environment.nsw.gov.au/arcgis/rest/services/RoadAccess/RoadAccess/MapServer',
+				layers: [6],
+				attribution: attrib_nsw_dcceew
+			});
+
 
 			///////////////////////////
 			// crown land
@@ -3033,6 +3037,7 @@
 							{ label: 'Getlost Maps huts', layer: vector_hosted_glm_huts },
 							{ label: 'Getlost Maps ruins', layer: vector_hosted_glm_ruins },
 							{ label: 'Getlost Maps repeaters', layer: vector_hosted_glm_repeaters },
+							{ label: 'NPWS access trails', layer: raster_env_ams_trails },
 						]
 					},
 					{
@@ -3707,6 +3712,7 @@
 				{ label: 'All survey marks', layer: raster_ss_scims },
 				{ label: 'Light pollution', layer: raster_light_pollution },
 				{ label: 'Land Tenure', layer: raster_env_tenure },
+				{ label: 'NPWS access trails', layer: raster_env_ams_trails },
 			);
 
 			// load canyon layer from ropewiki

@@ -147,4 +147,5 @@ Below are short gif recordings showing the various layer and features which are 
 - add - 1912 proposed railways - new nla map search layer for proposed railways in sydney in 1912
 - add - declared wilderness - previously had identified wilderness (incorrectly called declared wilderness), now added declared wilderness layer
 - add - light pollution - global light pollution layer from djlorenz light pollution atlas
-- add - nsw tenure - new raster layer for land tenure in nsw, shows private, crown land, national parks, state forest and aboriginal owned land
+- add - nsw tenure - raster layer for land tenure in nsw, shows private, crown land, national parks, state forest and aboriginal owned land
+- add - npws access trails - raster layer for access trails in nsw national parks
