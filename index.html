@@ -1151,6 +1151,13 @@
 				attribution: attrib_nsw_dcceew
 			});	
 
+			const raster_env_tenure = L.esri.dynamicMapLayer({url: 'https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Tenure/Land_Tenure_NSW/MapServer',
+				layers: [3], // 3 = NSW Tenure
+				// maxZoom: 21,
+				// maxNativeZoom: 16,
+				attribution: attrib_nsw_planning
+			});
+
 			///////////////////////////
 			// crown land
 			///////////////////////////
@@ -3062,6 +3069,7 @@
 							{ label: 'Federal seats', layer: vector_ss_federal_electoral },
 							{ label: 'Government property', layer: vector_env_gpi },
 							{ label: 'Government prop. ex. crown', layer: vector_env_gpi_ex_crown },
+							{ label: 'Land Tenure', layer: raster_env_tenure },
 							{ label: 'Schedule 1 catchment', layer: vector_wnsw_catchment_schedule_1 },
 							{ label: 'Schedule 2 catchment', layer: vector_wnsw_catchment_schedule_2 },
 							{ label: 'Identifed wilderness', layer: vector_env_wilderness_identified },
@@ -3697,7 +3705,8 @@
 				{ label: 'Lot size', layer: raster_env_planning_lot_size },
 				{ label: 'Acquisitions', layer: raster_env_planning_acquisition },
 				{ label: 'All survey marks', layer: raster_ss_scims },
-				{ label: 'Light pollution', layer: raster_light_pollution }
+				{ label: 'Light pollution', layer: raster_light_pollution },
+				{ label: 'Land Tenure', layer: raster_env_tenure },
 			);
 
 			// load canyon layer from ropewiki
