@@ -971,6 +971,11 @@
 				basemap_raster_esri_hillshade
 			]);
 
+			// raster caltopo basemap
+			const basemap_raster_caltopo_basemap = L.tileLayer('https://caltopo.com/tile/mb_topo/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="https://caltopo.com">CalTopo</a> Contributors'
+			});
+
 			///////////////////////////
 			//	overlay layers
 			///////////////////////////
@@ -2434,6 +2439,20 @@
 			});
 
 			///////////////////////////
+			// caltopo slope maps
+			///////////////////////////
+
+			const raster_caltopo_slope_fixed = L.tileLayer('https://caltopo.com/tile/sc_fixed/{z}/{x}/{y}.png', {
+				maxZoom: 15,
+				attribution: 'Map tiles by <a href="https://caltopo.com/">CalTopo</a>'
+			});
+
+			const raster_caltopo_slope_gradient = L.tileLayer('https://caltopo.com/tile/sc_gradient/{z}/{x}/{y}.png', {
+				maxZoom: 15,
+				attribution: 'Map tiles by <a href="https://caltopo.com/">CalTopo</a>'
+			});
+
+			///////////////////////////
 			// geoman functionality
 			///////////////////////////
 
@@ -2860,6 +2879,7 @@
 						{ label: 'ESRI topo raster', layer: basemap_raster_esri_topo },
 						{ label: 'OpenFreeMap', layer: basemap_vectortile_ofm_liberty },
 						{ label: 'OpenTopoMap', layer: basemap_raster_open_topo_maps },
+						{ label: 'CalTopo', layer: basemap_raster_caltopo_basemap },
 					]
 				},
 				{
@@ -2988,6 +3008,8 @@
 							{ label: 'ELVIS DEM availablity', layer: raster_fsdf_elvis },
 							{ label: 'Terrarium elevation', layer: raster_aws_elevation_terrarium },
 							{ label: 'Multiscale TPI', layer: raster_ga_multiscale_tpi },
+							{ label: 'CalTopo slope fixed', layer: raster_caltopo_slope_fixed },
+							{ label: 'CalTopo slope gradient', layer: raster_caltopo_slope_gradient },
 							// { label: 'SIX vector topo', layer: basemap_vectortile_ss_basemap },					
 						]
 					},
@@ -3713,6 +3735,8 @@
 				{ label: 'Light pollution', layer: raster_light_pollution },
 				{ label: 'Land Tenure', layer: raster_env_tenure },
 				{ label: 'NPWS access trails', layer: raster_env_ams_trails },
+				{ label: 'CalTopo slope fixed', layer: raster_caltopo_slope_fixed },
+				{ label: 'CalTopo slope gradient', layer: raster_caltopo_slope_gradient },
 			);
 
 			// load canyon layer from ropewiki
