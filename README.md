@@ -150,3 +150,4 @@ Below are short gif recordings showing the various layer and features which are 
 - add - nsw tenure - raster layer for land tenure in nsw, shows private, crown land, national parks, state forest and aboriginal owned land
 - add - npws access trails - raster layer for access trails in nsw national parks
 - add - caltopo layers - caltopo basemap and slope layers
+- add - byo layers via url - ability to add byo layers via a url parameter 'byo', for easier sharing of custom maps

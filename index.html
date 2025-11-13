@@ -4086,7 +4086,45 @@
 			document.addEventListener('DOMContentLoaded', async () => {
 				const urlParams = new URLSearchParams(window.location.search);
 				const sharedId = urlParams.get('id');
-				
+				const byoUrl = urlParams.get('byo');
+
+				// Handle BYO layers URL parameter
+				if (byoUrl) {
+					try {
+						const response = await fetch(byoUrl);
+
+						if (!response.ok) {
+							throw new Error(`Failed to fetch BYO layers configuration: ${response.statusText}`);
+						}
+
+						const layerConfig = await response.json();
+
+						// Clear existing BYO layers before loading new ones
+						if (byoLayersTree.children.length > 0) {
+							// Remove all BYO layers from the map
+							byoLayersTree.children.forEach(child => {
+								if (child.layer && map.hasLayer(child.layer)) {
+									map.removeLayer(child.layer);
+								}
+							});
+
+							// Clear the BYO layers tree
+							byoLayersTree.children = [];
+
+							// Remove BYO layers from opacity layers array
+							opacityLayers = opacityLayers.filter(item => {
+								return !item.label || !byoLayersTree.children.some(child => child.label === item.label);
+							});
+						}
+
+						loadBYOLayers(layerConfig);
+					} catch (error) {
+						console.error('Error loading BYO layers from URL:', error);
+						alert('Error loading BYO layers: ' + error.message);
+					}
+				}
+
+				// Handle shared GeoJSON ID parameter
 				if (sharedId) {
 					try {
 						const response = await fetch('https://supabasekong-is8gocowgsckokooskwo8kww.cloud.al3x.au/rest/v1/rpc/get_geojson_by_id', {
