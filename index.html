@@ -624,6 +624,20 @@
 				document.getElementById("watercourseSearchBtn").onclick = () => openModal("watercourseSearchModal");
 				document.getElementById("gnrSearchBtn").onclick = () => openModal("gnrSearchModal");
 
+				// pressing enter in search inputs triggers search
+				document.getElementById("folio").addEventListener("keypress", (event) => {
+					if (event.key === "Enter") searchLot();
+				});
+				document.getElementById("locationQuery").addEventListener("keypress", (event) => {
+					if (event.key === "Enter") searchLocation();
+				});
+				document.getElementById("watercourseQuery").addEventListener("keypress", (event) => {
+					if (event.key === "Enter") searchWatercourse();
+				});
+				document.getElementById("gnrQuery").addEventListener("keypress", (event) => {
+					if (event.key === "Enter") searchGNR();
+				});
+
 				// functions for each search type
 
 				// lot search
