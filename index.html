@@ -2445,6 +2445,19 @@
 				attribution: attrib_ga,
 			});
 
+			// TPG/Vodafone mobile coverage map
+			const raster_tpg_coverage = L.tileLayer.wms('https://maps.vodafone.com.au/wms/cache', {
+				layers: '[{"name":"VHA_COVERAGE_CLASS","theme":"vha_grid","visibility":true,"VISIBLE_NETWORKS":"VODA,OPTUS","MODE":"BYDATE","DATETIMETO":"2025-11-21","COVERAGE_CONFIGS":"BASE,BASE_OPTUS","RENDER_AS":"DATA_OUTDOOR","STAT_SET":"SVC_DATA_AVG","FREQUENCIES":"N3600,N2600,N2100,N1800,N900,N700,L2600,L2100,L1800,L900,L850,L700,X3600,X700","DEVICE_CAP":""}]',
+				styles: 'vha_cov_tile',
+				format: 'image/png',
+				transparent: true,
+				version: 'VODA,OPTUS-DATA_OUTDOOR-SVC_DATA_AVG-N3600,N2600,N2100,N1800,N900,N700,L2600,L2100,L1800,L900,L850,L700,X3600,X700',
+				cache: true,
+				renderset: 'vha_grid',
+				crs: L.CRS.EPSG3857,
+				attribution: 'Mobile coverage data &copy; <a href="https://www.vodafone.com.au/">Vodafone/TPG</a>'
+			});
+
 			// getlost maps files - https://www.getlost.com.au/downloads/
 
 			// getlost maps - huts
@@ -3187,6 +3200,7 @@
 							{ label: 'Getlost Maps ruins', layer: vector_hosted_glm_ruins },
 							{ label: 'Getlost Maps repeaters', layer: vector_hosted_glm_repeaters },
 							{ label: 'NPWS access trails', layer: raster_env_ams_trails },
+							{ label: 'TPG mobile coverage', layer: raster_tpg_coverage },
 						]
 					},
 					{
@@ -3865,6 +3879,7 @@
 				{ label: 'SSC 2010', layer: image_ssc_aerial_2010 },
 				{ label: 'NSW 5m hillshade', layer: basemap_raster_geonsw_hillshade_5m },
 				{ label: 'DEA Hotspots', layer: raster_ga_hotspots_three_days },
+				{ label: 'TPG mobile coverage', layer: raster_tpg_coverage },
 				{ label: 'ELVIS DEM availablity', layer: raster_fsdf_elvis },
 				{ label: 'Zoning', layer: raster_env_planning_zoning },
 				{ label: 'Lot size', layer: raster_env_planning_lot_size },

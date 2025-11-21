@@ -151,3 +151,4 @@ Below are short gif recordings showing the various layer and features which are 
 - add - npws access trails - raster layer for access trails in nsw national parks
 - add - caltopo layers - caltopo basemap and slope layers
 - add - byo layers via url - ability to add byo layers via a url parameter 'byo', for easier sharing of custom maps
+- add - tpg mobile coverage - layer for mobile coverage from tpg, optus and vodafone in nsw
