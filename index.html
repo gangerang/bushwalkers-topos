@@ -209,6 +209,44 @@
 				border: none;
 				cursor: pointer;
 			}
+
+			/* Header buttons styled to match Leaflet controls */
+			#buttonContainer {
+				box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+				border-radius: 4px;
+				overflow: hidden;
+			}
+
+			.header-button {
+				min-width: 30px;
+				height: 30px;
+				line-height: 30px;
+				padding: 0 10px;
+				background: #fff;
+				color: #000;
+				border: none;
+				border-right: 1px solid #ccc;
+				font-size: 12px;
+				font-weight: normal;
+				text-decoration: none;
+				text-align: center;
+				cursor: pointer;
+				display: inline-block;
+				vertical-align: top;
+			}
+
+			.header-button:last-child {
+				border-right: none;
+			}
+
+			.header-button:hover {
+				background-color: #f4f4f4;
+			}
+
+			.header-button:active {
+				background-color: #e0e0e0;
+			}
+
 			.results-table {
 				width: 100%;
 				border-collapse: collapse;
@@ -242,12 +280,12 @@
 	<body>
 		<div id="map"></div>
 
-		<div id="buttonContainer" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; gap: 2px;">
-			<button onclick="window.open('https://github.com/gangerang/bushwalkers-topos', '_blank')">About</button>
-			<button id="lotSearchBtn">Lot Search</button>
-			<button id="locationSearchBtn">Location Search</button>
-			<button id="watercourseSearchBtn">Watercourse Search</button>
-			<button id="gnrSearchBtn">GNR Search</button>
+		<div id="buttonContainer" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex;">
+			<button class="header-button" onclick="window.open('https://github.com/gangerang/bushwalkers-topos', '_blank')">About</button>
+			<button class="header-button" id="lotSearchBtn">Lot Search</button>
+			<button class="header-button" id="locationSearchBtn">Location Search</button>
+			<button class="header-button" id="watercourseSearchBtn">Watercourse Search</button>
+			<button class="header-button" id="gnrSearchBtn">GNR Search</button>
 		</div>
 	
 		<!-- Lot Search Modal -->
