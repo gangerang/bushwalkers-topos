@@ -1711,6 +1711,8 @@
 			const strava_auth_hot_all_url = 'https://strava-heatmap-proxy.ajallchin.workers.dev/globalheat/all/all/{z}/{x}/{y}@2x.png'
 			const strava_auth_hot_run_url = 'https://strava-heatmap-proxy.ajallchin.workers.dev/globalheat/all/red/{z}/{x}/{y}@2x.png'
 
+			const strava_auth_hot_all_nsw_url = 'https://tileserver-gl.cloud.al3x.au/data/strava_nsw/{z}/{x}/{y}.png'
+
 			const basemap_raster_strava_public_hot_all = L.tileLayer(strava_public_hot_all_url, {
 				maxZoom: 21,
 				maxNativeZoom: 11
@@ -1726,6 +1728,11 @@
 			const basemap_raster_strava_auth_hot_run = L.tileLayer(strava_auth_hot_run_url, {
 				maxZoom: 21,
 				maxNativeZoom: 14
+			});
+
+			const basemap_raster_strava_auth_hot_all_nsw = L.tileLayer(strava_auth_hot_all_nsw_url, {
+				maxZoom: 21,
+				maxNativeZoom: 13
 			});
 
 			///////////////////////////
@@ -3306,8 +3313,9 @@
 						children: [
 							// { label: 'Auth hot all', layer: basemap_raster_strava_auth_hot_all },
 							// { label: 'Auth hot run', layer: basemap_raster_strava_auth_hot_run },
-							{ label: 'Public hot all', layer: basemap_raster_strava_public_hot_all },
-							{ label: 'Public hot run', layer: basemap_raster_strava_public_hot_run },
+							{ label: 'NSW all high-res', layer: basemap_raster_strava_auth_hot_all_nsw },
+							{ label: 'Global all low-res', layer: basemap_raster_strava_public_hot_all },
+							{ label: 'Global run low-res', layer: basemap_raster_strava_public_hot_run },
 						]
 					},
 					{
@@ -3844,10 +3852,9 @@
 				{ label: 'Geology WMTS', layer: basemap_raster_geonsw_geology_wmts },
 				{ label: 'Geology', layer: basemap_raster_geonsw_geology },
 				{ label: 'Geology simplifed', layer: basemap_raster_geonsw_geology_simplified },
-				{ label: 'Public hot all', layer: basemap_raster_strava_auth_hot_all },
-				{ label: 'Public hot run', layer: basemap_raster_strava_auth_hot_run },
-				{ label: 'Public hot all', layer: basemap_raster_strava_public_hot_all },
-				{ label: 'Public hot run', layer: basemap_raster_strava_public_hot_run },
+				{ label: 'NSW all high-res', layer: basemap_raster_strava_auth_hot_all_nsw },
+				{ label: 'Global all low-res', layer: basemap_raster_strava_public_hot_all },
+				{ label: 'Global run low-res', layer: basemap_raster_strava_public_hot_run },
 				{ label: 'NSW SVTM veg class and pct layers', layer: basemap_raster_env_svtm_pct_5m_labels },
 				{ label: 'NSW SVTM veg class and pct layers', layer: basemap_raster_env_svtm_pct_5m },
 				{ label: 'NSW SVTM veg class and pct layers', layer: basemap_raster_env_svtm_veg_class_5m },
