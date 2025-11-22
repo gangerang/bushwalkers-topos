@@ -931,6 +931,7 @@
 			const attrib_rfs = '&copy; State of New South Wales (NSW Rural Fire Service). For current information go to <a href="www.rfs.nsw.gov.au">www.rfs.nsw.gov.au.</a>'
 			const attrib_glm = '&copy; <a href="https://www.getlost.com.au/current-map-information/">GetLost Maps</a>'
 			const attrib_qld = '&copy; <a href="https://www.qld.gov.au/">Queensland Government</a>'
+			const attrib_accc = '&copy; ACCC</a>'
 
 			///////////////////////////
 			//	basemaps
@@ -2452,17 +2453,38 @@
 				attribution: attrib_ga,
 			});
 
-			// TPG/Vodafone mobile coverage map
-			const raster_tpg_coverage = L.tileLayer.wms('https://maps.vodafone.com.au/wms/cache', {
-				layers: '[{"name":"VHA_COVERAGE_CLASS","theme":"vha_grid","visibility":true,"VISIBLE_NETWORKS":"VODA,OPTUS","MODE":"BYDATE","DATETIMETO":"2025-11-21","COVERAGE_CONFIGS":"BASE,BASE_OPTUS","RENDER_AS":"DATA_OUTDOOR","STAT_SET":"SVC_DATA_AVG","FREQUENCIES":"N3600,N2600,N2100,N1800,N900,N700,L2600,L2100,L1800,L900,L850,L700,X3600,X700","DEVICE_CAP":""}]',
-				styles: 'vha_cov_tile',
-				format: 'image/png',
-				transparent: true,
-				version: 'VODA,OPTUS-DATA_OUTDOOR-SVC_DATA_AVG-N3600,N2600,N2100,N1800,N900,N700,L2600,L2100,L1800,L900,L850,L700,X3600,X700',
-				cache: true,
-				renderset: 'vha_grid',
-				crs: L.CRS.EPSG3857,
-				attribution: 'Mobile coverage data &copy; <a href="https://www.vodafone.com.au/">Vodafone/TPG</a>'
+			// // TPG mobile coverage map
+			// const raster_tpg_coverage = L.tileLayer.wms('https://maps.vodafone.com.au/wms/cache', {
+			// 	layers: '[{"name":"VHA_COVERAGE_CLASS","theme":"vha_grid","visibility":true,"VISIBLE_NETWORKS":"VODA,OPTUS","MODE":"BYDATE","DATETIMETO":"2025-11-21","COVERAGE_CONFIGS":"BASE,BASE_OPTUS","RENDER_AS":"DATA_OUTDOOR","STAT_SET":"SVC_DATA_AVG","FREQUENCIES":"N3600,N2600,N2100,N1800,N900,N700,L2600,L2100,L1800,L900,L850,L700,X3600,X700","DEVICE_CAP":""}]',
+			// 	styles: 'vha_cov_tile',
+			// 	format: 'image/png',
+			// 	transparent: true,
+			// 	version: 'VODA,OPTUS-DATA_OUTDOOR-SVC_DATA_AVG-N3600,N2600,N2100,N1800,N900,N700,L2600,L2100,L1800,L900,L850,L700,X3600,X700',
+			// 	cache: true,
+			// 	renderset: 'vha_grid',
+			// 	crs: L.CRS.EPSG3857,
+			// 	attribution: 'Mobile coverage data &copy; <a href="https://www.vodafone.com.au/">Vodafone/TPG</a>'
+			// });
+
+			// accc mobile coverage maps - https://spatial.infrastructure.gov.au/arcgis/rest/services/ACCC_Mobile_Sites_and_Coverages/MapServer
+			// 2024 data
+
+			const raster_mobile_2024_optus = L.esri.dynamicMapLayer({
+				url: "https://spatial.infrastructure.gov.au/server/rest/services/ACCC_Mobile_Sites_and_Coverages/MapServer",
+				layers: [15],
+				attribution: attrib_accc
+			});
+
+			const raster_mobile_2024_telstra = L.esri.dynamicMapLayer({
+				url: "https://spatial.infrastructure.gov.au/server/rest/services/ACCC_Mobile_Sites_and_Coverages/MapServer",
+				layers: [25],
+				attribution: attrib_accc
+			});
+
+			const raster_mobile_2024_tpg = L.esri.dynamicMapLayer({
+				url: "https://spatial.infrastructure.gov.au/server/rest/services/ACCC_Mobile_Sites_and_Coverages/MapServer",
+				layers: [33],
+				attribution: attrib_accc
 			});
 
 			// getlost maps files - https://www.getlost.com.au/downloads/
@@ -3207,7 +3229,6 @@
 							{ label: 'Getlost Maps ruins', layer: vector_hosted_glm_ruins },
 							{ label: 'Getlost Maps repeaters', layer: vector_hosted_glm_repeaters },
 							{ label: 'NPWS access trails', layer: raster_env_ams_trails },
-							{ label: 'TPG mobile coverage', layer: raster_tpg_coverage },
 						]
 					},
 					{
@@ -3334,6 +3355,16 @@
 							{ label: 'Zoning', layer: raster_env_planning_zoning },
 							{ label: 'Lot size', layer: raster_env_planning_lot_size },
 							{ label: 'Acquisitions', layer: raster_env_planning_acquisition },
+						]
+					},
+					{
+						label: 'Mobile Coverage',
+						collapsed: true,
+						children: [
+							// { label: 'TPG mobile coverage', layer: raster_tpg_coverage },
+							{ label: 'TPG', layer: raster_mobile_2024_tpg },
+							{ label: 'Optus', layer: raster_mobile_2024_optus },
+							{ label: 'Telstra', layer: raster_mobile_2024_telstra },
 						]
 					},
 					{
@@ -3886,7 +3917,9 @@
 				{ label: 'SSC 2010', layer: image_ssc_aerial_2010 },
 				{ label: 'NSW 5m hillshade', layer: basemap_raster_geonsw_hillshade_5m },
 				{ label: 'DEA Hotspots', layer: raster_ga_hotspots_three_days },
-				{ label: 'TPG mobile coverage', layer: raster_tpg_coverage },
+				{ label: 'TPG', layer: raster_mobile_2024_tpg },
+				{ label: 'Optus', layer: raster_mobile_2024_optus },
+				{ label: 'Telstra', layer: raster_mobile_2024_telstra },
 				{ label: 'ELVIS DEM availablity', layer: raster_fsdf_elvis },
 				{ label: 'Zoning', layer: raster_env_planning_zoning },
 				{ label: 'Lot size', layer: raster_env_planning_lot_size },
