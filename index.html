@@ -1544,12 +1544,32 @@
 						//uppercase: true,
 						attribution: 'Department of Regional New South Wales'
 			});
+			// seamless geology - surface - wmts
+			const basemap_raster_geonsw_geology_wmts =  new L.TileLayer.WMTS('https://minview.geoscience.nsw.gov.au/gs-geology/gwc/service/wmts', {
+						layer: 'geology:nsw_surface',
+						format: 'image/png',
+						tilematrixSet: 'EPSG:900913',
+						//transparent: true,
+						version: '1.0.0',
+						//uppercase: true,
+						attribution: 'Department of Regional New South Wales'
+			});
 			// seamless geology - surface simplified
 			const basemap_raster_geonsw_geology_simplified = L.tileLayer.wms('https://gs-seamless.geoscience.nsw.gov.au/geoserver/ows?', {
-						layers: 'geology-simplified:simplified_geology',
+				layers: 'geology-simplified:simplified_geology',
+				format: 'image/png',
+				transparent: true,
+				version: '1.3.0',
+				//uppercase: true,
+				attribution: 'Department of Regional New South Wales'
+			});
+			// seamless geology - surface simplified - wmts
+			const basemap_raster_geonsw_geology_simplified_wmts =  new L.TileLayer.WMTS('https://minview.geoscience.nsw.gov.au/gs-geology/gwc/service/wmts', {
+						layer: 'geology-simplified:simplified_geology',
 						format: 'image/png',
-						transparent: true,
-						version: '1.3.0',
+						tilematrixSet: 'EPSG:900913',
+						//transparent: true,
+						version: '1.0.0',
 						//uppercase: true,
 						attribution: 'Department of Regional New South Wales'
 			});
@@ -1559,16 +1579,6 @@
 						format: 'image/png',
 						transparent: true,
 						version: '1.3.0',
-						//uppercase: true,
-						attribution: 'Department of Regional New South Wales'
-			});
-			// seamless geology - surface - wmts
-			const basemap_raster_geonsw_geology_wmts =  new L.TileLayer.WMTS('https://minview.geoscience.nsw.gov.au/gs-geology/gwc/service/wmts', {
-						layer: 'geology:nsw_surface',
-						format: 'image/png',
-						tilematrixSet: 'EPSG:900913',
-						//transparent: true,
-						version: '1.0.0',
 						//uppercase: true,
 						attribution: 'Department of Regional New South Wales'
 			});
@@ -2598,6 +2608,11 @@
 				attribution: attrib_nsw_planning
 			});
 
+			const vector_ss_subivisions = L.esri.featureLayer({
+				url: "https://portal.spatial.nsw.gov.au/server/rest/services/Hosted/NSW_Land_Subdivision_Pipeline_Production/FeatureServer/0",
+				attribution: attrib_nsw_planning
+			});
+
 			///////////////////////////
 			// queensland topo maps
 			///////////////////////////			
@@ -3025,6 +3040,15 @@
 				<a href="{advertisement_url}" target="_blank">View and comment on proposal</a>
 				`
 			);
+			bindPopupToLayer(vector_ss_subivisions,
+				`Type: {applicationtype}<br>
+				Status: {casestatus}<br>
+				Outcome: {determinationoutcome}<br>
+				Parcel Name/Plan: {parcelname}/{preallocatedplannumber}<br>
+				Council Ref: {councildanumber}<br>
+				Survey: {surveydescription}<br>
+				`
+			);
 
 
 			///////////////////////////
@@ -3212,9 +3236,9 @@
 						label: 'Geology',
 						collapsed: true,
 						children: [
-							{ label: 'Geology WMTS', layer: basemap_raster_geonsw_geology_wmts },
-							{ label: 'Geology', layer: basemap_raster_geonsw_geology },
-							{ label: 'Geology simplifed', layer: basemap_raster_geonsw_geology_simplified },
+							{ label: 'Geology', layer: basemap_raster_geonsw_geology_wmts },
+							// { label: 'Geology', layer: basemap_raster_geonsw_geology },
+							{ label: 'Geology simplifed', layer: basemap_raster_geonsw_geology_simplified_wmts },
 						]
 					},
 					{
@@ -3355,6 +3379,7 @@
 							{ label: 'Zoning', layer: raster_env_planning_zoning },
 							{ label: 'Lot size', layer: raster_env_planning_lot_size },
 							{ label: 'Acquisitions', layer: raster_env_planning_acquisition },
+							{ label: 'Subdivisions', layer: vector_ss_subivisions },
 						]
 					},
 					{
@@ -3883,6 +3908,7 @@
 				{ label: 'Geology WMTS', layer: basemap_raster_geonsw_geology_wmts },
 				{ label: 'Geology', layer: basemap_raster_geonsw_geology },
 				{ label: 'Geology simplifed', layer: basemap_raster_geonsw_geology_simplified },
+				{ label: 'Geology simplifed', layer: basemap_raster_geonsw_geology_simplified_wmts },
 				{ label: 'NSW all high-res', layer: basemap_raster_strava_auth_hot_all_nsw },
 				{ label: 'Global all low-res', layer: basemap_raster_strava_public_hot_all },
 				{ label: 'Global run low-res', layer: basemap_raster_strava_public_hot_run },
