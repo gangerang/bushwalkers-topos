@@ -938,16 +938,18 @@
 			///////////////////////////
 
 			// NSW raster topo maps layer
-			const basemap_raster_ss_nsw_raster_topo = L.tileLayer('https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+			const basemap_raster_ss_nsw_raster_topo = L.tileLayer('https://maps{s}.six.nsw.gov.au/arcgis/rest/services/public/NSW_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
 				maxZoom: 21,
 				maxNativeZoom: 16,
+				subdomains: '1234',
 				attribution: attrib_nsw_ss
 			});
 			
 			// NSW raster imagery layer
-			const basemap_raster_ss_nsw_imagery = L.tileLayer('https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Imagery/MapServer/tile/{z}/{y}/{x}', {
+			const basemap_raster_ss_nsw_imagery = L.tileLayer('https://maps{s}.six.nsw.gov.au/arcgis/rest/services/public/NSW_Imagery/MapServer/tile/{z}/{y}/{x}', {
 				maxZoom: 21,
 				//maxNativeZoom: 16,
+				subdomains: '1234',
 				attribution: attrib_nsw_ss
 			});
 
@@ -958,16 +960,18 @@
 			});
 			
 			// NSW poi topo basemap
-			const basemap_raster_ss_nsw_poi_topo = L.esri.tiledMapLayer({url: 'https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/LPIMap/MapServer',
+			const basemap_raster_ss_nsw_poi_topo = L.esri.tiledMapLayer({url: 'https://maps{s}.six.nsw.gov.au/arcgis/rest/services/sixmaps/LPIMap/MapServer',
 				maxZoom: 21,
 				maxNativeZoom: 18,
+				subdomains: '1234',
 				attribution: attrib_nsw_ss
 			}).addTo(map);
 
 			// NSW series 1 topo basemap
-			const basemap_raster_ss_nsw_raster_topo_s1 = L.esri.tiledMapLayer({url: 'https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/LPITopoMap_S1/MapServer',
+			const basemap_raster_ss_nsw_raster_topo_s1 = L.esri.tiledMapLayer({url: 'https://maps{s}.six.nsw.gov.au/arcgis/rest/services/sixmaps/LPITopoMap_S1/MapServer',
 				maxZoom: 21,
 				maxNativeZoom: 16,
+				subdomains: '1234',
 				attribution: attrib_nsw_ss
 			});
 
@@ -2556,32 +2560,24 @@
 
 			const vector_ss_public_cadastre_lot = L.esri.featureLayer({
 				url: "https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/Cadastre/MapServer/0",
-				simplifyFactor: 0.5,
-				precision: 4,
 				attribution: attrib_nsw_ss,
 				where: "controllingauthorityoid>2",
 			});
 
 			const vector_ss_public_cadastre_road = L.esri.featureLayer({
-				url: "https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/Cadastre/MapServer/1",
-				simplifyFactor: 0.5,
-				precision: 4,
+				url: "https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/Cadastre/MapServer/1",		
 				attribution: attrib_nsw_ss,
 				where: "controllingauthorityoid>2",
 			});
 
 			const vector_ss_public_cadastre_water = L.esri.featureLayer({
 				url: "https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/Cadastre/MapServer/2",
-				simplifyFactor: 0.5,
-				precision: 4,
 				attribution: attrib_nsw_ss,
 				where: "controllingauthorityoid>2",
 			});
 
 			const vector_ss_public_cadastre_unidentifed = L.esri.featureLayer({
 				url: "https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/Cadastre/MapServer/3",
-				simplifyFactor: 0.5,
-				precision: 4,
 				attribution: attrib_nsw_ss,
 				where: "controllingauthorityoid>2",
 			});
