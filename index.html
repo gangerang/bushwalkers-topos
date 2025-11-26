@@ -1675,13 +1675,33 @@
 			// all nsw forestry corp (fcnsw) estate, including state forest, flora reserve and other
 			const vector_fcnsw_estate = L.esri.featureLayer({
 				url: "https://services2.arcgis.com/iCBB4zKDwkw2iwDD/ArcGIS/rest/services/FCNSW_Estate/FeatureServer/0",
-				simplifyFactor: 0.5,
-				precision: 4,
 				attribution: attrib_fcnsw,
 				style: () => {
 					return {
 						color: "#BFFF00" // yellow-green
 					};
+				}
+			});
+
+			const vector_fcnsw_plan_of_operations = L.esri.featureLayer({
+				url: "https://services2.arcgis.com/iCBB4zKDwkw2iwDD/ArcGIS/rest/services/PlanOfOperation/FeatureServer/0",
+				attribution: attrib_fcnsw,
+				style: function (feature) {
+					const val = (feature.properties.OperationStatus || '').trim();
+					switch (val) {
+						case 'Operations Active':
+							return { color: '#d73027', fillColor: '#d73027' };
+						case 'Operations temporarily paused':
+							return { color: '#fc8d59', fillColor: '#fc8d59' };
+						case 'Operations Completed':
+							return { color: '#1a9850', fillColor: '#1a9850' };
+						case 'Potential future harvest/roading within 6 months':
+							return { color: '#fee08b', fillColor: '#fee08b' };
+						case 'Potential future harvest/roading within 6-18 months':
+							return { color: '#91bfdb', fillColor: '#91bfdb' };
+						default:
+							return { color: '#cccccc', fillColor: '#cccccc' }; // Blank / unknown
+					}
 				}
 			});
 
@@ -2943,6 +2963,14 @@
 			bindPopupToLayer(vector_env_gpi, "{LOTREF}<br>{SOURCE}");
 			bindPopupToLayer(vector_env_gpi_ex_crown, "{LOTREF}<br>{SOURCE}");
 			bindPopupToLayer(vector_fcnsw_estate, "<b>{OperationalSFName}</b><br>Reserve No. {OperationalSFNo}");
+			bindPopupToLayer(vector_fcnsw_plan_of_operations,
+				`{GazettedSFName} SF
+				{PlanName}<br>
+				Plan status: {PlanStatusName}<br>
+				Operation status: {OperationStatus}<br>
+				Start month/year: {StartMonth}/{StartYear}<br>
+				`
+			);
 			bindPopupToLayer(vector_env_crownland_reserves, 
 				`{crownlregno}<br>
 				Name: {reserve_name}<br>
@@ -3291,7 +3319,8 @@
 							{ label: 'Identifed wilderness', layer: vector_env_wilderness_identified },
 							{ label: 'Declared wilderness', layer: vector_env_wilderness_declared },
 							{ label: 'NPWS all managed', layer: vector_env_npws_all },
-							{ label: 'FCNSW estate', layer: vector_fcnsw_estate}
+							{ label: 'Forestry estate', layer: vector_fcnsw_estate},
+							{ label: 'Forestry operations', layer: vector_fcnsw_plan_of_operations}
 						]
 					},					
 					{
