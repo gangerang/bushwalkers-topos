@@ -2354,29 +2354,12 @@
 				layersConfig: geoserver_topo_100k_config
 			});
 
-			// const raster_geoserver_topo_100k_group = new L.TileLayer.WMTS('https://geoserver.cloud.al3x.au/geoserver/topo_100k/gwc/service/wmts', {
-			// 	layer: 'topo_100k:100k_group',
-			// 	tilematrixSet: 'WebMercatorQuadx2',
-			// 	tileSize: 512,
-			// 	format: 'image/png',
-			// 	version: '1.1.0'
-			// });
-
-			const raster_geoserver_topo_100k_group_url =
-				'https://geoserver.cloud.al3x.au/geoserver/topo_100k/gwc/service/wmts' +
-				'?service=WMTS&request=GetTile&version=1.0.0' +
-				'&layer=topo_100k:100k_group' +         // note: LAYER, singular
-				'&style=' +                             // or a style name if you have one
-				'&tilematrixSet=WebMercatorQuadx2' +    // your 512×512 gridset
-				'&format=image/png' +
-				'&tilematrix={z}&tilerow={y}&tilecol={x}';
-
-			const raster_geoserver_topo_100k_group = L.tileLayer(raster_geoserver_topo_100k_group_url, {
-				tileSize: 512,                          // Leaflet knows these are 512px tiles
-				zoomOffset: -1,
-				attribution: '© topo_100k'
-				});
-
+			const raster_geoserver_topo_100k_group = L.tileLayer(
+				'https://geoserver.cloud.al3x.au/geoserver/gwc/service/wmts/rest/topo_100k:100k_group/WebMercatorQuadx2/{z}/{y}/{x}?format=image/png', {
+				tileSize: 512,
+				zoomOffset: -1
+			});
+			
 			const geoserver_topo_50k_config = [
 				{ label: '50k 8932-4 Growee Gulph', layerid: 'topo_50k:8932_4_Growee_Gulph' },
 				{ label: '50k 8932-1 Mount Pomany', layerid: 'topo_50k:8932_1_Mount_Pomany' },
@@ -3183,15 +3166,15 @@
 									...raster_geoserver_topo_50k,
 								]
 							},
-							{
-								label: '1:100k',
-								selectAllCheckbox: true,
-								collapsed: true,
-								children: [
-									...raster_geoserver_topo_100k,
-								]
-							},
-							{ label: '100k group', layer: raster_geoserver_topo_100k_group },
+							// {
+							// 	label: '1:100k',
+							// 	selectAllCheckbox: true,
+							// 	collapsed: true,
+							// 	children: [
+							// 		...raster_geoserver_topo_100k,
+							// 	]
+							// },
+							{ label: '1:100k', layer: raster_geoserver_topo_100k_group },
 						]
 					},
 					{
@@ -3974,8 +3957,8 @@
 				{ label: 'Sydney Proposed Railways 1912', layer: raster_nla_misc_railways_proposed_1912 },
 				raster_ss_historic_imagery_list,
 				raster_env_fesm_wms_list,
-				raster_geoserver_topo_100k,
-				{ label: '100k group', layer: raster_geoserver_topo_100k_group },
+				// raster_geoserver_topo_100k,
+				{ label: '1:100k ', layer: raster_geoserver_topo_100k_group },
 				raster_geoserver_topo_50k,
 				{ label: 'SSC 1930', layer: image_ssc_aerial_1930 },
 				{ label: 'SSC 1942', layer: image_ssc_aerial_1942 },
