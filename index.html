@@ -2354,6 +2354,13 @@
 				layersConfig: geoserver_topo_100k_config
 			});
 
+			const raster_geoserver_topo_100k_group = new L.TileLayer.WMTS('https://geoserver.cloud.al3x.au/geoserver/topo_100k/gwc/service/wmts', {
+				layer: 'topo_100k:100k_group',
+				tilematrixSet: 'EPSG:900913',
+				format: 'image/png',
+				version: '1.1.0'
+			});
+
 			const geoserver_topo_50k_config = [
 				{ label: '50k 8932-4 Growee Gulph', layerid: 'topo_50k:8932_4_Growee_Gulph' },
 				{ label: '50k 8932-1 Mount Pomany', layerid: 'topo_50k:8932_1_Mount_Pomany' },
@@ -3168,6 +3175,7 @@
 									...raster_geoserver_topo_100k,
 								]
 							},
+							{ label: '100k group', layer: raster_geoserver_topo_100k_group },
 						]
 					},
 					{
@@ -3951,6 +3959,7 @@
 				raster_ss_historic_imagery_list,
 				raster_env_fesm_wms_list,
 				raster_geoserver_topo_100k,
+				{ label: '100k group', layer: raster_geoserver_topo_100k_group },
 				raster_geoserver_topo_50k,
 				{ label: 'SSC 1930', layer: image_ssc_aerial_1930 },
 				{ label: 'SSC 1942', layer: image_ssc_aerial_1942 },
