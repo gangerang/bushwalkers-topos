@@ -626,7 +626,7 @@
 			///////////////////////////	
 
 			document.addEventListener("DOMContentLoaded", function() {
-				let polygonLayer;
+				let polygonLayers = [];
 				let pointLayer;
 				let watercourseLayer;
 				let gnrLayer;
@@ -680,54 +680,93 @@
 
 				// lot search
 				function searchLot() {
-					const folio = document.getElementById("folio").value.toUpperCase();
-					const folioParts = folio.split("/");
+					const input = document.getElementById("folio").value.toUpperCase();
+					// Split by comma and trim whitespace from each folio
+					const folios = input.split(',').map(f => f.trim()).filter(f => f.length > 0);
 
-					let lot = "", section = "", plan = "", planType = "DP";
-
-					if (folioParts.length === 2 && folioParts[0] !== "SP") {
-						// Format like 10/100 (lot and plan)
-						[lot, plan] = folioParts;
-					} else if (folioParts.length === 3) {
-						// Format like 10/3/400 (lot, section, and plan)
-						[lot, section, plan] = folioParts;
-					} else if (folioParts[0].startsWith("SP")) {
-						// Format like SP100 or SP500 (plan type SP and plan number)
-						planType = "SP";
-						plan = folioParts[0].slice(2); // Extract number after "SP"
-					} else {
-						alert("Invalid folio format.");
+					if (folios.length === 0) {
+						alert("Please enter at least one folio.");
 						return;
 					}
 
-					// Construct the lotidstring based on the provided parts
-					const lotidstring = planType === "SP" ? `//SP${plan}` : `${lot}/${section || ""}/${planType}${plan}`;
-					const url = `https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/Boundaries/MapServer/6/query?f=json&where=lotidstring%20%3D%20%27${lotidstring}%27&returnGeometry=true&spatialRel=esriSpatialRelIntersects&outFields=*&outSR=3857`;
+					// Parse each folio into a lotidstring and create API requests
+					const fetchPromises = [];
+					const allBounds = [];
 
-					fetch(url)
-						.then(response => response.json())
-						.then(data => {
-							if (data.features.length > 0) {
-								const feature = data.features[0];
-								const allRings = feature.geometry.rings;
-								const lotidstringValue = feature.attributes.lotidstring;
-								const allCoordinates = allRings.map(ring => {
-									return ring.map(([x, y]) => {
-										const latlng = L.Projection.SphericalMercator.unproject(L.point(x, y));
-										return [latlng.lat, latlng.lng];
+					for (const folio of folios) {
+						const folioParts = folio.split("/");
+						let lot = "", section = "", plan = "", planType = "DP";
+
+						if (folioParts.length === 2 && folioParts[0] !== "SP") {
+							// Format like 10/100 (lot and plan)
+							[lot, plan] = folioParts;
+						} else if (folioParts.length === 3) {
+							// Format like 10/3/400 (lot, section, and plan)
+							[lot, section, plan] = folioParts;
+						} else if (folioParts[0].startsWith("SP")) {
+							// Format like SP100 or SP500 (plan type SP and plan number)
+							planType = "SP";
+							plan = folioParts[0].slice(2); // Extract number after "SP"
+						} else {
+							alert(`Invalid folio format: ${folio}`);
+							return;
+						}
+
+						// Construct the lotidstring based on the provided parts
+						const lotidstring = planType === "SP" ? `//SP${plan}` : `${lot}/${section || ""}/${planType}${plan}`;
+						const url = `https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/Boundaries/MapServer/6/query?f=json&where=lotidstring%20%3D%20%27${lotidstring}%27&returnGeometry=true&spatialRel=esriSpatialRelIntersects&outFields=*&outSR=3857`;
+
+						// Create a fetch promise for each lot
+						const fetchPromise = fetch(url)
+							.then(response => response.json())
+							.then(data => {
+								if (data.features.length > 0) {
+									const feature = data.features[0];
+									const allRings = feature.geometry.rings;
+									const lotidstringValue = feature.attributes.lotidstring;
+									const allCoordinates = allRings.map(ring => {
+										return ring.map(([x, y]) => {
+											const latlng = L.Projection.SphericalMercator.unproject(L.point(x, y));
+											return [latlng.lat, latlng.lng];
+										});
 									});
-								});
-								// uncomment for adding new feature removed previous ones
-								// if (polygonLayer) map.removeLayer(polygonLayer);
-								polygonLayer = L.polygon(allCoordinates, { color: 'blue' }).addTo(map);
-								polygonLayer.bindPopup(lotidstringValue);
-								map.fitBounds(polygonLayer.getBounds());
-								closeModal('lotSearchModal');
-							} else {
-								alert(`Folio ${lotidstring} not found.`);
-							}
-						})
-						.catch(error => console.error("Error fetching data:", error));
+									// uncomment for adding new feature removed previous ones
+									// if (polygonLayer) map.removeLayer(polygonLayer);
+									const polygon = L.polygon(allCoordinates, { color: 'blue' }).addTo(map);
+									polygon.bindPopup(lotidstringValue);
+									polygonLayers.push(polygon);
+									allBounds.push(polygon.getBounds());
+									return { success: true, lotidstring };
+								} else {
+									return { success: false, lotidstring };
+								}
+							})
+							.catch(error => {
+								console.error(`Error fetching ${lotidstring}:`, error);
+								return { success: false, lotidstring, error };
+							});
+
+						fetchPromises.push(fetchPromise);
+					}
+
+					// Wait for all requests to complete
+					Promise.all(fetchPromises).then(results => {
+						const notFound = results.filter(r => !r.success);
+						if (notFound.length > 0) {
+							const notFoundList = notFound.map(r => r.lotidstring).join(', ');
+							alert(`The following lots were not found: ${notFoundList}`);
+						}
+
+						// Fit map to show all polygons
+						if (allBounds.length > 0) {
+							const group = L.featureGroup(allBounds.map(b => L.rectangle(b)));
+							map.fitBounds(group.getBounds());
+						}
+
+						if (results.some(r => r.success)) {
+							closeModal('lotSearchModal');
+						}
+					});
 				}
 
 				// Location Search with clear button
@@ -851,7 +890,8 @@
 				}
 
 				function clearMap() {
-					if (polygonLayer) map.removeLayer(polygonLayer);
+					polygonLayers.forEach(layer => map.removeLayer(layer));
+					polygonLayers = [];
 					if (pointLayer) map.removeLayer(pointLayer);
 					if (watercourseLayer) map.removeLayer(watercourseLayer);
 					if (gnrLayer) map.removeLayer(gnrLayer);
