@@ -708,14 +708,16 @@
 						.then(response => response.json())
 						.then(data => {
 							if (data.features.length > 0) {
-								const rings = data.features[0].geometry.rings[0];
-								const coordinates = rings.map(([x, y]) => {
-									const latlng = L.Projection.SphericalMercator.unproject(L.point(x, y));
-									return [latlng.lat, latlng.lng];
+								const allRings = data.features[0].geometry.rings;
+								const allCoordinates = allRings.map(ring => {
+									return ring.map(([x, y]) => {
+										const latlng = L.Projection.SphericalMercator.unproject(L.point(x, y));
+										return [latlng.lat, latlng.lng];
+									});
 								});
 								// uncomment for adding new feature removed previous ones
 								// if (polygonLayer) map.removeLayer(polygonLayer);
-								polygonLayer = L.polygon(coordinates, { color: 'blue' }).addTo(map);
+								polygonLayer = L.polygon(allCoordinates, { color: 'blue' }).addTo(map);
 								map.fitBounds(polygonLayer.getBounds());
 								closeModal('lotSearchModal');
 							} else {
