@@ -708,7 +708,9 @@
 						.then(response => response.json())
 						.then(data => {
 							if (data.features.length > 0) {
-								const allRings = data.features[0].geometry.rings;
+								const feature = data.features[0];
+								const allRings = feature.geometry.rings;
+								const lotidstringValue = feature.attributes.lotidstring;
 								const allCoordinates = allRings.map(ring => {
 									return ring.map(([x, y]) => {
 										const latlng = L.Projection.SphericalMercator.unproject(L.point(x, y));
@@ -718,6 +720,7 @@
 								// uncomment for adding new feature removed previous ones
 								// if (polygonLayer) map.removeLayer(polygonLayer);
 								polygonLayer = L.polygon(allCoordinates, { color: 'blue' }).addTo(map);
+								polygonLayer.bindPopup(lotidstringValue);
 								map.fitBounds(polygonLayer.getBounds());
 								closeModal('lotSearchModal');
 							} else {
