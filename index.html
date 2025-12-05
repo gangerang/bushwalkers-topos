@@ -1153,6 +1153,20 @@
 				attribution: '&copy; <a href="https://caltopo.com">CalTopo</a> Contributors'
 			});
 
+			// ga land cover
+			const basemap_raster_ga_landcover_2024 = L.esri.imageMapLayer({url: 'https://di-daa.img.arcgis.com/arcgis/rest/services/Land_and_vegetation/DEA_Landcover_Landsat_Level4/ImageServer',
+				renderingRule: { "rasterFunction":"DEA Landcover (level4)" },
+				time: 1704067200000,
+				attribution: attrib_ga
+			});
+
+			const basemap_raster_ga_landcover_1988 = L.esri.imageMapLayer({url: 'https://di-daa.img.arcgis.com/arcgis/rest/services/Land_and_vegetation/DEA_Landcover_Landsat_Level4/ImageServer',
+				renderingRule: { "rasterFunction":"DEA Landcover (level4)" },
+				time: 567993600000,
+				attribution: attrib_ga
+			});
+
+
 			///////////////////////////
 			//	overlay layers
 			///////////////////////////
@@ -3287,6 +3301,8 @@
 						collapsed: true,
 						children: [
 							{ label: 'NSW SVTM vegetation', layer: basemap_raster_env_svtm_veg_group },
+							{ label: 'Land cover 2024', layer: basemap_raster_ga_landcover_2024 },
+							{ label: 'Land cover 1988', layer: basemap_raster_ga_landcover_1988 },
 						]
 					},
 					{
@@ -4034,6 +4050,8 @@
 				{ label: 'NPWS access trails', layer: raster_env_ams_trails },
 				{ label: 'CalTopo slope fixed', layer: raster_caltopo_slope_fixed },
 				{ label: 'CalTopo slope gradient', layer: raster_caltopo_slope_gradient },
+				{ label: 'Land cover 2024', layer: basemap_raster_ga_landcover_2024 },
+				{ label: 'Land cover 1988', layer: basemap_raster_ga_landcover_1988 },
 			);
 
 			// load canyon layer from ropewiki
