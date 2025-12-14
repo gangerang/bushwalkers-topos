@@ -154,3 +154,4 @@ Below are short gif recordings showing the various layer and features which are 
 - add - mobile coverage layers - telstra, optus and tpg mobile coverage for australia based on 2024 data from accc
 - add - forestry operations - new layer for forestry corporation of nsw planned logging operations
 - add - ga land cover layers - new layers for australian land cover from ga landsat data, for years 1988 and 2024
+- add - basemaps to overlays - all basemap layers are now also available as overlay layers so they can be used with opacity

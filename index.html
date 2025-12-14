@@ -3182,12 +3182,93 @@
 				},
 			];
 			
+		
+		// Dynamically create overlay versions of all basemap layers
+		// This clones the baseTree structure and creates new layer instances for overlays
+		function cloneLayerForOverlay(layer) {
+			if (!layer) return null;
+			
+			// For most Leaflet layers, we can access their options and recreate them
+			// L.tileLayer
+			if (layer instanceof L.TileLayer && layer._url && !layer.options.url) {
+				return L.tileLayer(layer._url, { ...layer.options });
+			}
+			
+			// L.esri.tiledMapLayer
+			if (layer.options && layer.options.url && typeof L.esri !== 'undefined' && layer instanceof L.esri.TiledMapLayer) {
+				return L.esri.tiledMapLayer({ ...layer.options });
+			}
+			
+			// L.esri.imageMapLayer  
+			if (layer.options && layer.options.url && typeof L.esri !== 'undefined' && layer instanceof L.esri.ImageMapLayer) {
+				const cloned = L.esri.imageMapLayer({ ...layer.options });
+				// Copy rendering rules and other properties
+				if (layer.options.renderingRule) cloned.options.renderingRule = layer.options.renderingRule;
+				if (layer._bandIds) cloned.setBandIds(...layer._bandIds);
+				return cloned;
+			}
+			
+			// L.esri.Vector.vectorTileLayer
+			if (layer._serviceUrl && typeof L.esri !== 'undefined' && typeof L.esri.Vector !== 'undefined') {
+				if (layer instanceof L.esri.Vector.VectorTileLayer) {
+					return L.esri.Vector.vectorTileLayer(layer._serviceUrl, { ...layer.options });
+				}
+			}
+			
+			// L.esri.Vector.maplibreGLJSLayer
+			if (layer.options && layer.options.style && typeof L.esri !== 'undefined' && typeof L.esri.Vector !== 'undefined') {
+				if (L.esri.Vector.maplibreGLJSLayer && layer.options.style) {
+					return L.esri.Vector.maplibreGLJSLayer({ ...layer.options });
+				}
+			}
+			
+			// L.TileLayer.WMS
+			if (layer instanceof L.TileLayer.WMS && layer._url) {
+				return L.tileLayer.wms(layer._url, { ...layer.options });
+			}
+			
+			// L.LayerGroup - recursively clone all sublayers
+			if (layer instanceof L.LayerGroup) {
+				const clonedLayers = [];
+				layer.eachLayer(function(sublayer) {
+					const clonedSublayer = cloneLayerForOverlay(sublayer);
+					if (clonedSublayer) clonedLayers.push(clonedSublayer);
+				});
+				return L.layerGroup(clonedLayers);
+			}
+			
+			// If we can't clone it, return null (opacity just won't work for it)
+			return null;
+		}
+		
+		// Clone the entire baseTree structure with new layer instances
+		function cloneBaseTreeForOverlays(tree) {
+			if (Array.isArray(tree)) {
+				return tree.map(item => cloneBaseTreeForOverlays(item));
+			} else if (tree && typeof tree === 'object') {
+				const cloned = { ...tree };
+				if (tree.layer) {
+					cloned.layer = cloneLayerForOverlay(tree.layer);
+				}
+				if (tree.children) {
+					cloned.children = cloneBaseTreeForOverlays(tree.children);
+				}
+				return cloned;
+			}
+			return tree;
+		}
+		
+		// Create the overlay tree from baseTree
+		const baseTreeAsOverlays = cloneBaseTreeForOverlays(baseTree);
+		
 			// overlay tree
 			var overlaysTree = {
 				label: 'Overlays',
 				//selectAllCheckbox: 'Un/select all',
 				collapsed: true,
 				children: [
+					// Basemap layers as overlays (dynamically cloned)
+					...baseTreeAsOverlays,
 					{
 						label: 'Historic Topo Maps',
 						collapsed: true,
@@ -3974,22 +4055,59 @@
 			function updateLayerOpacity(layersArray, value) {
 				layersArray.forEach((item) => {
 					const layer = item.layer;
-
-					if (typeof layer.setOpacity === 'function') {
-						layer.setOpacity(value); // Raster layers
-					} else if (layer.setStyle && layer instanceof L.Path) {
-						layer.setStyle({ opacity: value, fillOpacity: value }); // Vector layers
-					} else if (layer.setStyle && layer.eachFeature) {
-						layer.setStyle({ opacity: value, fillOpacity: value }); // Feature layers
-					} else {
-						console.warn("Opacity adjustment not supported for this layer type");
+					
+					// Skip if layer is null or not on the map
+					if (!layer || !map.hasLayer(layer)) {
+						return;
 					}
+
+					// Try different opacity methods based on layer type
+					if (typeof layer.setOpacity === 'function') {
+						layer.setOpacity(value);
+					} else if (layer._container && layer._container.style) {
+						layer._container.style.opacity = value;
+					} else if (layer.setStyle && layer instanceof L.Path) {
+						layer.setStyle({ opacity: value, fillOpacity: value });
+					} else if (layer.setStyle && typeof layer.eachLayer === 'function') {
+						layer.eachLayer(function(sublayer) {
+							if (typeof sublayer.setOpacity === 'function') {
+								sublayer.setOpacity(value);
+							} else if (sublayer._container && sublayer._container.style) {
+								sublayer._container.style.opacity = value;
+							}
+						});
+					} else if (layer.setStyle && layer.eachFeature) {
+						layer.setStyle({ opacity: value, fillOpacity: value });
+					}
+					// If none work, opacity just won't work for this layer (which is fine)
 				});
 			}
 
+
 			// Layers to be updated by opacity slider
+		// Extract all layers from a tree structure
+		function extractLayersFromTree(tree) {
+			const layers = [];
+			function traverse(node) {
+				if (Array.isArray(node)) {
+					node.forEach(traverse);
+				} else if (node) {
+					if (node.layer) {
+						layers.push({ label: node.label, layer: node.layer });
+					}
+					if (node.children) {
+						traverse(node.children);
+					}
+				}
+			}
+			traverse(tree);
+			return layers;
+		}
+
 			let opacityLayers = [];
 			opacityLayers = opacityLayers.concat(
+				// Dynamically cloned basemap overlays
+				extractLayersFromTree(baseTreeAsOverlays),
 				nlaTopo31680Layers,
 				nlaMilitary63360Layers,
 				nlaMilitary253440Layers,
