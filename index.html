@@ -3188,8 +3188,14 @@
 		function cloneLayerForOverlay(layer) {
 			if (!layer) return null;
 			
-			// For most Leaflet layers, we can access their options and recreate them
-			// L.tileLayer
+			// Check specific types before generic types (order matters!)
+			
+			// L.TileLayer.WMS (must come before L.TileLayer check)
+			if (layer instanceof L.TileLayer.WMS && layer._url) {
+				return L.tileLayer.wms(layer._url, { ...layer.options });
+			}
+			
+			// L.tileLayer (generic tile layer)
 			if (layer instanceof L.TileLayer && layer._url && !layer.options.url) {
 				return L.tileLayer(layer._url, { ...layer.options });
 			}
@@ -3222,11 +3228,6 @@
 				}
 			}
 			
-			// L.TileLayer.WMS
-			if (layer instanceof L.TileLayer.WMS && layer._url) {
-				return L.tileLayer.wms(layer._url, { ...layer.options });
-			}
-			
 			// L.LayerGroup - recursively clone all sublayers
 			if (layer instanceof L.LayerGroup) {
 				const clonedLayers = [];
@@ -3238,25 +3239,41 @@
 			}
 			
 			// If we can't clone it, return null (opacity just won't work for it)
+			console.warn("Could not clone layer - unsupported type:", layer);
 			return null;
 		}
 		
+		
+		// Clone the entire baseTree structure with new layer instances
 		// Clone the entire baseTree structure with new layer instances
 		function cloneBaseTreeForOverlays(tree) {
 			if (Array.isArray(tree)) {
-				return tree.map(item => cloneBaseTreeForOverlays(item));
+				return tree.map(item => cloneBaseTreeForOverlays(item)).filter(item => {
+					// Filter out items where the layer failed to clone
+					if (item && item.layer === null) return false;
+					return true;
+				});
 			} else if (tree && typeof tree === 'object') {
 				const cloned = { ...tree };
 				if (tree.layer) {
 					cloned.layer = cloneLayerForOverlay(tree.layer);
+					// If cloning failed, mark this node as invalid
+					if (cloned.layer === null) {
+						return null;
+					}
 				}
 				if (tree.children) {
 					cloned.children = cloneBaseTreeForOverlays(tree.children);
+					// Filter out any null children
+					if (Array.isArray(cloned.children)) {
+						cloned.children = cloned.children.filter(child => child !== null);
+					}
 				}
 				return cloned;
 			}
 			return tree;
 		}
+		
 		
 		// Create the overlay tree from baseTree
 		const baseTreeAsOverlays = cloneBaseTreeForOverlays(baseTree);
