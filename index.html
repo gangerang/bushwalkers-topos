@@ -1136,6 +1136,75 @@
 			attribution: '&copy; <a href="https://sanddune.dev">SandDune</a> Contributors'
 		});
 
+
+	// SandDune contours overlay - hardcoded inline style with contour layers
+	const overlay_vectortile_sanddune_contours = L.esri.Vector.maplibreGLJSLayer({
+		style: {
+			version: 8,
+			sources: {
+				contours: {
+					type: 'vector',
+					tiles: ['https://data.map.sanddune.dev/contour/{z}/{x}/{y}.mvt'],
+					minzoom: 13,
+					maxzoom: 16
+				}
+			},
+			glyphs: 'https://orangemug.github.io/font-glyphs/glyphs/{fontstack}/{range}.pbf',
+			layers: [
+				// Regular contour lines
+				{
+					id: 'contour',
+					type: 'line',
+					source: 'contours',
+					'source-layer': 'contour',
+					minzoom: 13,
+					filter: ['all', ['!has', 'index']],
+					paint: {
+						'line-color': 'rgba(122, 152, 111, 1)',
+						'line-opacity': 0.2
+					}
+				},
+				// Index contour lines (every 5th line, thicker)
+				{
+					id: 'contour_index',
+					type: 'line',
+					source: 'contours',
+					'source-layer': 'contour',
+					minzoom: 13,
+					filter: ['all', ['==', 'index', 1]],
+					paint: {
+						'line-color': 'rgba(122, 152, 111, 1)',
+						'line-opacity': 0.6
+					}
+				},
+				// Contour labels
+				{
+					id: 'contour_label',
+					type: 'symbol',
+					source: 'contours',
+					'source-layer': 'contour',
+					minzoom: 14,
+					filter: ['all', ['==', '$type', 'LineString'], ['>', 'ele', 0], ['==', 'index', 1]],
+					layout: {
+						'symbol-placement': 'line',
+						'text-font': ['Roboto Regular'],
+						'text-field': '{ele}m',
+						'text-size': 11,
+						'symbol-spacing': {
+							stops: [[14, 250], [18, 500]]
+						}
+					},
+					paint: {
+						'text-color': 'rgba(37, 45, 33, 1)',
+						'text-opacity': 0.7
+					}
+				}
+			]
+		},
+		pane: 'overlayPane',
+		attribution: '&copy; <a href="https://sanddune.dev">SandDune</a> Contributors'
+	});
+
 			// raster OpenTopoMap - https://opentopomap.org/about
 			const basemap_raster_open_topo_maps = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
 				maxZoom: 21,
@@ -3402,7 +3471,8 @@
 							// { label: 'NSW 5m hillshade', layer: basemap_raster_geonsw_hillshade_5m },
 							{ label: 'NSW SandDune 5m hillshade', layer: basemap_raster_sanddune_hillshade },
 							{ label: 'ESRI contours', layer: basemap_vectortile_esri_contours },
-														{ label: 'ELVIS DEM availablity', layer: raster_fsdf_elvis },
+							{ label: 'SandDune contours', layer: overlay_vectortile_sanddune_contours },
+							{ label: 'ELVIS DEM availablity', layer: raster_fsdf_elvis },
 							{ label: 'Terrarium elevation', layer: raster_aws_elevation_terrarium },
 							{ label: 'Multiscale TPI', layer: raster_ga_multiscale_tpi },
 							{ label: 'CalTopo slope fixed', layer: raster_caltopo_slope_fixed },
@@ -4148,6 +4218,7 @@
 				nlaParishWestmorelandLayers,
 				{ label: 'ESRI Hillshade', layer: basemap_raster_esri_hillshade_opacity },
 				{ label: 'NSW SandDune 5m hillshade', layer: basemap_raster_sanddune_hillshade },
+				{ label: 'SandDune contours', layer: overlay_vectortile_sanddune_contours },
 				{ label: 'Multiscale TPI', layer: raster_ga_multiscale_tpi },
 				{ label: 'Vegetation index', layer: image_env_geebam_veg_index },
 				{ label: 'Sentinel 2 imagery', layer: image_env_geebam_sentinel },
