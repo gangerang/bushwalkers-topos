@@ -1127,6 +1127,15 @@
 				attribution: attrib_ofm
 			});
 			
+
+
+
+		// SandDune OSM with contours - use the full style
+		const basemap_vectortile_sanddune_osm_with_contours = L.esri.Vector.maplibreGLJSLayer({
+			style: 'https://map.sanddune.dev/styles/osm-liberty.json',
+			attribution: '&copy; <a href="https://sanddune.dev">SandDune</a> Contributors'
+		});
+
 			// raster OpenTopoMap - https://opentopomap.org/about
 			const basemap_raster_open_topo_maps = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
 				maxZoom: 21,
@@ -3165,6 +3174,7 @@
 						{ label: 'Google imagery', layer: basemap_raster_google_imagery },
 						{ label: 'ESRI topo raster', layer: basemap_raster_esri_topo },
 						{ label: 'OpenFreeMap', layer: basemap_vectortile_ofm_liberty },
+						{ label: 'SandDune OSM', layer: basemap_vectortile_sanddune_osm_with_contours },
 						{ label: 'OpenTopoMap', layer: basemap_raster_open_topo_maps },
 						{ label: 'CalTopo', layer: basemap_raster_caltopo_basemap },
 					]
@@ -3392,7 +3402,7 @@
 							// { label: 'NSW 5m hillshade', layer: basemap_raster_geonsw_hillshade_5m },
 							{ label: 'NSW SandDune 5m hillshade', layer: basemap_raster_sanddune_hillshade },
 							{ label: 'ESRI contours', layer: basemap_vectortile_esri_contours },
-							{ label: 'ELVIS DEM availablity', layer: raster_fsdf_elvis },
+														{ label: 'ELVIS DEM availablity', layer: raster_fsdf_elvis },
 							{ label: 'Terrarium elevation', layer: raster_aws_elevation_terrarium },
 							{ label: 'Multiscale TPI', layer: raster_ga_multiscale_tpi },
 							{ label: 'CalTopo slope fixed', layer: raster_caltopo_slope_fixed },

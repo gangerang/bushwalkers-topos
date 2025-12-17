@@ -156,3 +156,4 @@ Below are short gif recordings showing the various layer and features which are 
 - add - ga land cover layers - new layers for australian land cover from ga landsat data, for years 1988 and 2024
 - add - basemaps to overlays - all basemap layers are now also available as overlay layers so they can be used with opacity
 - add - sanddune hillshade - new hillshade layer for nsw from sanddune.dev, based on 5m elevation data for nsw
+- add - sanddune osm - new basemap layer for sanddune osm styled map, based on openstreetmap data
