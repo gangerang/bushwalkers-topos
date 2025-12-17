@@ -1167,6 +1167,11 @@
 			});
 
 
+			const basemap_raster_sanddune_hillshade = L.tileLayer('https://data.map.sanddune.dev/hillshade/{z}/{x}/{y}.webp', {
+				maxNativeZoom: 15,
+				attribution: '&copy; <a href="https://sanddune.dev">Sand Dune</a> &copy; Department Customer Service'
+			});
+
 			///////////////////////////
 			//	overlay layers
 			///////////////////////////
@@ -3384,7 +3389,8 @@
 						collapsed: true,
 						children: [
 							{ label: 'ESRI hillshade', layer: basemap_raster_esri_hillshade_opacity },
-							{ label: 'NSW 5m hillshade', layer: basemap_raster_geonsw_hillshade_5m },
+							// { label: 'NSW 5m hillshade', layer: basemap_raster_geonsw_hillshade_5m },
+							{ label: 'NSW SandDune 5m hillshade', layer: basemap_raster_sanddune_hillshade },
 							{ label: 'ESRI contours', layer: basemap_vectortile_esri_contours },
 							{ label: 'ELVIS DEM availablity', layer: raster_fsdf_elvis },
 							{ label: 'Terrarium elevation', layer: raster_aws_elevation_terrarium },
@@ -4131,6 +4137,8 @@
 				nlaParishCookLayers,
 				nlaParishWestmorelandLayers,
 				{ label: 'ESRI Hillshade', layer: basemap_raster_esri_hillshade_opacity },
+				{ label: 'NSW SandDune 5m hillshade', layer: basemap_raster_sanddune_hillshade },
+				{ label: 'Multiscale TPI', layer: raster_ga_multiscale_tpi },
 				{ label: 'Vegetation index', layer: image_env_geebam_veg_index },
 				{ label: 'Sentinel 2 imagery', layer: image_env_geebam_sentinel },
 				{ label: 'Geology WMTS', layer: basemap_raster_geonsw_geology_wmts },
@@ -4170,7 +4178,7 @@
 				{ label: 'SSC 2005', layer: image_ssc_aerial_2005 },
 				{ label: 'SSC 2006', layer: image_ssc_aerial_2006 },
 				{ label: 'SSC 2010', layer: image_ssc_aerial_2010 },
-				{ label: 'NSW 5m hillshade', layer: basemap_raster_geonsw_hillshade_5m },
+				// { label: 'NSW 5m hillshade', layer: basemap_raster_geonsw_hillshade_5m },
 				{ label: 'DEA Hotspots', layer: raster_ga_hotspots_three_days },
 				{ label: 'TPG', layer: raster_mobile_2024_tpg },
 				{ label: 'Optus', layer: raster_mobile_2024_optus },
