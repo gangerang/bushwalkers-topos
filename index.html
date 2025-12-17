@@ -1151,7 +1151,7 @@
 			},
 			glyphs: 'https://orangemug.github.io/font-glyphs/glyphs/{fontstack}/{range}.pbf',
 			layers: [
-				// Regular contour lines
+				// 1. Regular contour lines (Subtle)
 				{
 					id: 'contour',
 					type: 'line',
@@ -1160,11 +1160,14 @@
 					minzoom: 13,
 					filter: ['all', ['!has', 'index']],
 					paint: {
-						'line-color': 'rgba(122, 152, 111, 1)',
-						'line-opacity': 0.2
+						// A orange color
+						'line-color': '#FF9F1C',
+						'line-opacity': 0.5,
+						// Keep thin to avoid clutter
+						'line-width': 0.8
 					}
 				},
-				// Index contour lines (every 5th line, thicker)
+				// 2. Index contour lines (Every 5th line, bolder)
 				{
 					id: 'contour_index',
 					type: 'line',
@@ -1173,30 +1176,39 @@
 					minzoom: 13,
 					filter: ['all', ['==', 'index', 1]],
 					paint: {
-						'line-color': 'rgba(122, 152, 111, 1)',
-						'line-opacity': 0.6
+						'line-color': '#FF9F1C',
+						'line-opacity': 1, // Full opacity for index lines
+						// Slightly thicker to distinguish from regular lines
+						'line-width': 1.2
 					}
 				},
-				// Contour labels
+				// 3. Contour labels (With Halo)
 				{
 					id: 'contour_label',
 					type: 'symbol',
 					source: 'contours',
 					'source-layer': 'contour',
-					minzoom: 14,
+					minzoom: 13,
 					filter: ['all', ['==', '$type', 'LineString'], ['>', 'ele', 0], ['==', 'index', 1]],
 					layout: {
 						'symbol-placement': 'line',
 						'text-font': ['Roboto Regular'],
 						'text-field': '{ele}m',
 						'text-size': 11,
-						'symbol-spacing': {
-							stops: [[14, 250], [18, 500]]
-						}
+						// Adjust spacing to avoid clutter
+						'symbol-spacing': 500,
+						// Max angle prevents labels from drawing on sharp jagged turns
+						'text-max-angle': 30
 					},
 					paint: {
-						'text-color': 'rgba(37, 45, 33, 1)',
-						'text-opacity': 0.7
+						'text-color': '#FF9F1C',
+						
+						// The Halo
+						// This creates a white outline around text, making it readable
+						// on top of dark satellite imagery or busy street maps.
+						'text-halo-color': 'rgba(0, 0, 0, 0.9)',
+						'text-halo-width': 2,
+						'text-halo-blur': 0.5
 					}
 				}
 			]
