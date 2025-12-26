@@ -1552,7 +1552,7 @@
 				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/crown_road_sales_inactive.geojson'
 			});
 
-			const raster_geoserver_crown_roads_sold = L.tileLayer.wms('https://geoserver.cloud.al3x.au/geoserver/geodata/wms?', {
+			const raster_geoserver_crown_roads_sold = L.tileLayer.wms('https://geoserver.al3x.au/geoserver/geodata/wms?', {
 						layers: 'geodata:crown_roads_sold',
 						format: 'image/png',
 						transparent: true,
@@ -1585,7 +1585,7 @@
 
 			// vector spatial services nsw historic aerial photos - all via geoserver from geopackage, excluding invalid images
 			const vector_geoserver_nsw_historic_aerial_photos = addDynamicWfsLayer(map, {
-				baseLayerUrl: 'https://geoserver.cloud.al3x.au/geoserver/geodata/ows',
+				baseLayerUrl: 'https://geoserver.al3x.au/geoserver/geodata/ows',
 				layers: 'geodata:ss_nsw_historic_aerial_imagery_index',
 				layerName: 'nsw_historic_aerial_photos_config',
 				limit: 5000,
@@ -2011,7 +2011,7 @@
 
 			// nsw trig survey map
 			// 1912 from nla via geoserver
-			const raster_geoserver_nla_trig_progress_sketch_1912 = L.tileLayer.wmts('https://geoserver.cloud.al3x.au/geoserver/geodata/gwc/service/wmts?', {
+			const raster_geoserver_nla_trig_progress_sketch_1912 = L.tileLayer.wmts('https://geoserver.al3x.au/geoserver/geodata/gwc/service/wmts?', {
 				layer: 'geodata:nsw-trigs_1912_nla-obj-233482781',
 				format: 'image/png',
 				version: '1.1.0',
@@ -2020,7 +2020,7 @@
 			});
 
 			// misc - port hacking tourist map
-			const raster_geoserver_nla_port_hacking_tourist_1966 = L.tileLayer.wmts('https://geoserver.cloud.al3x.au/geoserver/geodata/gwc/service/wmts?', {
+			const raster_geoserver_nla_port_hacking_tourist_1966 = L.tileLayer.wmts('https://geoserver.al3x.au/geoserver/geodata/gwc/service/wmts?', {
 				layer: 'geodata:port-hacking-tourist-1966_nla-obj-233795541',
 				format: 'image/png',
 				version: '1.1.0',
@@ -2028,7 +2028,7 @@
 			});
 
 			// misc - port hacking tourist map
-			const raster_geoserver_nla_bruces_walk_1931 = L.tileLayer.wmts('https://geoserver.cloud.al3x.au/geoserver/geodata/gwc/service/wmts?', {
+			const raster_geoserver_nla_bruces_walk_1931 = L.tileLayer.wmts('https://geoserver.al3x.au/geoserver/geodata/gwc/service/wmts?', {
 				layer: 'geodata:bruces-walk-1931_nla-obj-499787680-3',
 				format: 'image/png',
 				version: '1.1.0',
@@ -2036,7 +2036,7 @@
 			});
 
 			// misc - dunphy gangerang 6th jpeg
-			const raster_geoserver_dunphy_gangerang_6th = L.tileLayer.wmts('https://geoserver.cloud.al3x.au/geoserver/geodata/gwc/service/wmts?', {
+			const raster_geoserver_dunphy_gangerang_6th = L.tileLayer.wmts('https://geoserver.al3x.au/geoserver/geodata/gwc/service/wmts?', {
 				layer: 'geodata:dunphy_gangerang_6th_SLNSW_FL9039937_jpeg',
 				format: 'image/jpeg',
 				version: '1.1.0',
@@ -2044,7 +2044,7 @@
 			});
 
 			// misc - dunphy kowmung 1th jpeg
-			const raster_geoserver_dunphy_kowmung_1st = L.tileLayer.wmts('https://geoserver.cloud.al3x.au/geoserver/geodata/gwc/service/wmts?', {
+			const raster_geoserver_dunphy_kowmung_1st = L.tileLayer.wmts('https://geoserver.al3x.au/geoserver/geodata/gwc/service/wmts?', {
 				layer: 'geodata:dunphy_kowmung_1st_SLNSW_FL3514124_jpeg',
 				format: 'image/jpeg',
 				version: '1.1.0',
@@ -2502,14 +2502,14 @@
 			];
 
 			const raster_geoserver_topo_100k = createWmtsLayers({
-				wmtsUrl: 'https://geoserver.cloud.al3x.au/geoserver/topo_100k/gwc/service/wmts',
+				wmtsUrl: 'https://geoserver.al3x.au/geoserver/topo_100k/gwc/service/wmts',
 				tilematrixSet: 'EPSG:900913',
 				version: '1.1.0',
 				layersConfig: geoserver_topo_100k_config
 			});
 
 			const raster_geoserver_topo_100k_group = L.tileLayer(
-				'https://geoserver.cloud.al3x.au/geoserver/gwc/service/wmts/rest/topo_100k:100k_group/WebMercatorQuadx2/{z}/{y}/{x}?format=image/png', {
+				'https://geoserver.al3x.au/geoserver/gwc/service/wmts/rest/topo_100k:100k_group/WebMercatorQuadx2/{z}/{y}/{x}?format=image/png', {
 				tileSize: 512,
 				zoomOffset: -1
 			});
@@ -2545,7 +2545,7 @@
 			];
 
 			const raster_geoserver_topo_50k = createWmtsLayers({
-				wmtsUrl: 'https://geoserver.cloud.al3x.au/geoserver/topo_50k/gwc/service/wmts',
+				wmtsUrl: 'https://geoserver.al3x.au/geoserver/topo_50k/gwc/service/wmts',
 				tilematrixSet: 'EPSG:900913',
 				version: '1.1.0',
 				layersConfig: geoserver_topo_50k_config
@@ -2640,7 +2640,7 @@
 
 			// placenames from ga gazatteer https://placenames.fsdf.org.au/ - all via geoserver from downloaded geopackage
 			const vector_geoserver_ga_placenames = addDynamicWfsLayer(map, {
-				baseLayerUrl: 'https://geoserver.cloud.al3x.au/geoserver/geodata/ows',
+				baseLayerUrl: 'https://geoserver.al3x.au/geoserver/geodata/ows',
 				layers: 'geodata:ga_placenames',
 				layerName: 'PLACENAMES',
 				limit: 5000,
