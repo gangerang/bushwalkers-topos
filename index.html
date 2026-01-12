@@ -1789,6 +1789,28 @@
 				basemap_raster_env_svtm_veg_formation_5m
 			]);
 
+			// ibra7 subregions
+			const raster_env_ibra7_subregions = L.tileLayer.wms('https://gis.environment.gov.au/gispubmap/services/ogc_services/IBRA7_Subregions/MapServer/WMSServer', {
+				layers: 'IBRA7_subregions12045',
+				format: 'image/png',
+				transparent: true,
+				version: '1.3.0',
+				uppercase: true,
+				attribution: 'DECCWA'
+			});
+
+			const vector_env_ibra7_subregions = L.esri.featureLayer({
+				url: "https://gis.environment.gov.au/gispubmap/rest/services/ogc_services/IBRA7_Subregions/FeatureServer/0",
+				simplifyFactor: 0.5,
+				precision: 4,
+				attribution: 'DECCWA',
+				style: () => {
+					return {
+						color: "#FF8000" // orange
+					};
+				}
+			});
+
 			///////////////////////////
 			// nsw npws
 			///////////////////////////
@@ -3233,6 +3255,11 @@
 				Survey: {surveydescription}<br>
 				`
 			);
+			bindPopupToLayer(vector_env_ibra7_subregions,
+				`Region: {REG_NAME_7}<br>
+				Subregion: {SUB_NAME_7} ({SUB_CODE_7})<br>
+				`
+			);
 
 
 			///////////////////////////
@@ -3499,6 +3526,8 @@
 							{ label: 'NSW SVTM vegetation', layer: basemap_raster_env_svtm_veg_group },
 							{ label: 'Land cover 2024', layer: basemap_raster_ga_landcover_2024 },
 							{ label: 'Land cover 1988', layer: basemap_raster_ga_landcover_1988 },
+							// { label: 'IBRA Subregions', layer: raster_env_ibra7_subregions },
+							{ label: 'IBRA Subregions', layer: vector_env_ibra7_subregions }
 						]
 					},
 					{
@@ -4288,6 +4317,7 @@
 				{ label: 'CalTopo slope gradient', layer: raster_caltopo_slope_gradient },
 				{ label: 'Land cover 2024', layer: basemap_raster_ga_landcover_2024 },
 				{ label: 'Land cover 1988', layer: basemap_raster_ga_landcover_1988 },
+				{ label: 'IBRA Subregions', layer: raster_env_ibra7_subregions },
 			);
 
 			// load canyon layer from ropewiki
