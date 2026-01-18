@@ -1296,6 +1296,11 @@
 				// precision: 4,
 				attribution: attrib_nsw_ss
 			});
+			// vector property boundaries
+			const vector_ss_properties = L.esri.featureLayer({
+				url: "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Land_Parcel_Property_Theme/FeatureServer/12",
+				attribution: attrib_nsw_ss
+			});
 			// vector plans - crown only
 			const vector_ss_crown_plans = L.esri.featureLayer({
 				url: "https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/Boundaries/MapServer/2",
@@ -3059,6 +3064,12 @@
 				<a href="https://maps.six.nsw.gov.au/SketchPlansWS/rest/getSketchPlans?surveyMark={marktype}{marknumber}" target="_blank">Download sketch</a>
 			`);
 			bindPopupToLayer(vector_ss_lots, "{lotidstring}");
+			bindPopupToLayer(vector_ss_properties, 
+				`Address: {address}<br>
+				Property Id: {propid}<br>
+				Lot Count: {dissolveparcelcount}
+				`
+			);
 			bindPopupToLayer(vector_ss_crown_plans, 
 				`<b>{plannumber}-{smallnumber}</b><br>
 				<a href="https://maps.six.nsw.gov.au/arcgis/rest/services/sixmaps/Boundaries/MapServer/2/{rid}/htmlPopup?f=html" target="_blank">Table</a>
@@ -3594,6 +3605,7 @@
 						collapsed: true,
 						children: [
 							{ label: 'Lots', layer: vector_ss_lots },
+							{ label: 'Properties', layer: vector_ss_properties },
 							{ label: 'Crown Plans', layer: vector_ss_crown_plans },
 							{ label: 'Roads', layer: vector_ss_roads },
 							{ label: 'Easements', layer: vector_ss_easements },

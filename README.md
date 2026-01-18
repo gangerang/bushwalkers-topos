@@ -159,3 +159,4 @@ Below are short gif recordings showing the various layer and features which are 
 - add - sanddune osm - new basemap layer for sanddune osm styled map, based on openstreetmap data
 - add - sanddune contours - new contour layer for nsw from sanddune.dev, based on 5m elevation data for nsw
 - add - ibra7 subregions - new layer for ibra7 subregions
+- add - property layer - new layer for property boundaries, being those comprised of one or more lots
