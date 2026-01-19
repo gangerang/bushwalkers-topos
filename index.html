@@ -2825,6 +2825,10 @@
 				attribution: attrib_qld,
 			});
 
+			const basemap_vectortile_qld_qtopo = L.esri.Vector.vectorTileLayer(
+				"https://spatial.information.qld.gov.au/arcgis/rest/services/Hosted/QTopo/VectorTileServer"
+			);
+
 			///////////////////////////
 			// caltopo slope maps
 			///////////////////////////
@@ -3311,7 +3315,8 @@
 						{ label: 'ESRI Landsat 8', layer: basemap_raster_esri_landsat8 },
 						{ label: 'ESRI Sentinel 2', layer: basemap_raster_esri_sentinel2_natural },
 						{ label: 'ESRI Sentinel 2 SWIR', layer: basemap_raster_esri_sentinel2_swir },
-						{ label: 'QLD QTopo', layer: basemap_raster_qld_qtopo },
+						{ label: 'QLD QTopo Raster', layer: basemap_raster_qld_qtopo },
+						{ label: 'QLD QTopo Vector', layer: basemap_vectortile_qld_qtopo },
 					]
 				},
 			];
