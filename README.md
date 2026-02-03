@@ -161,3 +161,4 @@ Below are short gif recordings showing the various layer and features which are 
 - add - ibra7 subregions - new layer for ibra7 subregions
 - add - property layer - new layer for property boundaries, being those comprised of one or more lots
 - add - qld qtopo vector tile basemap - new vector tile basemap for queensland topo maps, sourced from qld government (also covers other states!)
+- update - bushwalkers topo datasets - new github urls for the bushwalkers topo datasets after repo restrucuture

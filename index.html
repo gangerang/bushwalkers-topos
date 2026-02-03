@@ -1549,12 +1549,12 @@
 
 			// vector crown road sales - active
 			const vector_crown_road_sales_active = createGeoJsonLayer({
-				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/crown_road_sales_active.geojson'
+				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/data/dynamic/crown_roads/sales_active.geojson'
 			});
 
 			// vector crown road sales - inactive
 			const vector_crown_road_sales_inactive = createGeoJsonLayer({
-				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/crown_road_sales_inactive.geojson'
+				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/data/dynamic/crown_roads/sales_inactive.geojson'
 			});
 
 			const raster_geoserver_crown_roads_sold = L.tileLayer.wms('https://geoserver.al3x.au/geoserver/geodata/wms?', {
@@ -1600,7 +1600,7 @@
 
 			// vector spatial services nsw historic aerial photos - based on static geojson just of sydney
 			const vector_ss_nsw_historic_aerial_photos_static_sydney = createGeoJsonLayer({
-				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/ss_nsw_historic_aerial_imagery_index_sydney_extract.geojson',
+				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/data/static/historic_imagery/sydney_extract.geojson',
 				layerOptions: {
 					minZoom: 15,
 					attribution: attrib_nsw_ss,
@@ -1622,11 +1622,11 @@
 
 			// vector wnsw schedule 1 and 2 catchment boundaries
 			const vector_wnsw_catchment_schedule_1 = createGeoJsonLayer({
-				url: "https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/wnsw_schedule_1.geojson",
+				url: "https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/data/static/wnsw/schedule_1.geojson",
 				popupField: 'Class'
 			});
 			const vector_wnsw_catchment_schedule_2= createGeoJsonLayer({
-				url: "https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/wnsw_schedule_2.geojson",
+				url: "https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/data/static/wnsw/schedule_2.geojson",
 				popupField: 'Class'
 			});
 			
@@ -1902,7 +1902,7 @@
 
 
 			// load geojson stream height data
-			const nsw_stream_gauges_url = `https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/bom_au_stream_gauges.geojson?cache_buster=${Math.random()}`;
+			const nsw_stream_gauges_url = `https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/data/dynamic/bom/au_stream_gauges.geojson?cache_buster=${Math.random()}`;
 			const vector_hosted_stream_heights_nsw_geojson = createGeoJsonLayer({
 				url: nsw_stream_gauges_url,
 				// popupField: 'name',
@@ -2634,7 +2634,7 @@
 			///////////////////////////
 
 			const vector_hosted_rfs_hr_burns_geojson = createGeoJsonLayer({
-				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/rfs_hr_burns.geojson',
+				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/data/dynamic/rfs/hr_burns.geojson',
 				attribution: attrib_rfs
 			});
 
@@ -2657,7 +2657,7 @@
 
 			// load gnb placename proposals
 			const vector_hosted_gnb_proposals_geojson = createGeoJsonLayer({
-				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/gnb_naming_proposals.geojson',
+				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/data/dynamic/gnb/naming_proposals.geojson',
 				// styleOptions: {
 				// 	color: "#3388ff",
 				// 	weight: 2,
@@ -2712,19 +2712,19 @@
 
 			// getlost maps - huts
 			const vector_hosted_glm_huts = createGeoJsonLayer({
-				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/getlostmaps_huts.geojson',
+				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/data/static/getlostmaps/huts.geojson',
 				attribution: attrib_glm
 			});
 
 			// getlost maps - ruins
 			const vector_hosted_glm_ruins = createGeoJsonLayer({
-				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/getlostmaps_ruins.geojson',
+				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/data/static/getlostmaps/ruins.geojson',
 				attribution: attrib_glm
 			});
 
 			// getlost maps - repeaters
 			const vector_hosted_glm_repeaters = createGeoJsonLayer({
-				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/main/datasets/getlostmaps_repeaters.geojson',
+				url: 'https://raw.githubusercontent.com/gangerang/bushwalkers-topo-datasets/refs/heads/data/static/getlostmaps/repeaters.geojson',
 				attribution: attrib_glm
 			});
 
